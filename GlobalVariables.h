@@ -4,6 +4,6 @@
 #include "PathFinder.h"
 #include "BasicUnit.h"
 
-PathFinder<BasicUnit> * pf;
+PathFinder<int> * pf;
 
 #endif // __GLOBAL_VARIABLES_H__
