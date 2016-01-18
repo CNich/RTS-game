@@ -284,7 +284,7 @@ bool HelloWorld::init() {
 			_tileMap->getMapSize().height, _tileMap->getMapSize().width,
 			_tileMap->getTileSize().height, _tileMap->getTileSize().width);
 
-	pf = new PathFinder<int>(_tileMap->getMapSize().height,
+	pf = new PathFinder<BasicUnit>(_tileMap->getMapSize().height,
 			_tileMap->getMapSize().width);
 	pf->setTileX(_tileMap->getTileSize().height);
 	pf->setTileX(_tileMap->getTileSize().width);

@@ -71,7 +71,7 @@ private:
     cocos2d::Point tileCoordForPosition(cocos2d::Point position);
 
 	LinkedList<cocos2d::Point> * lStack = new LinkedList<cocos2d::Point>;
-	PathFinder<int> * tpf;
+	PathFinder<BasicUnit> * tpf;
 
 	BasicUnit *newClosestEnemy = 0;
 	BasicUnit *currentEnemy = 0;

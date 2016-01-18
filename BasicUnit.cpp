@@ -15,7 +15,7 @@ BasicUnit* BasicUnit::create() {
 	pSprite->initWithFile("029.png");
 	srand((unsigned) time(NULL));
 	pSprite->autorelease();
-	pSprite->tpf = new PathFinder<int>(50, 50);
+	pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
 	pSprite->tpf->setTileX(32);
 	pSprite->tpf->setTileY(32);
 	pSprite->setScale(0.5);
