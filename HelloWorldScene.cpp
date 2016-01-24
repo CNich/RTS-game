@@ -3,14 +3,6 @@
 
 using namespace CocosDenshion;
 
-/* MAKE SCALE VARIABLE
- *
- *
- *
- *
- *
- * */
-
 USING_NS_CC;
 
 HelloWorldHud *HelloWorld::_hud = NULL;
@@ -42,7 +34,6 @@ bool HelloWorld::init() {
 	auto str =
 			String::createWithContentsOfFile(
 					FileUtils::getInstance()->fullPathForFilename(file.c_str()).c_str());
-	//auto str = String::createWithContentsOfFile ("C:\\CocosGames\\cocos2d-x-3.6\\tileMapTest\\Resources\\TileMap.tmx");
 	_tileMap = TMXTiledMap::createWithXML(str->getCString(), "");
 	_background = _tileMap->layerNamed("Background");
 
@@ -116,8 +107,6 @@ bool HelloWorld::init() {
 	touchListener->onTouchesEnded =
 			CC_CALLBACK_2(HelloWorld::onTouchesEnded, this);
 
-	//this->_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
-
 	_player = Sprite::create("Player.png");
 	_player->setPosition(x + _tileMap->getTileSize().width / 2,
 			y + _tileMap->getTileSize().height / 2);
@@ -173,17 +162,13 @@ bool HelloWorld::init() {
 			target->setPosition(target->getPosition() +
 					cocos2d::Point(touch->getDelta().x / tempScale,
 					touch->getDelta().y / tempScale));
-			//target->setPosition(convertToNodeSpace(touch->getLocation()));
-			//CCLOG("target->getScale(): %5.5f", layerScale);
 		};
 
 	//Process the touch end event
 	listener1->onTouchEnded = [=](Touch* touch, Event* event) {
 		auto target = static_cast<Sprite*>(event->getCurrentTarget());
 		CCLOG("sprite onTouchesEnded.. ");
-		//CCLOG("target->getScale(): %5.5f", layerScale);
 		target->setOpacity(255);
-		//Reset zOrder and the display sequence will change
 
 			lStack->reset();
 			auto ppos = _player->getPosition();
@@ -196,16 +181,11 @@ bool HelloWorld::init() {
 			tpos.y = (tpos.y - 16) / 32;
 
 			if (tpos.x >= 0 && tpos.x < 50 && tpos.y >= 0 && tpos.y < 50) {
-				//pf->setStart(ppos.x, ppos.y);
-				//pf->setEnd(tpos.x, tpos.y);
 
 				pf->setTileX(32);
 				pf->setTileY(32);
 				pf->setOffX(16);
 				pf->setOffY(16);
-
-				//this->setMap();
-				//this->checkMap();
 
 				lStack = pf->solve();
 
@@ -247,11 +227,9 @@ bool HelloWorld::init() {
 
 	for (auto& eSpawnPoint : objects->getObjects()) {
 		ValueMap& dict = eSpawnPoint.asValueMap();
-		//if(dict["Enemy"].asInt() == 1){
 		x = dict["x"].asInt();
 		y = dict["y"].asInt();
 		this->addEnemyAtPos(Point(x, y));
-		//}
 	}
 
 	_foreground = _tileMap->getLayer("Foreground");
@@ -263,7 +241,6 @@ bool HelloWorld::init() {
 	SimpleAudioEngine::getInstance()->playBackgroundMusic("background.mp3");
 	SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(0.1);
 
-	//this->schedule(schedule_selector(HelloWorld::testCollisions));
 	this->scheduleUpdate();
 
 	__String *tempScore = __String::createWithFormat("%i %i, h:%i t:%i", moving,
@@ -343,7 +320,7 @@ void HelloWorld::setViewPointCenter(Point position) {
 }
 
 void HelloWorld::onTouchEnded(Touch *touch, Event *unused_event) {
-	//auto ttouch = this->convertToNodeSpace(touch->getLocation());
+
 	numTouch--;
 	if (!firstTouch) {
 		//this->setMap();
@@ -352,114 +329,9 @@ void HelloWorld::onTouchEnded(Touch *touch, Event *unused_event) {
 	}
 
 	auto ttouch = touch->getLocation();
-	/*if (ttouch.x < 500 && ttouch.y < 700 && ttouch.y > 500) {
-	 if (_mode == false) {
-	 _mode = true;
-	 CCLOG("true");
-	 } else {
-	 _mode = false;
-	 CCLOG("false");
-	 }
-	 } else if (ttouch.x < 500 && ttouch.y >= 700) {
-	 this->setScale(this->getScale() + 0.1f);
-	 CCLOG("Zoom in");
-	 } else if (ttouch.x < 500 && ttouch.y <= 500) {
-	 this->setScale(this->getScale() - 0.1f);
-	 CCLOG("Zoom out");
-	 }*/
 
-	/*
-	 CCLOG("touch getLocation: %f %f", touch->getLocation().x, touch->getLocation().y);
-	 CCLOG("touch convertToNodeSpace: %f %f", this->convertToNodeSpace(touch->getLocation()).x, this->convertToNodeSpace(touch->getLocation()).y);
-	 CCLOG("_topLeft: %5.1f %5.1f, _topRight: %5.1f %5.1f, _bottomLeft: %5.1f %5.1f, _bottomRight: %5.1f %5.1f", _topLeft.x, _topLeft.y,
-	 _topRight.x, _topRight.y, _bottomLeft.x, _bottomLeft.y, _bottomRight.x, _bottomRight.y);
-
-	 CCLOG("Player position: %5.1f %5.1f", _player->getPosition().x, _player->getPosition().y);
-	 */
 	if (_mode == false) {
-
-		/*
-		lStack->reset();
-		//pf->resetMap();
-
-		//auto ppos = tileCoordForPosition(_player->getPosition());
-		//auto tpos = tileCoordForPosition(touch->getLocation());
-
-		auto ppos = _player->getPosition();
-		auto tpos = touch->getLocation();
-		tpos = convertToNodeSpace(tpos);
-
-		ppos.x = (ppos.x - 16) / 32;
-		ppos.y = (ppos.y - 16) / 32;
-		tpos.x = (tpos.x - 16) / 32;
-		tpos.y = (tpos.y - 16) / 32;
-
-		if (tpos.x >= 0 && tpos.x < 50 && tpos.y >= 0 && tpos.y < 50) {
-			pf->setStart(ppos.x, ppos.y);
-			pf->setEnd(tpos.x, tpos.y);
-
-			pf->setTileX(32);
-			pf->setTileY(32);
-			pf->setOffX(16);
-			pf->setOffY(16);
-
-			this->setMap();
-			this->checkMap();
-
-			lStack = pf->solve();
-		}
-		*/
-
-		/*
-		 * auto temp = _player->getPosition();
-		 auto drawNode = DrawNode::create();
-		 drawNode->drawDot(temp, 16, Color4F::BLUE);
-		 this->addChild(drawNode, 1000);
-		 lStack->addBack(touch->getLocation());
-		 */
-
-		////////////
-		/*
-		 auto actionTo1 = RotateTo::create(0, 0, 180);
-		 auto actionTo2 = RotateTo::create(0, 0, 0);
-		 auto touchLocation = touch->getLocation();
-
-		 touchLocation = this->convertToNodeSpace(touchLocation);
-
-		 auto playerPos = _player->getPosition();
-		 auto playerPos2 = _player->getPosition();
-		 auto diff = touchLocation - playerPos;
-		 if (abs(diff.x) > abs(diff.y)) {
-		 if (diff.x > 0) {
-		 playerPos.x += _tileMap->getTileSize().width / 2;
-		 _player->runAction(actionTo2);
-		 }
-		 else {
-		 playerPos.x -= _tileMap->getTileSize().width / 2;
-		 _player->runAction(actionTo1);
-		 }
-		 }
-		 else {
-		 if (diff.y > 0) {
-		 playerPos.y += _tileMap->getTileSize().height / 2;
-		 }
-		 else {
-		 playerPos.y -= _tileMap->getTileSize().height / 2;
-		 }
-		 }
-
-		 if (playerPos.x <= (_tileMap->getMapSize().width * _tileMap->getMapSize().width) &&
-		 playerPos.y <= (_tileMap->getMapSize().height * _tileMap->getMapSize().height) &&
-		 playerPos.y >= 0 &&
-		 playerPos.x >= 0)
-		 {
-		 SimpleAudioEngine::getInstance()->playEffect("step.mp3");
-		 CCLOG("player position move: %5.1f:%5.1f,   %5.1f:%5.1f", playerPos.x, playerPos2.x, playerPos.y, playerPos2.y);
-		 this->addToStack(playerPos);
-		 }
-
-		 this->setViewPointCenter(_player->getPosition());
-		 */
+		//will fill in
 	} else {
 		auto touchLocation = touch->getLocation();
 		touchLocation = this->convertToNodeSpace(touchLocation);
@@ -510,34 +382,15 @@ void HelloWorld::onTouchMoved(Touch *touch, Event *unused_event) {
 		touchMovedPoint = touch->getLocation();
 		auto delta = touchMovedPoint - touchBeganPoint;
 		auto currPos = this->getPosition();
-		//auto delta = currPos - touchMovedPoint;
 
 		int s = 1.5;
 		delta.x = s * delta.x;
 		delta.y = s * delta.y;
 
 		auto newPos = currPos + delta;
-		/*
-		 CCLOG("---------------------------------");
-		 CCLOG("%d %d %d", numTouch, numTouch, numTouch);
-		 CCLOG("currPos         : %4.0f %4.0f", currPos.x, currPos.y);
-		 CCLOG(
-		 "touchBeganPoint : %4.0f %4.0f", touchBeganPoint.x, touchBeganPoint.y);
-		 CCLOG(
-		 "getStartLocation: %4.0f %4.0f", touch->getStartLocation().x, touch->getStartLocation().y);
-		 CCLOG( "touch 1         : %4.0f %4.0f", touchBegan1.x, touchBegan1.y);
-		 CCLOG( "touch 2         : %4.0f %4.0f", touchBegan2.x, touchBegan2.y);
-		 */
-		/*
-		 CCLOG("touchMovedPoint: %4.0f %4.0f", touchMovedPoint.x, touchMovedPoint.y);
-		 CCLOG("touchBeganPoint: %4.0f %4.0f", touchBeganPoint.x, touchBeganPoint.y);
-		 CCLOG("delta          : %4.0f %4.0f", delta.x, delta.y);
-		 CCLOG("currPos        : %4.0f %4.0f", currPos.x, currPos.y);
-		 CCLOG("newPos         : %4.0f %4.0f", newPos.x, newPos.y);
-		 */
+
 		touchBeganPoint = touchMovedPoint;
 
-		//this->setPosition(convertToNodeSpace(newPos));
 		this->setPosition(newPos);
 	} else if (numTouch == 2) {
 		cocos2d::Point moved = touch->getLocation();
@@ -559,14 +412,7 @@ void HelloWorld::onTouchMoved(Touch *touch, Event *unused_event) {
 				tdiff = 0.98;
 			}
 			this->setScale(this->getScale() * tdiff);
-			/*
-			 CCLOG("=======================");
-			 CCLOG("%4.0f %4.0f", touchMoved1.x, touchMoved1.y);
-			 CCLOG("%4.0f %4.0f", touchMoved2.x, touchMoved2.y);
-			 CCLOG("%4.0f %4.0f", moveDiff.x, moveDiff.y);
-			 CCLOG("scale: %4.4f", tdiff);
-			 CCLOG("--------");
-			 */
+
 		}
 		moveDiff = cdiff;
 	}
@@ -589,7 +435,6 @@ void HelloWorld::onTouchesBegan(const std::vector<Touch *> &touches,
 				"%4.0f, %4.0f", touches[0]->getLocation().x, touches[0]->getLocation().y);
 		CCLOG(
 				"%4.0f, %4.0f", touches[1]->getLocation().x, touches[1]->getLocation().y);
-		//CCLOG("%4.0f, %4.0f", touches->getLocation().x, touches->getLocation().y);
 	}
 
 	if (tmcase == 0) {
@@ -639,7 +484,6 @@ void HelloWorld::delayedMove() {
 		//CCLOG("===========");
 		CCLOG("MU: %4.0f %4.0f", touchLocation.x, touchLocation.y);
 		lStack->removeFront();
-		//touchLocation = this->convertToNodeSpace(touchLocation);
 		auto playerPos = _player->getPosition();
 		auto playerPos2 = _player->getPosition();
 		auto diff = touchLocation - playerPos;
@@ -778,9 +622,6 @@ void HelloWorld::update(float dt) {
 		} else {
 			tmp = lStack->get(1)->data;
 		}
-
-		//drawNode->drawDot(tmp, 16, Color4F::RED);
-		//this->addChild(drawNode, 500);
 	}
 //schedule_selector(HelloWorld::testCollisions);
 	testCollisions(dt);
@@ -866,6 +707,7 @@ void HelloWorld::projectileMoveFinished(Object *pSender) {
 	this->removeChild(sprite);
 }
 
+//may be useful to know
 void HelloWorld::testCollisions(float dt) {
 	Vector<Sprite*> projectilesToDelete;
 
