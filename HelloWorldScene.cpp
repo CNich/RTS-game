@@ -301,7 +301,7 @@ bool HelloWorld::init() {
 	for(int i=0; i< 5; i++){
 		BasicUnit * r = BasicUnit::create();
 		bvec.pushBack(r);
-		r->setPosition(_player->getPosition().x + 32 * i, _player->getPosition().y);
+		r->setPosition(_player->getPosition().x + 32 * i, _player->getPosition().y  - 32 * 15 );
 		this->addChild(r, 2);
 		r->setBlockageMap(_blockage);
 		r->setForegroundMap(_foreground);
@@ -312,7 +312,7 @@ bool HelloWorld::init() {
 	for(int i=0; i< 5; i++){
 		BasicUnit * r = BasicUnit::create();
 		bvec2.pushBack(r);
-		r->setPosition(_player->getPosition().x + 32, _player->getPosition().y + 32 * i);
+		r->setPosition(_player->getPosition().x+ 32, _player->getPosition().y - 32 * 15  + 32 * (i + 1));
 		this->addChild(r, 2);
 		r->setBlockageMap(_blockage);
 		r->setForegroundMap(_foreground);

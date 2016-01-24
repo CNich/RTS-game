@@ -6,6 +6,8 @@ struct pairC{
 	int y;
 };
 
+class BasicUnit;
+
 struct pathNode{
 	//tentative_g_score := g_score[current] + dist_between(current,neighbor)
 	int H; // distance to goal
@@ -21,6 +23,7 @@ struct pathNode{
 	bool checked;
 	int x;
 	int y;
+	BasicUnit *unit;
 
 	inline bool operator==(pathNode a){ return (F == a.F); }
 	inline bool operator<=(pathNode a){ return (F <= a.F ? true : false); }

@@ -1,6 +1,8 @@
 #include "BasicUnit.h"
 #include "SimpleAudioEngine.h"
 #include "stdlib.h"
+#include "AttackObject.h"
+#include "RangedAttackObject.h"
 
 USING_NS_CC;
 
@@ -167,8 +169,14 @@ void BasicUnit::setPlayerPosition(Point position) {
 		giveup = false;
 		pf->block(convertToPf(position).x, convertToPf(position).y);
 		pf->unblock(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
+
 		pf->taken(convertToPf(position).x, convertToPf(position).y);
 		pf->untaken(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
+
+		pf->setUnit(convertToPf(position).x, convertToPf(position).y, this);
+		CCLOG("this: %p", this);
+		pf->setUnitZero(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
+
 
 		CCFiniteTimeAction* actionMove = CCMoveTo::create(0.2, position);
 
@@ -261,9 +269,9 @@ void BasicUnit::update(float dt) {
 		attacking = true;
 		CCLOG("ATTACKED");
 		auto callback = CallFunc::create([this]() {
-			if(currentEnemy != 0 && !currentEnemy->isDead()){
-				currentEnemy->attack(this, 40, 'a');
-			}
+			//if(currentEnemy != 0 && !currentEnemy->isDead()){
+			//	currentEnemy->attack(this, 40, 'a');
+			//}
 			attacking = false;
 		});
 		auto rotateTo = RotateTo::create(0.1, 0, 20.0f);
@@ -271,6 +279,9 @@ void BasicUnit::update(float dt) {
 		auto seq = Sequence::create(DelayTime::create(2), callback,
 				rotateTo, rotateBack, nullptr);
 		this->runAction(seq);
+		RangedAttackObject* atk = RangedAttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm');
+		CCLOG("%p THIS WAS SENT", this);
+		atk->initAttack();
 	} else if (!lStack->empty() && !moving) {
 		delayedMove();
 		tempMoving = true;
@@ -308,7 +319,9 @@ int BasicUnit::unitToUnitDistance(BasicUnit *p1, BasicUnit *p2){
 	dist.y = abs(loc1.y - loc2.y);
 	return dist.x + dist.y;
 }
+/*
 
+//Melee
 bool BasicUnit::enemyIsAttackable(){
 	if(this->getCurrentEnemy() != 0){
 		auto enemyLoc = convertToPf(currentEnemy->getPosition());
@@ -319,10 +332,21 @@ bool BasicUnit::enemyIsAttackable(){
 	}
 	return false;
 }
+*/
+
+//Ranged
+bool BasicUnit::enemyIsAttackable(){
+	if(this->getCurrentEnemy() != 0 && unitToUnitDistance(this, getCurrentEnemy()) <= 6){
+		return true;
+	}
+	return false;
+}
 
 //WILL BUILD ON LATER
 void BasicUnit::attack(BasicUnit * attacker, int damage, char attackType){
-	health -= damage;
+	health = health - damage;
+	CCLOG("%p WAS ATTACKEDDDD for %d damage", this, damage);
+	CCLOG("%p's health: %d", this, health);
 }
 
 void BasicUnit::returnHealth(int healthTaken, char attackType){

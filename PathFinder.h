@@ -34,6 +34,10 @@ public:
 	int getRows();
 	int getCols();
 
+	void setUnit(int x, int y, T *ty) { map[x][y].unit = ty; };
+	void setUnitZero(int x, int y) { map[x][y].unit = 0; };
+	T* getUnit(int x, int y) { return map[x][y].unit; };
+
 private:
 	pathNode **map;
 	//cocos2d::Vector< cocos2d::Vector < pathNode > > map;
@@ -173,6 +177,7 @@ pathNode PathFinder<T>::defaultPathNode(){
 	p.taken = false;
 	p.success = false;
 	p.checked = false;
+	p.unit = 0;
 
 	return p;
 }
