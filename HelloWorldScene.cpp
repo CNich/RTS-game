@@ -61,37 +61,6 @@ bool HelloWorld::init() {
 		}
 
 		touchBeganPoint = touch->getLocation();
-		CCLOG("=================================");
-		CCLOG("%d %d %d", numTouch, numTouch, numTouch);
-		if(tmcase == 0) {
-			Point tmp;
-			tmp.x = 750;
-			tmp.y = 0;
-			CCLOG("top right tmcase: %d, %4.0f, %4.0f", tmcase, tmp.x, tmp.y);
-			//this->setPosition(tmp);
-			tmcase = 1;
-		} else if(tmcase == 1) {
-			Point tmp;
-			tmp.x = 1500;
-			tmp.y = 0;
-			CCLOG("top left  tmcase: %d, %4.0f, %4.0f", tmcase, tmp.x, tmp.y);
-			//this->setPosition(tmp);
-			tmcase = 2;
-		} else if(tmcase == 2) {
-			Point tmp;
-			tmp.x = 1500;
-			tmp.y = 750;
-			CCLOG("bot left  tmcase: %d, %4.0f, %4.0f", tmcase, tmp.x, tmp.y);
-			//this->setPosition(tmp);
-			tmcase = 3;
-		} else {
-			Point tmp;
-			tmp.x = 750;
-			tmp.y = 750;
-			CCLOG("bot right tmcase: %d, %4.0f, %4.0f", tmcase, tmp.x, tmp.y);
-			//this->setPosition(tmp);
-			tmcase = 0;
-		}
 		return true;
 	};
 
@@ -225,11 +194,12 @@ bool HelloWorld::init() {
 	_bottomRight.x = tL["x"].asInt();
 	_bottomRight.y = tL["y"].asInt();
 
+	//useful!
 	for (auto& eSpawnPoint : objects->getObjects()) {
 		ValueMap& dict = eSpawnPoint.asValueMap();
 		x = dict["x"].asInt();
 		y = dict["y"].asInt();
-		this->addEnemyAtPos(Point(x, y));
+		//this->addEnemyAtPos(Point(x, y));
 	}
 
 	_foreground = _tileMap->getLayer("Foreground");
@@ -272,8 +242,6 @@ bool HelloWorld::init() {
 	tileAtrs->setColor(Color3B::BLUE);
 	tileAtrs->setPosition(Point(winSize.width / 2, winSize.height * 0.75));
 	this->addChild(tileAtrs, 10000);
-
-	CCLOG("------------------------------------");
 
 	for(int i=0; i< 5; i++){
 		BasicUnit * r = BasicUnit::create();
@@ -363,12 +331,6 @@ void HelloWorld::onTouchEnded(Touch *touch, Event *unused_event) {
 		float velocity = 480 / 1; // 480pixels/1sec
 		float realMoveDuration = length / velocity;
 
-		auto actionMoveDone = CallFuncN::create(
-				CC_CALLBACK_1(HelloWorld::projectileMoveFinished, this));
-		projectile->runAction(
-				Sequence::create(MoveTo::create(realMoveDuration, realDest),
-						actionMoveDone, NULL));
-
 		_projectiles.pushBack(projectile);
 	}
 }
@@ -427,46 +389,6 @@ void HelloWorld::onTouchesBegan(const std::vector<Touch *> &touches,
 		Event *unused_event) {
 	numTouch++;
 	touchBeganPoint = touches[0]->getLocation();
-	CCLOG("=================================");
-	CCLOG("%d     %d %d %d", touches.size(), numTouch, numTouch, numTouch);
-
-	if (numTouch == 2) {
-		CCLOG(
-				"%4.0f, %4.0f", touches[0]->getLocation().x, touches[0]->getLocation().y);
-		CCLOG(
-				"%4.0f, %4.0f", touches[1]->getLocation().x, touches[1]->getLocation().y);
-	}
-
-	if (tmcase == 0) {
-		Point tmp;
-		tmp.x = 750;
-		tmp.y = 0;
-		CCLOG("top right tmcase: %d, %4.0f, %4.0f", tmcase, tmp.x, tmp.y);
-		//this->setPosition(tmp);
-		tmcase = 1;
-	} else if (tmcase == 1) {
-		Point tmp;
-		tmp.x = 1500;
-		tmp.y = 0;
-		CCLOG("top left  tmcase: %d, %4.0f, %4.0f", tmcase, tmp.x, tmp.y);
-		//this->setPosition(tmp);
-		tmcase = 2;
-	} else if (tmcase == 2) {
-		Point tmp;
-		tmp.x = 1500;
-		tmp.y = 750;
-		CCLOG("bot left  tmcase: %d, %4.0f, %4.0f", tmcase, tmp.x, tmp.y);
-		//this->setPosition(tmp);
-		tmcase = 3;
-	} else {
-		Point tmp;
-		tmp.x = 750;
-		tmp.y = 750;
-		CCLOG("bot right tmcase: %d, %4.0f, %4.0f", tmcase, tmp.x, tmp.y);
-		//this->setPosition(tmp);
-		tmcase = 0;
-	}
-	//return true;
 }
 
 void HelloWorld::delayedMove() {
@@ -481,8 +403,6 @@ void HelloWorld::delayedMove() {
 			touchLocation = lStack->get(1)->data;
 			CCLOG("%p %p", lStack->get(1), lStack->getTail());
 		}
-		//CCLOG("===========");
-		CCLOG("MU: %4.0f %4.0f", touchLocation.x, touchLocation.y);
 		lStack->removeFront();
 		auto playerPos = _player->getPosition();
 		auto playerPos2 = _player->getPosition();
@@ -512,13 +432,11 @@ void HelloWorld::delayedMove() {
 
 			this->setPlayerPosition(playerPos);
 		}
-		//this->setViewPointCenter(_player->getPosition());
 	}
 }
 
 void HelloWorld::setPlayerPosition(Point position) {
 	if (!moving) {
-		//CCLOG("updating: moving = %d and stack empty = %d", moving, !lStack->get(0)->empty);
 		Point tileCoord = this->tileCoordForPosition(position);
 		int tileGid = _blockage->getTileGIDAt(tileCoord);
 
@@ -560,8 +478,6 @@ void HelloWorld::setPlayerPosition(Point position) {
 
 void HelloWorld::setMoving() {
 	moving = false;
-//CCLOG("Added to back");
-//CCLOG("%d", moving);
 }
 
 void HelloWorld::enemyDistances(float dt){
@@ -610,12 +526,8 @@ void HelloWorld::enemyDistances(float dt){
 
 void HelloWorld::update(float dt) {
 	elapsedTime += dt;
-//if (!lStack->get(0)->empty && !moving)
-//if (!lStack->get(0)->empty && !lStack->get(1)->empty && !moving)
 	if (!lStack->empty() && !moving) {
 		delayedMove();
-		//CCLOG("%5.0f %5.0f", lStack->get(0)->data.x, lStack->get(0)->data.y);
-		//auto drawNode = DrawNode::create();
 		Point tmp;
 		if (!lStack->get(0)->empty) {
 			tmp = lStack->get(0)->data;
@@ -623,7 +535,6 @@ void HelloWorld::update(float dt) {
 			tmp = lStack->get(1)->data;
 		}
 	}
-//schedule_selector(HelloWorld::testCollisions);
 	testCollisions(dt);
 	enemyDistances(dt);
 	__String *tempScore = __String::createWithFormat("%i %i, h:%i t:%i", moving,
@@ -665,47 +576,17 @@ void HelloWorldHud::numCollectedChanged(int numCollected) {
 	label->setString(showStr);
 }
 
-void HelloWorld::addEnemyAtPos(Point pos) {
+//Useful function
+/*void HelloWorld::addEnemyAtPos(Point pos) {
 	auto enemy = Sprite::create("030.png");
 	enemy->setPosition(pos);
 	enemy->setScale(0.5);
-	this->animateEnemy(enemy);
+	//this->animateEnemy(enemy);
 	this->addChild(enemy);
 
 	_enemies.pushBack(enemy);
-}
-
-void HelloWorld::enemyMoveFinished(Object *pSender) {
-	Sprite *enemy = (Sprite *) pSender;
-	this->animateEnemy(enemy);
-}
-
-void HelloWorld::animateEnemy(Sprite *enemy) {
-	auto actionTo1 = RotateTo::create(0, 0, 180);
-	auto actionTo2 = RotateTo::create(0, 0, 0);
-	auto diff = ccpSub(_player->getPosition(), enemy->getPosition());
-
-	if (diff.x < 0) {
-		enemy->runAction(actionTo2);
-	}
-	if (diff.x > 0) {
-		enemy->runAction(actionTo1);
-	}
-
-	float actualDuration = 0.3f;
-	auto position = (_player->getPosition() - enemy->getPosition());
-	position.x /= 10;
-	position.y /= 10;
-	auto actionMove = MoveBy::create(actualDuration, position);
-	auto actionMoveDone = CallFuncN::create(
-			CC_CALLBACK_1(HelloWorld::enemyMoveFinished, this));
-	enemy->runAction(Sequence::create(actionMove, actionMoveDone, NULL));
-}
-
-void HelloWorld::projectileMoveFinished(Object *pSender) {
-	Sprite *sprite = (Sprite *) pSender;
-	this->removeChild(sprite);
-}
+	//deleted functions that mess around with these enemies but they weren't too special
+}*/
 
 //may be useful to know
 void HelloWorld::testCollisions(float dt) {
