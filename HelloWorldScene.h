@@ -111,6 +111,8 @@ public:
     void testCollisions(float dt);
     void enemyDistances(float dt);
 
+    cocos2d::Point _plpos;
+
     // implement the "static create()" method manually
     CREATE_FUNC(HelloWorld);
 };

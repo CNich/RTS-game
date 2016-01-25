@@ -50,6 +50,9 @@ bool HelloWorld::init() {
 	int x = playerShowUpPoint["x"].asInt();
 	int y = playerShowUpPoint["y"].asInt();
 
+	_plpos.x = x + _tileMap->getTileSize().width / 2;
+	_plpos.y = y + _tileMap->getTileSize().height / 2;
+
 	auto listener = EventListenerTouchOneByOne::create();
 	listener->onTouchBegan = [&](Touch *touch, Event *unused_event)->bool {
 		numTouch++;
@@ -70,19 +73,7 @@ bool HelloWorld::init() {
 	this->_eventDispatcher->addEventListenerWithSceneGraphPriority(listener,
 			this);
 
-	auto touchListener = EventListenerTouchAllAtOnce::create();
-	touchListener->onTouchesBegan =
-			CC_CALLBACK_2(HelloWorld::onTouchesBegan, this);
-	touchListener->onTouchesEnded =
-			CC_CALLBACK_2(HelloWorld::onTouchesEnded, this);
-
-	_player = Sprite::create("Player.png");
-	_player->setPosition(x + _tileMap->getTileSize().width / 2,
-			y + _tileMap->getTileSize().height / 2);
-	_player->setScale(0.5);
-
-	addChild(_player, 2);
-	setViewPointCenter(_player->getPosition());
+	setViewPointCenter(_plpos);
 
 	/*********************************************************************************************/
 	//Event Listener: http://www.cocos2d-x.org/wiki/EventDispatcher_Mechanism
@@ -140,7 +131,7 @@ bool HelloWorld::init() {
 		target->setOpacity(255);
 
 			lStack->reset();
-			auto ppos = _player->getPosition();
+			auto ppos = _plpos;
 			auto tpos = touch->getLocation();
 			tpos = convertToNodeSpace(tpos);
 
@@ -244,9 +235,12 @@ bool HelloWorld::init() {
 	this->addChild(tileAtrs, 10000);
 
 	for(int i=0; i< 5; i++){
-		BasicUnit * r = BasicUnit::create();
+		auto p = _plpos;
+		p.x = _plpos.x + 32 * i;
+		p.y = _plpos.y  - 32 * 11;
+		BasicUnit * r = BasicUnit::create(p);
 		bvec.pushBack(r);
-		r->setPosition(_player->getPosition().x + 32 * i, _player->getPosition().y  - 32 * 15 );
+		//r->setPosition(_plpos.x + 32 * i, _plpos.y  - 32 * 15 );
 		this->addChild(r, 2);
 		r->setBlockageMap(_blockage);
 		r->setForegroundMap(_foreground);
@@ -255,9 +249,12 @@ bool HelloWorld::init() {
 	}
 
 	for(int i=0; i< 5; i++){
-		BasicUnit * r = BasicUnit::create();
+		auto p = _plpos;
+		p.x = _plpos.x + 32 * i;
+		p.y = _plpos.y  - 32 * 15;
+		BasicUnit * r = BasicUnit::create(p);
 		bvec2.pushBack(r);
-		r->setPosition(_player->getPosition().x+ 32, _player->getPosition().y - 32 * 15  + 32 * (i + 1));
+		//r->setPosition(_plpos.x + 32 * i, _plpos.y  - 32 * 15 - 32 * 4);
 		this->addChild(r, 2);
 		r->setBlockageMap(_blockage);
 		r->setForegroundMap(_foreground);
@@ -301,37 +298,6 @@ void HelloWorld::onTouchEnded(Touch *touch, Event *unused_event) {
 	if (_mode == false) {
 		//will fill in
 	} else {
-		auto touchLocation = touch->getLocation();
-		touchLocation = this->convertToNodeSpace(touchLocation);
-		auto projectile = Sprite::create("bullet.png");
-		projectile->setPosition(_player->getPosition());
-		projectile->setScale(0.25);
-		this->addChild(projectile);
-
-		int realX;
-
-		auto diff = touchLocation - _player->getPosition();
-		if (diff.x > 0) {
-			realX = (_tileMap->getMapSize().width
-					* _tileMap->getTileSize().width)
-					+ (projectile->getContentSize().width / 2);
-		} else {
-			realX = -(_tileMap->getMapSize().width
-					* _tileMap->getTileSize().width)
-					- (projectile->getContentSize().width / 2);
-		}
-		float ratio = (float) diff.y / (float) diff.x;
-		int realY = ((realX - projectile->getPosition().x) * ratio)
-				+ projectile->getPosition().y;
-		auto realDest = Point(realX, realY);
-
-		int offRealX = realX - projectile->getPosition().x;
-		int offRealY = realY - projectile->getPosition().y;
-		float length = sqrtf((offRealX * offRealX) + (offRealY * offRealY));
-		float velocity = 480 / 1; // 480pixels/1sec
-		float realMoveDuration = length / velocity;
-
-		_projectiles.pushBack(projectile);
 	}
 }
 
@@ -391,49 +357,6 @@ void HelloWorld::onTouchesBegan(const std::vector<Touch *> &touches,
 	touchBeganPoint = touches[0]->getLocation();
 }
 
-void HelloWorld::delayedMove() {
-	if (!lStack->empty() && !moving) {
-		auto actionTo1 = RotateTo::create(0, 0, 180);
-		auto actionTo2 = RotateTo::create(0, 0, 0);
-
-		Point touchLocation;
-		if (!lStack->get(0)->empty) {
-			touchLocation = lStack->get(0)->data;
-		} else {
-			touchLocation = lStack->get(1)->data;
-			CCLOG("%p %p", lStack->get(1), lStack->getTail());
-		}
-		lStack->removeFront();
-		auto playerPos = _player->getPosition();
-		auto playerPos2 = _player->getPosition();
-		auto diff = touchLocation - playerPos;
-		if (abs(diff.x) > abs(diff.y)) {
-			if (diff.x > 0) {
-				playerPos.x += _tileMap->getTileSize().width;
-				_player->runAction(actionTo2);
-			} else {
-				playerPos.x -= _tileMap->getTileSize().width;
-				_player->runAction(actionTo1);
-			}
-		} else {
-			if (diff.y > 0) {
-				playerPos.y += _tileMap->getTileSize().height;
-			} else {
-				playerPos.y -= _tileMap->getTileSize().height;
-			}
-		}
-		if (playerPos.x
-				<= (_tileMap->getMapSize().width * _tileMap->getMapSize().width)
-				&& playerPos.y
-						<= (_tileMap->getMapSize().height
-								* _tileMap->getMapSize().height)
-				&& playerPos.y >= 0 && playerPos.x >= 0) {
-			SimpleAudioEngine::getInstance()->playEffect("step.mp3");
-
-			this->setPlayerPosition(playerPos);
-		}
-	}
-}
 
 void HelloWorld::setPlayerPosition(Point position) {
 	if (!moving) {
@@ -469,8 +392,8 @@ void HelloWorld::setPlayerPosition(Point position) {
 
 		moving = true;
 
-		auto seq = Sequence::create(actionMove, callback, nullptr);
-		_player->runAction(seq);
+		//auto seq = Sequence::create(actionMove, callback, nullptr);
+		//_player->runAction(seq);
 
 	}
 //_player->setPosition(position);
@@ -527,7 +450,7 @@ void HelloWorld::enemyDistances(float dt){
 void HelloWorld::update(float dt) {
 	elapsedTime += dt;
 	if (!lStack->empty() && !moving) {
-		delayedMove();
+		//delayedMove();
 		Point tmp;
 		if (!lStack->get(0)->empty) {
 			tmp = lStack->get(0)->data;

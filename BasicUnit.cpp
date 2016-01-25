@@ -23,11 +23,33 @@ BasicUnit* BasicUnit::create() {
 	pSprite->setScale(0.5);
 
 	pSprite->scheduleUpdate();
+
 	return pSprite;
 
 }
 
-BasicUnit* BasicUnit::create(cocos2d::Point tmp) {
+BasicUnit* BasicUnit::create(cocos2d::Point tmp){
+	BasicUnit* pSprite = new BasicUnit();
+	pSprite->initWithFile("029.png");
+	srand((unsigned) time(NULL));
+	pSprite->autorelease();
+	pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
+	pSprite->tpf->setTileX(32);
+	pSprite->tpf->setTileY(32);
+	pSprite->setScale(0.5);
+
+	pSprite->scheduleUpdate();
+	pSprite->setPosition(tmp);
+
+	pf->block(pSprite->convertToPf(tmp).x, pSprite->convertToPf(tmp).y);
+	pf->taken(pSprite->convertToPf(tmp).x, pSprite->convertToPf(tmp).y);
+	pf->setUnit(pSprite->convertToPf(tmp).x, pSprite->convertToPf(tmp).y, pSprite);
+
+	return pSprite;
+
+}
+
+/*BasicUnit* BasicUnit::create(cocos2d::Point tmp) {
 	BasicUnit* pSprite = new BasicUnit();
 
 	if (pSprite->initWithSpriteFrameName("029.png")) {
@@ -41,7 +63,7 @@ BasicUnit* BasicUnit::create(cocos2d::Point tmp) {
 
 	CC_SAFE_DELETE(pSprite);
 	return NULL;
-}
+}*/
 
 void BasicUnit::setBlockageMap(cocos2d::TMXLayer *mp) {
 	_blockage = mp;
@@ -174,7 +196,6 @@ void BasicUnit::setPlayerPosition(Point position) {
 		pf->untaken(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
 
 		pf->setUnit(convertToPf(position).x, convertToPf(position).y, this);
-		CCLOG("this: %p", this);
 		pf->setUnitZero(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
 
 
