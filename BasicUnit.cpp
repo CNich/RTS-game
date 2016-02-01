@@ -104,6 +104,13 @@ void BasicUnit::ASolve(int x, int y) {
 
 	if (x >= 0 && x < 50 && y >= 0 && y < 50) {
 
+		/*
+		 * IS MAKING A NEW PATH FINDER EACH TIME BETTER
+		 * OR HAVING A SET ONE AND KEEPING IT ALIVE?
+		 *
+		 * */
+
+
 		tpf->setStart(ppos.x, ppos.y);
 		tpf->setEnd(x, y);
 		this->getMap();
@@ -114,19 +121,20 @@ void BasicUnit::ASolve(int x, int y) {
 
 		lStack = tpf->solve();
 
+		/*
+		PathFinder<BasicUnit> tpf2 = PathFinder<BasicUnit>(50, 50);
+		tpf2.setTileX(32);
+		tpf2.setTileY(32);
+		tpf2.setStart(ppos.x, ppos.y);
+		tpf2.setEnd(x, y);
+		this->getMap(&tpf2);
+		tpf2.setTileX(32);
+		tpf2.setTileY(32);
+		tpf2.setOffX(16);
+		tpf2.setOffY(16);
 
-		/* MAKE A BLOCKCOUNT TYPE THING
-		 *
-		 *
-		 * */
-		/*if(lStack->empty()){
-			auto callback = CallFunc::create([this, ppos]() {
-				//this->ASolve(ppos.x + 1, ppos.y + 1);
-				this->ASolve(goalPosition.x, goalPosition.y);
-			});
-			auto seq = Sequence::create(DelayTime::create(0.5), callback, nullptr);
-			this->runAction(seq);
-		}*/
+		lStack = tpf2.solve();
+		*/
 	}
 }
 
@@ -138,6 +146,19 @@ void BasicUnit::getMap() {
 		for (int j = 0; j < h; j++) {
 			if (pf->checkBlock(i, j)) {
 				tpf->block(i, j);
+			}
+		}
+	}
+}
+
+void BasicUnit::getMap(PathFinder<BasicUnit> *tpf2) {
+	int w = 50;
+	int h = 50;
+
+	for (int i = 0; i < w; i++) {
+		for (int j = 0; j < h; j++) {
+			if (pf->checkBlock(i, j)) {
+				tpf2->block(i, j);
 			}
 		}
 	}
@@ -300,7 +321,8 @@ void BasicUnit::update(float dt) {
 		auto seq = Sequence::create(DelayTime::create(2), callback,
 				rotateTo, rotateBack, nullptr);
 		this->runAction(seq);
-		RangedAttackObject* atk = RangedAttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm');
+		//RangedAttackObject* atk = RangedAttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm');
+		AttackObject* atk = AttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm');
 		CCLOG("%p THIS WAS SENT", this);
 		atk->initAttack();
 	} else if (!lStack->empty() && !moving) {
@@ -340,7 +362,7 @@ int BasicUnit::unitToUnitDistance(BasicUnit *p1, BasicUnit *p2){
 	dist.y = abs(loc1.y - loc2.y);
 	return dist.x + dist.y;
 }
-/*
+
 
 //Melee
 bool BasicUnit::enemyIsAttackable(){
@@ -353,8 +375,8 @@ bool BasicUnit::enemyIsAttackable(){
 	}
 	return false;
 }
-*/
 
+/*
 //Ranged
 bool BasicUnit::enemyIsAttackable(){
 	if(this->getCurrentEnemy() != 0 && unitToUnitDistance(this, getCurrentEnemy()) <= 6){
@@ -362,7 +384,7 @@ bool BasicUnit::enemyIsAttackable(){
 	}
 	return false;
 }
-
+*/
 //WILL BUILD ON LATER
 void BasicUnit::attack(BasicUnit * attacker, int damage, char attackType){
 	health = health - damage;

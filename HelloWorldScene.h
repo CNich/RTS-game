@@ -8,6 +8,7 @@
 #include "HeapPathFinder.h"
 #include "GlobalVariables.h"
 #include "BasicUnit.h"
+#include "RangedBasicUnit.h"
 #include <vector>
 
 #define SCORE_FONT_SIZE 0.1

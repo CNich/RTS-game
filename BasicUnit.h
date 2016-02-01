@@ -40,7 +40,7 @@ public:
 	void attack(BasicUnit *attacker, int damage, char attackType);
 	int attackRange = 2;
 
-private:
+protected:
 	cocos2d::Point startingPos;
 	bool enemy = false;
 	bool moving = false;
@@ -48,6 +48,7 @@ private:
 	void setPlayerPosition(cocos2d::Point position);
 	void setStartingPosCustom(cocos2d::Point tmp);
 	void getMap();
+	void getMap(PathFinder<BasicUnit> *tpf2);
 	void delayedMove();
 	void setMoving();
 

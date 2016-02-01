@@ -14,7 +14,7 @@ RangedAttackObject* RangedAttackObject::create(BasicUnit * attacker, cocos2d::Po
 	RangedAttackObject* pSprite = new RangedAttackObject();
 	pSprite->initWithFile("bullet.png");
 	pSprite->autorelease();
-	pSprite->setScale(0.5);
+	pSprite->setScale(0.25);
 	pSprite->parent = attacker;
 	pSprite->location = location;
 	pSprite->damage = damage;

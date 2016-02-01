@@ -251,8 +251,36 @@ bool HelloWorld::init() {
 	for(int i=0; i< 5; i++){
 		auto p = _plpos;
 		p.x = _plpos.x + 32 * i;
+		p.y = _plpos.y  - 32 * 10;
+		RangedBasicUnit * r = RangedBasicUnit::create(p);
+		bvec.pushBack(r);
+		//r->setPosition(_plpos.x + 32 * i, _plpos.y  - 32 * 15 );
+		this->addChild(r, 2);
+		r->setBlockageMap(_blockage);
+		r->setForegroundMap(_foreground);
+		r->setTileMap(_tileMap);
+		r->setTeam(0);
+	}
+
+	for(int i=0; i< 5; i++){
+		auto p = _plpos;
+		p.x = _plpos.x + 32 * i;
 		p.y = _plpos.y  - 32 * 15;
 		BasicUnit * r = BasicUnit::create(p);
+		bvec2.pushBack(r);
+		//r->setPosition(_plpos.x + 32 * i, _plpos.y  - 32 * 15 - 32 * 4);
+		this->addChild(r, 2);
+		r->setBlockageMap(_blockage);
+		r->setForegroundMap(_foreground);
+		r->setTileMap(_tileMap);
+		r->setTeam(1);
+	}
+
+	for(int i=0; i< 5; i++){
+		auto p = _plpos;
+		p.x = _plpos.x + 32 * i;
+		p.y = _plpos.y  - 32 * 16;
+		RangedBasicUnit * r = RangedBasicUnit::create(p);
 		bvec2.pushBack(r);
 		//r->setPosition(_plpos.x + 32 * i, _plpos.y  - 32 * 15 - 32 * 4);
 		this->addChild(r, 2);
