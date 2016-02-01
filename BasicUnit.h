@@ -40,6 +40,9 @@ public:
 	void attack(BasicUnit *attacker, int damage, char attackType);
 	int attackRange = 2;
 
+	PathFinder<BasicUnit> *pf;
+	void setPf(PathFinder<BasicUnit> *tempPf);
+
 protected:
 	cocos2d::Point startingPos;
 	bool enemy = false;
@@ -62,7 +65,7 @@ protected:
 	char blockedCount = 0;
 	bool giveup = false;
 	bool tempMoving = false;
-	void setPF();
+	void setBasicUnitPF();
 
 	char team;
 

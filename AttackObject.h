@@ -10,9 +10,10 @@ class AttackObject : public cocos2d::Sprite {
 public:
 	AttackObject();
 	~AttackObject();
-	static AttackObject* create(BasicUnit * attacker, cocos2d::Point location, int damage, char attackType);
+	static AttackObject* create(BasicUnit * attacker, cocos2d::Point location, int damage, char attackType, PathFinder<BasicUnit> *tpf);
 	void attack();
 	void initAttack();
+	PathFinder<BasicUnit> * pf;
 
 private:
 	BasicUnit *parent;

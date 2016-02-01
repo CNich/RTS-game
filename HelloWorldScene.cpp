@@ -246,6 +246,7 @@ bool HelloWorld::init() {
 		r->setForegroundMap(_foreground);
 		r->setTileMap(_tileMap);
 		r->setTeam(0);
+		r->setPf(pf);
 	}
 
 	for(int i=0; i< 5; i++){
@@ -260,6 +261,7 @@ bool HelloWorld::init() {
 		r->setForegroundMap(_foreground);
 		r->setTileMap(_tileMap);
 		r->setTeam(0);
+		r->setPf(pf);
 	}
 
 	for(int i=0; i< 5; i++){
@@ -274,6 +276,7 @@ bool HelloWorld::init() {
 		r->setForegroundMap(_foreground);
 		r->setTileMap(_tileMap);
 		r->setTeam(1);
+		r->setPf(pf);
 	}
 
 	for(int i=0; i< 5; i++){
@@ -288,6 +291,7 @@ bool HelloWorld::init() {
 		r->setForegroundMap(_foreground);
 		r->setTileMap(_tileMap);
 		r->setTeam(1);
+		r->setPf(pf);
 	}
 
 	return true;

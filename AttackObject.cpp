@@ -8,7 +8,7 @@ AttackObject::AttackObject() {
 AttackObject::~AttackObject() {
 }
 
-AttackObject* AttackObject::create(BasicUnit * attacker, cocos2d::Point location, int damage, char attackType) {
+AttackObject* AttackObject::create(BasicUnit * attacker, cocos2d::Point location, int damage, char attackType, PathFinder<BasicUnit> *tpf) {
 	AttackObject* pSprite = new AttackObject();
 	pSprite->initWithFile("bullet.png");
 	pSprite->autorelease();
@@ -16,6 +16,7 @@ AttackObject* AttackObject::create(BasicUnit * attacker, cocos2d::Point location
 	pSprite->parent = attacker;
 	pSprite->location = location;
 	pSprite->damage = damage;
+	pSprite->pf = tpf;
 	CCLOG("%p THIS WAS RECEIVED", attacker);
 	//pSprite->init(location, damage, attackType);
 	CCLOG("DUMMIED init");
@@ -32,8 +33,8 @@ void AttackObject::initAttack(){
 }
 
 void AttackObject::attack(){
-	if(pf->getUnit(location.x, location.y) != 0 && pf->getUnit(location.x, location.y)->getTeam() != parent->getTeam()){
-		pf->getUnit(location.x, location.y)->attack(parent, damage, 'm');
+	if(this->pf->getUnit(location.x, location.y) != 0 && this->pf->getUnit(location.x, location.y)->getTeam() != parent->getTeam()){
+		this->pf->getUnit(location.x, location.y)->attack(parent, damage, 'm');
 	}
 }
 

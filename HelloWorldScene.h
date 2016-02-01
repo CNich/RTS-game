@@ -47,7 +47,6 @@ private:
 	void setPlayerPosition(cocos2d::Point position);
 	void setMap();
 	void checkMap();
-	//PathFinder<int> * pf;
 	bool firstTouch = false;
 	bool checked = false;
 	float elapsedTime = 0;
@@ -66,11 +65,7 @@ private:
 	int numTouch = 0;
 
 public:
-	BasicUnit * rabbit;
-	BasicUnit * rabbit2;
-	BasicUnit * rabbit3;
-	BasicUnit * rabbit4;
-	BasicUnit * rabbit5;
+	PathFinder<BasicUnit> * pf;
 	cocos2d::Vector<BasicUnit *> bvec;
 	cocos2d::Vector<BasicUnit *> bvec2;
     // there's no 'id' in cpp, so we recommend returning the class instance pointer

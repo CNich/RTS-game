@@ -18,6 +18,7 @@ RangedAttackObject* RangedAttackObject::create(BasicUnit * attacker, cocos2d::Po
 	pSprite->parent = attacker;
 	pSprite->location = location;
 	pSprite->damage = damage;
+	pSprite->pf = tpf;
 	CCLOG("%p THIS WAS RECEIVED", attacker);
 	//pSprite->init(location, damage, attackType);
 	CCLOG("DUMMIED init");

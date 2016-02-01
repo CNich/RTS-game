@@ -41,13 +41,15 @@ BasicUnit* BasicUnit::create(cocos2d::Point tmp){
 	pSprite->scheduleUpdate();
 	pSprite->setPosition(tmp);
 
-	pf->block(pSprite->convertToPf(tmp).x, pSprite->convertToPf(tmp).y);
-	pf->taken(pSprite->convertToPf(tmp).x, pSprite->convertToPf(tmp).y);
-	pf->setUnit(pSprite->convertToPf(tmp).x, pSprite->convertToPf(tmp).y, pSprite);
+	//pf->block(pSprite->convertToPf(tmp).x, pSprite->convertToPf(tmp).y);
+	//pf->taken(pSprite->convertToPf(tmp).x, pSprite->convertToPf(tmp).y);
+	//pf->setUnit(pSprite->convertToPf(tmp).x, pSprite->convertToPf(tmp).y, pSprite);
 
 	return pSprite;
 
 }
+
+void BasicUnit::setPf(PathFinder<BasicUnit> *tempPf){ pf = tempPf; };
 
 /*BasicUnit* BasicUnit::create(cocos2d::Point tmp) {
 	BasicUnit* pSprite = new BasicUnit();
@@ -247,12 +249,12 @@ void BasicUnit::setPlayerPosition(Point position) {
 			CCLOG("HERE HERE HERE");
 			giveup = true;
 			blockedCount = 0;
-			setPF();
+			setBasicUnitPF();
 		}
 	}
 }
 
-void BasicUnit::setPF(){
+void BasicUnit::setBasicUnitPF(){
 	lStack->reset();
 	auto ppos = this->getPosition();
 	auto tpos = lStack->getTail()->data;
@@ -322,7 +324,7 @@ void BasicUnit::update(float dt) {
 				rotateTo, rotateBack, nullptr);
 		this->runAction(seq);
 		//RangedAttackObject* atk = RangedAttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm');
-		AttackObject* atk = AttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm');
+		AttackObject* atk = AttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
 		CCLOG("%p THIS WAS SENT", this);
 		atk->initAttack();
 	} else if (!lStack->empty() && !moving) {

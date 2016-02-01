@@ -40,9 +40,9 @@ RangedBasicUnit* RangedBasicUnit::create(cocos2d::Point tmp){
 	pSprite->scheduleUpdate();
 	pSprite->setPosition(tmp);
 
-	pf->block(pSprite->convertToPf(tmp).x, pSprite->convertToPf(tmp).y);
-	pf->taken(pSprite->convertToPf(tmp).x, pSprite->convertToPf(tmp).y);
-	pf->setUnit(pSprite->convertToPf(tmp).x, pSprite->convertToPf(tmp).y, pSprite);
+	//pf->block(pSprite->convertToPf(tmp).x, pSprite->convertToPf(tmp).y);
+	//pf->taken(pSprite->convertToPf(tmp).x, pSprite->convertToPf(tmp).y);
+	//pf->setUnit(pSprite->convertToPf(tmp).x, pSprite->convertToPf(tmp).y, pSprite);
 
 	return pSprite;
 
@@ -76,7 +76,7 @@ void RangedBasicUnit::update(float dt) {
 		auto seq = Sequence::create(DelayTime::create(2), callback,
 				rotateTo, rotateBack, nullptr);
 		this->runAction(seq);
-		RangedAttackObject* atk = RangedAttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm');
+		RangedAttackObject* atk = RangedAttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
 		CCLOG("%p THIS WAS SENT", this);
 		atk->initAttack();
 	} else if (!lStack->empty() && !moving) {
