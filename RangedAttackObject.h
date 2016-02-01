@@ -13,7 +13,7 @@ public:
 	static RangedAttackObject* create(BasicUnit * attacker, cocos2d::Point location, int damage, char attackType, PathFinder<BasicUnit> *tpf);
 	void attack();
 	void initAttack();
-	PathFinder<BasicUnit> pf;
+	PathFinder<BasicUnit> *pf;
 private:
 	BasicUnit *parent;
 	cocos2d::Point location;

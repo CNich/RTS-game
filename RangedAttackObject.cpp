@@ -10,7 +10,7 @@ RangedAttackObject::RangedAttackObject() {
 RangedAttackObject::~RangedAttackObject() {
 }
 
-RangedAttackObject* RangedAttackObject::create(BasicUnit * attacker, cocos2d::Point location, int damage, char attackType) {
+RangedAttackObject* RangedAttackObject::create(BasicUnit * attacker, cocos2d::Point location, int damage, char attackType, PathFinder<BasicUnit> * tpf) {
 	RangedAttackObject* pSprite = new RangedAttackObject();
 	pSprite->initWithFile("bullet.png");
 	pSprite->autorelease();
