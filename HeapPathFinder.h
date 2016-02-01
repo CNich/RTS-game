@@ -2,6 +2,7 @@
 #define __HEAPPATHFINDER_H__
 
 #include "pathNode.h"
+#include <vector>
 
 class HeapPathFinder {
 public:
@@ -23,7 +24,9 @@ public:
 
 private:
 	void swap(int a, int b);
-	pathNode **arr;
+	std::vector<pathNode*> arr;
+	//pathNode **arr;
+
 	int length;
 	void up(int a);
 	void down(int a);
@@ -31,13 +34,14 @@ private:
 };
 
 HeapPathFinder::HeapPathFinder(int L){
-	arr = new pathNode *[L];
+	arr.resize(L);
+	//arr = new pathNode *[L];
 	size = L;
 	length = 0;
 }
 
 HeapPathFinder::~HeapPathFinder(){
-	delete arr;
+	//delete arr;
 }
 
 int HeapPathFinder::getLength(){

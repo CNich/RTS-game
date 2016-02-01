@@ -5,6 +5,7 @@
 #include "LinkedList.h"
 #include "HeapPathFinder.h"
 #include "cocos2d.h"
+#include <vector>
 
 template<class T>
 class PathFinder {
@@ -39,8 +40,8 @@ public:
 	T* getUnit(int x, int y) { return map[x][y].unit; };
 
 private:
-	pathNode **map;
-	//cocos2d::Vector< cocos2d::Vector < pathNode > > map;
+	//pathNode **map;
+	std::vector<std::vector<pathNode> > map;
 	pairC start;
 	pairC end;
 	int rows;
@@ -58,11 +59,11 @@ private:
 
 template<class T>
 PathFinder<T>::PathFinder(int a, int b, pairC s, pairC e){
-	//map.resize(a);
-	map = new pathNode *[a];
+	map.resize(a);
+	//map = new pathNode *[a];
 	for (int i = 0; i < a; i++){
-		//map[i].resize(b);
-		map[i] = new pathNode[b];
+		map[i].resize(b);
+		//map[i] = new pathNode[b];
 		for (int j = 0; j < b; j++){
 			map[i][j] = defaultPathNode();
 			map[i][j].H = 10 * (abs(i - e.x) + abs(j - e.y));
@@ -84,11 +85,11 @@ PathFinder<T>::PathFinder(int a, int b, pairC s, pairC e){
 
 template<class T>
 PathFinder<T>::PathFinder(int a, int b){
-	//map.resize(a);
-	map = new pathNode *[a];
+	map.resize(a);
+	//map = new pathNode *[a];
 	for (int i = 0; i < a; i++){
-		//map[i].resize(b);
-		map[i] = new pathNode[b];
+		map[i].resize(b);
+		//map[i] = new pathNode[b];
 		for (int j = 0; j < b; j++){
 			map[i][j] = defaultPathNode();
 			map[i][j].x = i;

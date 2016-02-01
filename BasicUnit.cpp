@@ -49,7 +49,13 @@ BasicUnit* BasicUnit::create(cocos2d::Point tmp){
 
 }
 
-void BasicUnit::setPf(PathFinder<BasicUnit> *tempPf){ pf = tempPf; };
+void BasicUnit::setPf(PathFinder<BasicUnit> *tempPf){
+	pf = tempPf;
+	auto tmp = this->getPosition();
+	pf->block(convertToPf(tmp).x, convertToPf(tmp).y);
+	pf->taken(convertToPf(tmp).x, convertToPf(tmp).y);
+	pf->setUnit(convertToPf(tmp).x, convertToPf(tmp).y, this);
+};
 
 /*BasicUnit* BasicUnit::create(cocos2d::Point tmp) {
 	BasicUnit* pSprite = new BasicUnit();

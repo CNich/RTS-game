@@ -15,7 +15,7 @@ public:
 	void initAttack();
 	PathFinder<BasicUnit> * pf;
 
-private:
+protected:
 	BasicUnit *parent;
 	cocos2d::Point location;
 	int damage;
