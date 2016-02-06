@@ -253,7 +253,8 @@ bool HelloWorld::init() {
 		auto p = _plpos;
 		p.x = _plpos.x + 32 * i;
 		p.y = _plpos.y  - 32 * 10;
-		RangedBasicUnit * r = RangedBasicUnit::create(p);
+		BasicUnit * r = BasicUnit::create(p);
+		//RangedBasicUnit * r = RangedBasicUnit::create(p);
 		bvec.pushBack(r);
 		//r->setPosition(_plpos.x + 32 * i, _plpos.y  - 32 * 15 );
 		this->addChild(r, 2);
@@ -264,11 +265,43 @@ bool HelloWorld::init() {
 		r->setPf(pf);
 	}
 
-	for(int i=0; i< 5; i++){
+	for(int i=0; i< 15; i++){
 		auto p = _plpos;
 		p.x = _plpos.x + 32 * i;
-		p.y = _plpos.y  - 32 * 15;
+		p.y = _plpos.y  - 32 * 9;
+		RangedBasicUnit * r = RangedBasicUnit::create(p);
+		rangedBasicUnitVec.pushBack(r);
+		//r->setPosition(_plpos.x + 32 * i, _plpos.y  - 32 * 15 );
+		this->addChild(r, 2);
+		r->setBlockageMap(_blockage);
+		r->setForegroundMap(_foreground);
+		r->setTileMap(_tileMap);
+		r->setTeam(0);
+		r->setPf(pf);
+	}
+
+	for(int i=0; i< 15; i++){
+		auto p = _plpos;
+		p.x = _plpos.x + 32 * i;
+		p.y = _plpos.y  - 32 * 8;
+		RangedBasicUnit * r = RangedBasicUnit::create(p);
+		rangedBasicUnitVec.pushBack(r);
+		//RangedBasicUnit * r = RangedBasicUnit::create(p);
+		//r->setPosition(_plpos.x + 32 * i, _plpos.y  - 32 * 15 );
+		this->addChild(r, 2);
+		r->setBlockageMap(_blockage);
+		r->setForegroundMap(_foreground);
+		r->setTileMap(_tileMap);
+		r->setTeam(0);
+		r->setPf(pf);
+	}
+
+	for(int i=0; i< 15; i++){
+		auto p = _plpos;
+		p.x = _plpos.x + 32 * i;
+		p.y = _plpos.y  - 32 * 13;
 		BasicUnit * r = BasicUnit::create(p);
+		r->setColor(Color3B::BLUE);
 		bvec2.pushBack(r);
 		//r->setPosition(_plpos.x + 32 * i, _plpos.y  - 32 * 15 - 32 * 4);
 		this->addChild(r, 2);
@@ -279,11 +312,13 @@ bool HelloWorld::init() {
 		r->setPf(pf);
 	}
 
-	for(int i=0; i< 5; i++){
+	for(int i=0; i< 15; i++){
 		auto p = _plpos;
 		p.x = _plpos.x + 32 * i;
-		p.y = _plpos.y  - 32 * 16;
-		RangedBasicUnit * r = RangedBasicUnit::create(p);
+		p.y = _plpos.y  - 32 * 14;
+		BasicUnit * r = BasicUnit::create(p);
+		r->setColor(Color3B::BLUE);
+		//RangedBasicUnit * r = RangedBasicUnit::create(p);
 		bvec2.pushBack(r);
 		//r->setPosition(_plpos.x + 32 * i, _plpos.y  - 32 * 15 - 32 * 4);
 		this->addChild(r, 2);
@@ -291,6 +326,38 @@ bool HelloWorld::init() {
 		r->setForegroundMap(_foreground);
 		r->setTileMap(_tileMap);
 		r->setTeam(1);
+		r->setPf(pf);
+	}
+
+
+	for(int i=0; i< 15; i++){
+		auto p = _plpos;
+		p.x = _plpos.x + 32 * i;
+		p.y = _plpos.y  - 32 * 15;
+		RangedBasicUnit * r = RangedBasicUnit::create(p);
+		rangedBasicUnitVec2.pushBack(r);
+		//r->setPosition(_plpos.x + 32 * i, _plpos.y  - 32 * 15 );
+		this->addChild(r, 2);
+		r->setBlockageMap(_blockage);
+		r->setForegroundMap(_foreground);
+		r->setTileMap(_tileMap);
+		r->setTeam(0);
+		r->setPf(pf);
+	}
+
+	for(int i=0; i< 15; i++){
+		auto p = _plpos;
+		p.x = _plpos.x + 32 * i;
+		p.y = _plpos.y  - 32 * 16;
+		RangedBasicUnit * r = RangedBasicUnit::create(p);
+		rangedBasicUnitVec2.pushBack(r);
+		//RangedBasicUnit * r = RangedBasicUnit::create(p);
+		//r->setPosition(_plpos.x + 32 * i, _plpos.y  - 32 * 15 );
+		this->addChild(r, 2);
+		r->setBlockageMap(_blockage);
+		r->setForegroundMap(_foreground);
+		r->setTileMap(_tileMap);
+		r->setTeam(0);
 		r->setPf(pf);
 	}
 
@@ -436,6 +503,11 @@ void HelloWorld::setMoving() {
 }
 
 void HelloWorld::enemyDistances(float dt){
+	cocos2d::Vector<BasicUnit *> team1;
+	cocos2d::Vector<BasicUnit *> team2;
+
+	//for(BasicUnit * p : bvec)
+
 	//reset newClosestEnemy
 	if(bvec.size() > 0 && bvec2.size() > 0){
 
@@ -444,11 +516,10 @@ void HelloWorld::enemyDistances(float dt){
 		}
 
 		for(BasicUnit * p : bvec){
-			//reset newClosestEnemy
-			p->setCurrentEnemy(0);
-
 			if(!p->isDead()){
-			//find distances between each per team
+				//reset newClosestEnemy
+				p->setCurrentEnemy(0);
+				//find distances between each per team
 				for(BasicUnit * p2 : bvec2){
 					//set current enemy to new if no previous current enemy exists
 					if(!p2->isDead()){
@@ -472,8 +543,16 @@ void HelloWorld::enemyDistances(float dt){
 								p2->setCurrentEnemy(p);
 							}
 						}
+					} else{
+						bvec2.eraseObject(p2);
+						//p->removeUnit();
+						this->removeChild(p2);
 					}
 				}
+			} else{
+				bvec.eraseObject(p);
+				//p->removeUnit();
+				this->removeChild(p);
 			}
 		}
 	}

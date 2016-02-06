@@ -13,6 +13,7 @@ class BasicUnit : public cocos2d::Sprite
 public:
 	BasicUnit();
 	~BasicUnit();
+	void removeUnit();
 	static BasicUnit* create();
 	static BasicUnit* create(cocos2d::Point tmp);
 	void ASolve(int x, int y);
@@ -38,7 +39,7 @@ public:
 	void returnHealth(int healthTaken, char attackType);
 
 	void attack(BasicUnit *attacker, int damage, char attackType);
-	int attackRange = 2;
+	int attackRange = 6;
 
 	PathFinder<BasicUnit> *pf;
 	void setPf(PathFinder<BasicUnit> *tempPf);
@@ -79,10 +80,14 @@ protected:
 
 	BasicUnit *newClosestEnemy = 0;
 	BasicUnit *currentEnemy = 0;
+	cocos2d::Point currentEnemyLocation;
 
 	int health = 100;
 	bool attacking = false;
 	bool dead = false;
+
+	bool currentEnemyIsCloseEnough = false;
+	bool pursuingcurrentEnemy = false;
 
 	void update(float dt);
 };

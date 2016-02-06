@@ -9,6 +9,10 @@ RangedBasicUnit::RangedBasicUnit() {
 }
 
 RangedBasicUnit::~RangedBasicUnit() {
+	CCLOG("THIS GUY WAS DELETED!!!!!!!!!!!");
+	delete tpf;
+	delete lStack;
+	//this->getParent()->removeChild(this);
 }
 
 RangedBasicUnit* RangedBasicUnit::create() {
@@ -58,6 +62,7 @@ void RangedBasicUnit::update(float dt) {
 	//if dead, die
 	else if(dead){
 		//figure out how to delete
+		//delete this;
 	}
 	//if an enemy is within striking distance and the attack cooldown has expired,
 	//attack the closest enemy (loaded from the parent scene)
