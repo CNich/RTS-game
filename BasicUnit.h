@@ -87,7 +87,7 @@ protected:
 	bool dead = false;
 
 	bool currentEnemyIsCloseEnough = false;
-	bool pursuingcurrentEnemy = false;
+	bool currentEnemyMoved = false;
 
 	void update(float dt);
 };

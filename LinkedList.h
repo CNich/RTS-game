@@ -2,6 +2,7 @@
 #define __LINKED_LIST_H__
 
 using namespace std;
+
 /*#include <iostream>
 #include <fstream>
 #include <istream>
@@ -195,8 +196,12 @@ void LinkedList<T>::reset(){
 	while (get(1) != tail){
 		removeFront();
 	}
-	removeFront();
-	removeFront();
+	if(head->empty){
+		removeFront();
+	}
+	if(tail->empty){
+		removeBack();
+	}
 }
 
 template<class T>

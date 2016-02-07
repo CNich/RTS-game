@@ -151,13 +151,23 @@ bool HelloWorld::init() {
 
 				if(target == sprite1){
 					for(BasicUnit *i : bvec){
-						i->ASolve(tpos.x, tpos.y);
+						//i->ASolve(tpos.x, tpos.y);
+						i->goalPosition.x = tpos.x;
+						i->goalPosition.y = tpos.y;
+					}
+					for(RangedBasicUnit *i : rangedBasicUnitVec){
+						//i->ASolve(tpos.x, tpos.y);
 						i->goalPosition.x = tpos.x;
 						i->goalPosition.y = tpos.y;
 					}
 				} else{
 					for(BasicUnit *i : bvec2){
-						i->ASolve(tpos.x, tpos.y);
+						//i->ASolve(tpos.x, tpos.y);
+						i->goalPosition.x = tpos.x;
+						i->goalPosition.y = tpos.y;
+					}
+					for(RangedBasicUnit *i : rangedBasicUnitVec2){
+						//i->ASolve(tpos.x, tpos.y);
 						i->goalPosition.x = tpos.x;
 						i->goalPosition.y = tpos.y;
 					}
@@ -280,7 +290,7 @@ bool HelloWorld::init() {
 		r->setPf(pf);
 	}
 
-	for(int i=0; i< 15; i++){
+	for(int i=0; i< 2; i++){
 		auto p = _plpos;
 		p.x = _plpos.x + 32 * i;
 		p.y = _plpos.y  - 32 * 8;
@@ -296,7 +306,7 @@ bool HelloWorld::init() {
 		r->setPf(pf);
 	}
 
-	for(int i=0; i< 15; i++){
+	for(int i=0; i< 2; i++){
 		auto p = _plpos;
 		p.x = _plpos.x + 32 * i;
 		p.y = _plpos.y  - 32 * 13;
@@ -341,7 +351,7 @@ bool HelloWorld::init() {
 		r->setBlockageMap(_blockage);
 		r->setForegroundMap(_foreground);
 		r->setTileMap(_tileMap);
-		r->setTeam(0);
+		r->setTeam(1);
 		r->setPf(pf);
 	}
 
@@ -357,7 +367,7 @@ bool HelloWorld::init() {
 		r->setBlockageMap(_blockage);
 		r->setForegroundMap(_foreground);
 		r->setTileMap(_tileMap);
-		r->setTeam(0);
+		r->setTeam(1);
 		r->setPf(pf);
 	}
 
@@ -506,23 +516,43 @@ void HelloWorld::enemyDistances(float dt){
 	cocos2d::Vector<BasicUnit *> team1;
 	cocos2d::Vector<BasicUnit *> team2;
 
-	//for(BasicUnit * p : bvec)
+	for(BasicUnit * p : bvec){
+		if(p != 0 && !p->isDead()){
+			team1.pushBack(p);
+		}
+	}
+	for(BasicUnit * p : rangedBasicUnitVec){
+		if(p != 0 && !p->isDead()){
+			team1.pushBack(p);
+		}
+	}
+
+	for(BasicUnit * p : bvec2){
+		if(p != 0 && !p->isDead()){
+			team2.pushBack(p);
+		}
+	}
+	for(BasicUnit * p : rangedBasicUnitVec2){
+		if(p != 0 && !p->isDead()){
+			team2.pushBack(p);
+		}
+	}
 
 	//reset newClosestEnemy
-	if(bvec.size() > 0 && bvec2.size() > 0){
+	if(team1.size() > 0 && team2.size() > 0){
 
-		for(BasicUnit * p2 : bvec2){
+		for(BasicUnit * p2 : team2){
 			p2->setCurrentEnemy(0);
 		}
 
-		for(BasicUnit * p : bvec){
-			if(!p->isDead()){
+		for(BasicUnit * p : team1){
+			if(p != 0 && !p->isDead()){
 				//reset newClosestEnemy
 				p->setCurrentEnemy(0);
 				//find distances between each per team
-				for(BasicUnit * p2 : bvec2){
+				for(BasicUnit * p2 : team2){
 					//set current enemy to new if no previous current enemy exists
-					if(!p2->isDead()){
+					if(p2 != 0 && !p2->isDead()){
 						if(p->getCurrentEnemy() == 0){
 							p->setCurrentEnemy(p2);
 						} else{
@@ -543,16 +573,8 @@ void HelloWorld::enemyDistances(float dt){
 								p2->setCurrentEnemy(p);
 							}
 						}
-					} else{
-						bvec2.eraseObject(p2);
-						//p->removeUnit();
-						this->removeChild(p2);
 					}
 				}
-			} else{
-				bvec.eraseObject(p);
-				//p->removeUnit();
-				this->removeChild(p);
 			}
 		}
 	}

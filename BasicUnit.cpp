@@ -112,8 +112,13 @@ void BasicUnit::setStartingPosCustom(cocos2d::Point tmp) {
 }
 
 void BasicUnit::ASolve(int x, int y) {
-	lStack->reset();
-
+	CCLOG("asolve");
+	if(!lStack->empty()){
+		CCLOG("reset true");
+		lStack->reset();
+		CCLOG("reset complete");
+	}
+	CCLOG("resetting done");
 	//goalPosition.x = x;
 	//goalPosition.y = y;
 
@@ -317,9 +322,9 @@ void BasicUnit::update(float dt) {
 	cocos2d::Point currentEL;
 	if(currentEnemy != 0){
 		currentEL = convertToPf(currentEnemy->getPosition());
-		if(currentEnemyLocation.x == currentEL.x && currentEnemyLocation.y == currentEL.y){
+		if(currentEnemyLocation.x != currentEL.x || currentEnemyLocation.y != currentEL.y){
 			currentEnemyLocation = currentEL;
-			pursuingcurrentEnemy = false;
+			currentEnemyMoved = true;
 		}
 	}
 
@@ -334,6 +339,13 @@ void BasicUnit::update(float dt) {
 	else if(dead){
 		//figure out how to delete
 		//delete this;
+
+		delete tpf;
+		delete lStack;
+		pf->unblock(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
+		pf->untaken(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
+		pf->setUnitZero(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
+		this->getParent()->removeChild(this);
 	}
 
 	//if attacking, nothing should be done
@@ -344,7 +356,7 @@ void BasicUnit::update(float dt) {
 		if(!attacking && currentEnemy != 0 && !currentEnemy->isDead() &&
 				this->enemyIsAttackable()){
 			attacking = true;
-			//pursuingcurrentEnemy = false;
+			//currentEnemyMoved = false;
 			CCLOG("ATTACKED");
 			auto callback = CallFunc::create([this]() {
 				//if(currentEnemy != 0 && !currentEnemy->isDead()){
@@ -366,15 +378,15 @@ void BasicUnit::update(float dt) {
 		/*
 		else if(currentEnemy != 0 && unitToUnitDistance(this, currentEnemy) >= attackRange){
 			currentEnemyIsCloseEnough = false;
-			pursuingcurrentEnemy = false;
+			currentEnemyMoved = false;
 			CCLOG("drp");
 		}*/
 
-		//else if(currentEnemyIsCloseEnough && !pursuingcurrentEnemy && unitToUnitDistance(this, currentEnemy) < attackRange){
-		else if(currentEnemy != 0 && !pursuingcurrentEnemy && unitToUnitDistance(this, currentEnemy) < attackRange){
+		//else if(currentEnemyIsCloseEnough && !currentEnemyMoved && unitToUnitDistance(this, currentEnemy) < attackRange){
+		else if(currentEnemy != 0 && currentEnemyMoved && unitToUnitDistance(this, currentEnemy) < attackRange){
 			auto t = convertToPf(currentEnemy->getPosition());
 			this->ASolve(t.x, t.y);
-			pursuingcurrentEnemy = true;
+			currentEnemyMoved = false;
 			CCLOG("doooops");
 		}
 
