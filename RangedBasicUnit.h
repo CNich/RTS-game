@@ -17,7 +17,10 @@ public:
 
 protected:
 	bool enemyIsAttackable();
-	void update(float dt);
+	virtual void update(float dt);
+	bool removeThisUnit = false;
+	bool removeFromPf = true;
+	int health = 40;
 };
 
 #endif // __RANGED_BASIC_UNIT_H__

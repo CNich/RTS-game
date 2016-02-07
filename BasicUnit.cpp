@@ -112,13 +112,10 @@ void BasicUnit::setStartingPosCustom(cocos2d::Point tmp) {
 }
 
 void BasicUnit::ASolve(int x, int y) {
-	CCLOG("asolve");
-	if(!lStack->empty()){
-		CCLOG("reset true");
+	//if(!lStack->empty()){
 		lStack->reset();
-		CCLOG("reset complete");
-	}
-	CCLOG("resetting done");
+	//}
+
 	//goalPosition.x = x;
 	//goalPosition.y = y;
 

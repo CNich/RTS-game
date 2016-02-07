@@ -89,7 +89,7 @@ protected:
 	bool currentEnemyIsCloseEnough = false;
 	bool currentEnemyMoved = false;
 
-	void update(float dt);
+	virtual void update(float dt);
 };
 
 #endif // __BASIC_UNIT_H__
