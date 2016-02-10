@@ -3,6 +3,11 @@
 #include "stdlib.h"
 #include "AttackObject.h"
 #include "RangedAttackObject.h"
+#include "GlobalVariables.h"
+
+#include <AudioEngine.h>
+
+using namespace cocos2d::experimental;
 
 USING_NS_CC;
 
@@ -10,13 +15,6 @@ BasicUnit::BasicUnit() {
 }
 
 BasicUnit::~BasicUnit() {
-	CCLOG("THIS GUY WAS DELETED!!!!!!!!!!!");
-	delete tpf;
-	delete lStack;
-	pf->unblock(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
-	pf->untaken(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
-	pf->setUnitZero(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
-	//this->getParent()->removeChild(this);
 }
 
 void BasicUnit::removeUnit() {
@@ -252,7 +250,27 @@ void BasicUnit::setPlayerPosition(Point position) {
 
 		auto seq = Sequence::create(actionMove, callback, nullptr);
 		this->runAction(seq);
-		CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("step.mp3");
+		if(numSounds <= 10){
+			//CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("step.mp3");
+			//auto id = CocosDenshion::AudioEngine::play2d(_files[index], false, 1.0f, &_audioProfile);
+
+			numSounds++;
+			//auto id = cocos2d::experimental::AudioEngineImpl::play2d("step.mp3");
+			auto soundId = cocos2d::experimental::AudioEngine::play2d("step.mp3");
+
+			auto callback = CallFunc::create([this]() {
+				//this->getParent()->decrementNumSoundsPlaying();
+				numSounds--;
+			});
+
+			//cocos2d::experimental::AudioEngine::setFinishCallback(id, f_add_display);
+			//cocos2d::experimental::AudioEngine::setFinishCallback
+
+
+			cocos2d::experimental::AudioEngine::setFinishCallback(soundId, [&](int id, const std::string& filePath){
+				decNumSounds();
+			});
+		}
 
 	} else{
 		blockedCount++;
@@ -261,7 +279,7 @@ void BasicUnit::setPlayerPosition(Point position) {
 			auto callback = CallFunc::create([this]() {
 							this->moving = false;
 						});
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("error.mp3");
+			//CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("error.mp3");
 			auto seq = Sequence::create(DelayTime::create(0.5), callback, nullptr);
 			this->runAction(seq);
 			lStack->addFront(position);
@@ -395,6 +413,11 @@ void BasicUnit::update(float dt) {
 			tempMoving = true;
 			movedYet = true;
 			badMove = 0;
+		}
+
+		else if(goalPositionAsolve){
+			goalPositionAsolve = false;
+			this->ASolve(goalPosition.x, goalPosition.y);
 		}
 
 		/* if idleTrack is false then the unit should not be moving

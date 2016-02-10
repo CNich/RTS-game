@@ -20,7 +20,9 @@ public:
 	void setBlockageMap(cocos2d::TMXLayer *mp);
 	void setForegroundMap(cocos2d::TMXLayer *mp);
 	void setTileMap(cocos2d::TMXTiledMap *mp);
+
 	cocos2d::Point goalPosition;
+	void setAsovle(){ goalPositionAsolve = true; }
 
 	cocos2d::Point convertToPf(cocos2d::Point tmp);
 
@@ -38,7 +40,7 @@ public:
 
 	void returnHealth(int healthTaken, char attackType);
 
-	void attack(BasicUnit *attacker, int damage, char attackType);
+	virtual void attack(BasicUnit *attacker, int damage, char attackType);
 	int attackRange = 6;
 
 	PathFinder<BasicUnit> *pf;
@@ -85,6 +87,8 @@ protected:
 	int health = 100;
 	bool attacking = false;
 	bool dead = false;
+
+	bool goalPositionAsolve = false;
 
 	bool currentEnemyIsCloseEnough = false;
 	bool currentEnemyMoved = false;

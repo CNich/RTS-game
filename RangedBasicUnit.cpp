@@ -250,6 +250,12 @@ void RangedBasicUnit::update(float dt) {
 	}
 }*/
 
+void RangedBasicUnit::attack(BasicUnit * attacker, int damage, char attackType){
+	health -= damage;
+	CCLOG("%p RangedBasicUnit WAS ATTACKEDDDD for %d damage", this, damage);
+	CCLOG("%p's (RangedBasicUnit) health: %d", this, health);
+}
+
 //Ranged
 bool RangedBasicUnit::enemyIsAttackable(){
 	if(this->getCurrentEnemy() != 0 && unitToUnitDistance(this, getCurrentEnemy()) <= 6){

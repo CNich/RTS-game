@@ -64,6 +64,8 @@ private:
 	int tmcase = 0;
 	int numTouch = 0;
 
+	int numSoundsPlaying = 0;
+
 public:
 	PathFinder<BasicUnit> * pf;
 	cocos2d::Vector<BasicUnit *> bvec;
@@ -108,6 +110,10 @@ public:
 
     void testCollisions(float dt);
     void enemyDistances(float dt);
+
+    int getNumSoundsPlaying() {return numSoundsPlaying;};
+    void incrementNumSoundsPlaying() { numSoundsPlaying++; };
+    void decrementNumSoundsPlaying() { numSoundsPlaying++; };
 
     cocos2d::Point _plpos;
 
