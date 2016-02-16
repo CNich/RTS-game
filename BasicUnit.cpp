@@ -250,7 +250,7 @@ void BasicUnit::setPlayerPosition(Point position) {
 
 		auto seq = Sequence::create(actionMove, callback, nullptr);
 		this->runAction(seq);
-		if(numSounds <= 10){
+		//if(numSounds <= 10){
 			//CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("step.mp3");
 			//auto id = CocosDenshion::AudioEngine::play2d(_files[index], false, 1.0f, &_audioProfile);
 
@@ -258,19 +258,18 @@ void BasicUnit::setPlayerPosition(Point position) {
 			//auto id = cocos2d::experimental::AudioEngineImpl::play2d("step.mp3");
 			auto soundId = cocos2d::experimental::AudioEngine::play2d("step.mp3");
 
-			auto callback = CallFunc::create([this]() {
-				//this->getParent()->decrementNumSoundsPlaying();
-				numSounds--;
-			});
+
 
 			//cocos2d::experimental::AudioEngine::setFinishCallback(id, f_add_display);
 			//cocos2d::experimental::AudioEngine::setFinishCallback
 
+			//cocos2d::experimental::AudioEngine::setMaxAudioInstance(10);
 
-			cocos2d::experimental::AudioEngine::setFinishCallback(soundId, [&](int id, const std::string& filePath){
-				decNumSounds();
-			});
-		}
+
+			//cocos2d::experimental::AudioEngine::setFinishCallback(soundId, [&](int id, const std::string& filePath){
+			//	decNumSounds();
+			//});
+		//}
 
 	} else{
 		blockedCount++;
