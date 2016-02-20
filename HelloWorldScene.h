@@ -9,6 +9,7 @@
 #include "GlobalVariables.h"
 #include "BasicUnit.h"
 #include "RangedBasicUnit.h"
+#include "Ninja.h"
 #include <vector>
 
 #define SCORE_FONT_SIZE 0.1
@@ -68,6 +69,7 @@ private:
 
 public:
 	PathFinder<BasicUnit> * pf;
+	Ninja *ninja;
 	cocos2d::Vector<BasicUnit *> bvec;
 	cocos2d::Vector<BasicUnit *> bvec2;
 	cocos2d::Vector<RangedBasicUnit *> rangedBasicUnitVec;

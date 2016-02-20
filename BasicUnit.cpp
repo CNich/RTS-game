@@ -263,7 +263,7 @@ void BasicUnit::setPlayerPosition(Point position) {
 			//cocos2d::experimental::AudioEngine::setFinishCallback(id, f_add_display);
 			//cocos2d::experimental::AudioEngine::setFinishCallback
 
-			//cocos2d::experimental::AudioEngine::setMaxAudioInstance(10);
+			//cocos2d::experimental::AudioEngine::setMaxAudioInstance(1);
 
 
 			//cocos2d::experimental::AudioEngine::setFinishCallback(soundId, [&](int id, const std::string& filePath){

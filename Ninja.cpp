@@ -1,23 +1,23 @@
-#include "RangedBasicUnit.h"
+#include "Ninja.h"
 #include "SimpleAudioEngine.h"
 #include "stdlib.h"
-#include "RangedAttackObject.h"
+#include "AttackObjectNinjaStar.h"
 
 USING_NS_CC;
 
-RangedBasicUnit::RangedBasicUnit() {
+Ninja::Ninja() {
 }
 
-RangedBasicUnit::~RangedBasicUnit() {
+Ninja::~Ninja() {
 	CCLOG("THIS GUY WAS DELETED!!!!!!!!!!!");
 	//delete tpf;
 	//delete lStack;
 	//this->getParent()->removeChild(this);
 }
 
-RangedBasicUnit* RangedBasicUnit::create() {
-	RangedBasicUnit* pSprite = new RangedBasicUnit();
-	pSprite->initWithFile("030.png");
+Ninja* Ninja::create() {
+	Ninja* pSprite = new Ninja();
+	pSprite->initWithFile("Player.png");
 	srand((unsigned) time(NULL));
 	pSprite->autorelease();
 	pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
@@ -31,9 +31,9 @@ RangedBasicUnit* RangedBasicUnit::create() {
 
 }
 
-RangedBasicUnit* RangedBasicUnit::create(cocos2d::Point tmp){
-	RangedBasicUnit* pSprite = new RangedBasicUnit();
-	pSprite->initWithFile("030.png");
+Ninja* Ninja::create(cocos2d::Point tmp){
+	Ninja* pSprite = new Ninja();
+	pSprite->initWithFile("Player.png");
 	srand((unsigned) time(NULL));
 	pSprite->autorelease();
 	pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
@@ -52,7 +52,7 @@ RangedBasicUnit* RangedBasicUnit::create(cocos2d::Point tmp){
 
 }
 
-void RangedBasicUnit::update(float dt) {
+void Ninja::update(float dt) {
 	cocos2d::Point currentEL;
 	if(currentEnemy != 0){
 		currentEL = convertToPf(currentEnemy->getPosition());
@@ -114,7 +114,7 @@ void RangedBasicUnit::update(float dt) {
 			auto seq = Sequence::create(DelayTime::create(2), callback,
 					rotateTo, rotateBack, nullptr);
 			this->runAction(seq);
-			RangedAttackObject* atk = RangedAttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
+			AttackObjectNinjaStar *atk = AttackObjectNinjaStar::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
 			//AttackObject* atk = AttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
 			atk->initAttack();
 			lStack->reset();
@@ -194,75 +194,14 @@ void RangedBasicUnit::update(float dt) {
 	}
 }
 
-/*void RangedBasicUnit::update(float dt) {
-	//check if dead
-	if(!dead && health <= 0){
-		dead = true;
-		auto rotateTo = RotateTo::create(1.5, 90);
-		this->runAction(rotateTo);
-	}
-	//if dead, die
-	else if(dead){
-		//figure out how to delete
-		//delete this;
-	}
-	//if an enemy is within striking distance and the attack cooldown has expired,
-	//attack the closest enemy (loaded from the parent scene)
-	else if(!attacking && currentEnemy != 0 && !currentEnemy->isDead() &&
-			this->enemyIsAttackable()){
-		attacking = true;
-		CCLOG("ATTACKED");
-		auto callback = CallFunc::create([this]() {
-			//if(currentEnemy != 0 && !currentEnemy->isDead()){
-			//	currentEnemy->attack(this, 40, 'a');
-			//}
-			attacking = false;
-		});
-		auto rotateTo = RotateTo::create(0.1, 0, 20.0f);
-		auto rotateBack = RotateTo::create(0.1, 0, 0);
-		auto seq = Sequence::create(DelayTime::create(2), callback,
-				rotateTo, rotateBack, nullptr);
-		this->runAction(seq);
-		RangedAttackObject* atk = RangedAttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
-		CCLOG("%p THIS WAS SENT", this);
-		atk->initAttack();
-	} else if (!lStack->empty() && !moving) {
-		delayedMove();
-		tempMoving = true;
-		movedYet = true;
-		badMove = 0;
-	} else if(lStack->empty() && idle == true && idleTrack == true){
-		idle = false;
-		badMove = 0;
-		this->ASolve(goalPosition.x, goalPosition.y);
-		//CCLOG("lStack->empty(): %d   %7.7f", lStack->empty(), dt);
-	} else if(lStack->empty() && movedYet == true && idle == false && idleTrack == true){
-		badMove++;
-		idleTrack = false;
-		auto callback = CallFunc::create([this]() {
-			idle = true;
-			idleTrack = true;
-		});
-		auto seq = Sequence::create(DelayTime::create(1), callback, nullptr);
-		this->runAction(seq);
-		//CCLOG("%d", badMove);
-	} else if(lStack->empty() && !moving && tempMoving){
-		badMove = 0;
-		if(tempMoving){
-			pf->block(convertToPf(this->getPosition()).x, convertToPf(this->getPosition()).y);
-			tempMoving = false;
-		}
-	}
-}*/
-
-void RangedBasicUnit::attack(BasicUnit * attacker, int damage, char attackType){
+void Ninja::attack(BasicUnit * attacker, int damage, char attackType){
 	health -= damage;
-	CCLOG("%p RangedBasicUnit WAS ATTACKEDDDD for %d damage", this, damage);
-	CCLOG("%p's (RangedBasicUnit) health: %d", this, health);
+	CCLOG("%p Ninja WAS ATTACKEDDDD for %d damage", this, damage);
+	CCLOG("%p's (Ninja) health: %d", this, health);
 }
 
 //Ranged
-bool RangedBasicUnit::enemyIsAttackable(){
+bool Ninja::enemyIsAttackable(){
 	if(this->getCurrentEnemy() != 0 && unitToUnitDistance(this, getCurrentEnemy()) <= 6){
 		return true;
 	}

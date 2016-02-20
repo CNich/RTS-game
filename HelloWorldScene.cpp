@@ -1,5 +1,6 @@
 #include "HelloWorldScene.h"
 #include "SimpleAudioEngine.h"
+#include <AudioEngine.h>
 
 using namespace CocosDenshion;
 
@@ -30,18 +31,25 @@ bool HelloWorld::init() {
 	if (!Layer::init()) {
 		return false;
 	}
+
+	//cocos2d::experimental::AudioEngine::setMaxAudioInstance(1);
+
+	//load tilemap
 	std::string file = "TileMap.tmx";
 	auto str =
 			String::createWithContentsOfFile(
 					FileUtils::getInstance()->fullPathForFilename(file.c_str()).c_str());
 	_tileMap = TMXTiledMap::createWithXML(str->getCString(), "");
-	_background = _tileMap->layerNamed("Background");
 
+	//load background layer
+	_background = _tileMap->layerNamed("Background");
 	addChild(_tileMap, -1);
 
+	//load blocked layer and set it to invisible
 	_blockage = _tileMap->layerNamed("Meta");
 	_blockage->setVisible(false);
 
+	//get tilemap objects
 	TMXObjectGroup *objects = _tileMap->getObjectGroup("Objects");
 	CCASSERT(NULL != objects, "'Object-Player' object group not found");
 	auto playerShowUpPoint = objects->getObject("PlayerShowUpPoint");
@@ -53,6 +61,7 @@ bool HelloWorld::init() {
 	_plpos.x = x + _tileMap->getTileSize().width / 2;
 	_plpos.y = y + _tileMap->getTileSize().height / 2;
 
+	//set touch events for pan/zoom
 	auto listener = EventListenerTouchOneByOne::create();
 	listener->onTouchBegan = [&](Touch *touch, Event *unused_event)->bool {
 		numTouch++;
@@ -88,6 +97,11 @@ bool HelloWorld::init() {
 	sprite2->setScale(0.5);
 	addChild(sprite2, 1);
 
+	auto sprite3 = Sprite::create("Yellowsquare.png");
+	sprite3->setPosition(Point(x + 48, y + 48));
+	sprite3->setScale(0.5);
+	addChild(sprite3, 1);
+
 	//Create a "one by one" touch event listener (processes one touch at a time)
 	auto listener1 = EventListenerTouchOneByOne::create();
 	// When "swallow touches" is true, then returning 'true' from the onTouchBegan method will "swallow" the touch event, preventing other listeners from using it.
@@ -97,22 +111,22 @@ bool HelloWorld::init() {
 	listener1->onTouchBegan = [=](Touch* touch, Event* event) {
 
 		// event->getCurrentTarget() returns the *listener's* sceneGraphPriority node.
-			auto target = static_cast<Sprite*>(event->getCurrentTarget());
+		auto target = static_cast<Sprite*>(event->getCurrentTarget());
 
-			//Get the position of the current point relative to the button
-			Point locationInNode = target->convertToNodeSpace(touch->getLocation());
-			Size s = target->getContentSize();
-			Rect rect = Rect(0, 0, s.width, s.height);
+		//Get the position of the current point relative to the button
+		Point locationInNode = target->convertToNodeSpace(touch->getLocation());
+		Size s = target->getContentSize();
+		Rect rect = Rect(0, 0, s.width, s.height);
 
-			//Check the click area
-			if (rect.containsPoint(locationInNode))
-			{
-				CCLOG("sprite began... x = %f, y = %f", locationInNode.x, locationInNode.y);
-				target->setOpacity(180);
-				return true;
-			}
-			return false;
-		};
+		//Check the click area
+		if (rect.containsPoint(locationInNode))
+		{
+			CCLOG("sprite began... x = %f, y = %f", locationInNode.x, locationInNode.y);
+			target->setOpacity(180);
+			return true;
+		}
+		return false;
+	};
 
 	//Trigger when moving touch
 	listener1->onTouchMoved = [=](Touch* touch, Event* event) {
@@ -156,14 +170,20 @@ bool HelloWorld::init() {
 						i->goalPosition.y = tpos.y;
 						i->setAsovle();
 					}
+					/*for(RangedBasicUnit *i : rangedBasicUnitVec){
+						//i->ASolve(tpos.x, tpos.y);
+						i->goalPosition.x = tpos.x;
+						i->goalPosition.y = tpos.y;
+						i->setAsovle();
+					}*/
+				} else if(target == sprite2){
 					for(RangedBasicUnit *i : rangedBasicUnitVec){
 						//i->ASolve(tpos.x, tpos.y);
 						i->goalPosition.x = tpos.x;
 						i->goalPosition.y = tpos.y;
 						i->setAsovle();
 					}
-				} else{
-					for(BasicUnit *i : bvec2){
+					/*for(BasicUnit *i : bvec2){
 						//i->ASolve(tpos.x, tpos.y);
 						i->goalPosition.x = tpos.x;
 						i->goalPosition.y = tpos.y;
@@ -175,6 +195,12 @@ bool HelloWorld::init() {
 						i->goalPosition.y = tpos.y;
 						i->setAsovle();
 					}
+					*/
+				}
+				else{
+					ninja->goalPosition.x = tpos.x;
+					ninja->goalPosition.y = tpos.y;
+					ninja->setAsovle();
 				}
 			}
 		};
@@ -182,6 +208,7 @@ bool HelloWorld::init() {
 	//Add listener
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1,	sprite1);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1->clone(), sprite2);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1->clone(), sprite3);
 
 	auto tL = objects->getObject("topLeft");
 	_topLeft.x = tL["x"].asInt();
@@ -248,6 +275,18 @@ bool HelloWorld::init() {
 	tileAtrs->setPosition(Point(winSize.width / 2, winSize.height * 0.75));
 	this->addChild(tileAtrs, 10000);
 
+	auto ninjaPos = _plpos;
+	ninjaPos.x = _plpos.x + 320;
+	ninjaPos.y = _plpos.y  - 32 * 6;
+	ninja = Ninja::create(ninjaPos);
+	this->addChild(ninja, 2);
+	ninja->setBlockageMap(_blockage);
+	ninja->setForegroundMap(_foreground);
+	ninja->setTileMap(_tileMap);
+	ninja->setTeam(0);
+	ninja->setPf(pf);
+	ninja->setScale(2);
+
 	for(int i=0; i< 15; i++){
 		auto p = _plpos;
 		p.x = _plpos.x + 32 * i;
@@ -310,9 +349,9 @@ bool HelloWorld::init() {
 		r->setPf(pf);
 	}
 
-	for(int i=0; i< 15; i++){
+	for(int i=0; i< 35; i++){
 		auto p = _plpos;
-		p.x = _plpos.x + 32 * i;
+		p.x = _plpos.x - 320 + 32 * i;
 		p.y = _plpos.y  - 32 * 13;
 		BasicUnit * r = BasicUnit::create(p);
 		r->setColor(Color3B::BLUE);
@@ -326,9 +365,9 @@ bool HelloWorld::init() {
 		r->setPf(pf);
 	}
 
-	for(int i=0; i< 15; i++){
+	for(int i=0; i< 35; i++){
 		auto p = _plpos;
-		p.x = _plpos.x + 32 * i;
+		p.x = _plpos.x - 320 + 32 * i;
 		p.y = _plpos.y  - 32 * 14;
 		BasicUnit * r = BasicUnit::create(p);
 		r->setColor(Color3B::BLUE);
@@ -344,9 +383,9 @@ bool HelloWorld::init() {
 	}
 
 
-	for(int i=0; i< 15; i++){
+	for(int i=0; i< 35; i++){
 		auto p = _plpos;
-		p.x = _plpos.x + 32 * i;
+		p.x = _plpos.x - 320 + 32 * i;
 		p.y = _plpos.y  - 32 * 15;
 		RangedBasicUnit * r = RangedBasicUnit::create(p);
 		rangedBasicUnitVec2.pushBack(r);
@@ -360,9 +399,9 @@ bool HelloWorld::init() {
 		r->setPf(pf);
 	}
 
-	for(int i=0; i< 15; i++){
+	for(int i=0; i< 35; i++){
 		auto p = _plpos;
-		p.x = _plpos.x + 32 * i;
+		p.x = _plpos.x - 320 + 32 * i;
 		p.y = _plpos.y  - 32 * 16;
 		RangedBasicUnit * r = RangedBasicUnit::create(p);
 		rangedBasicUnitVec2.pushBack(r);
@@ -522,6 +561,9 @@ void HelloWorld::enemyDistances(float dt){
 	cocos2d::Vector<BasicUnit *> team1;
 	cocos2d::Vector<BasicUnit *> team2;
 
+	if(!ninja->isDead()) {
+		team1.pushBack(ninja);
+	}
 
 	for(BasicUnit * p : bvec){
 		if(p != 0 && !p->isDead()){
