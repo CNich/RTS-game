@@ -25,6 +25,10 @@ struct pathNode{
 	int y;
 	BasicUnit *unit;
 
+	//BFS map
+	char* dir = 0;
+	pairC bfsParent;
+
 	inline bool operator==(pathNode a){ return (F == a.F); }
 	inline bool operator<=(pathNode a){ return (F <= a.F ? true : false); }
 	inline bool operator<(pathNode a){ return  (F <  a.F ? true : false); }

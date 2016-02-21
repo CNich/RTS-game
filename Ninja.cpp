@@ -23,6 +23,7 @@ Ninja* Ninja::create() {
 	pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
 	pSprite->tpf->setTileX(32);
 	pSprite->tpf->setTileY(32);
+	pSprite->bfsMap = new BFS(50, 50);
 	pSprite->setScale(0.5);
 
 	pSprite->scheduleUpdate();
@@ -39,6 +40,7 @@ Ninja* Ninja::create(cocos2d::Point tmp){
 	pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
 	pSprite->tpf->setTileX(32);
 	pSprite->tpf->setTileY(32);
+	pSprite->bfsMap = new BFS(50, 50);
 	pSprite->setScale(0.5);
 
 	pSprite->scheduleUpdate();
@@ -50,6 +52,19 @@ Ninja* Ninja::create(cocos2d::Point tmp){
 
 	return pSprite;
 
+}
+
+void Ninja::setBFSmap(){
+	bfsMap->setPathFinder(pf);
+	auto L = 50;//pf->getRows();
+	auto W = 50;//pf->getCols();
+	for(int i = 0; i < L; i++){
+		for(int j = 0; j < W; j++){
+			if(pf->checkPermaBlock(i, j)){
+				bfsMap->setBlocked(i, j);
+			}
+		}
+	}
 }
 
 void Ninja::update(float dt) {
@@ -140,6 +155,9 @@ void Ninja::update(float dt) {
 		//i.e. in between moves, move to next location in stack
 		else if (!lStack->empty() && !moving) {
 			delayedMove();
+			auto p = this->convertToPf(this->getPosition());
+			bfsMap->setStart(p.x, p.y);
+			bfsMap->solve();
 			tempMoving = true;
 			movedYet = true;
 			badMove = 0;

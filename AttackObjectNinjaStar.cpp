@@ -14,19 +14,17 @@ AttackObjectNinjaStar* AttackObjectNinjaStar::create(BasicUnit * attacker, cocos
 	AttackObjectNinjaStar* pSprite = new AttackObjectNinjaStar();
 	pSprite->initWithFile("star.png");
 	pSprite->autorelease();
-	pSprite->setScale(0.25);
+	pSprite->setScale(0.75);
 	pSprite->parent = attacker;
 	pSprite->location = location;
 	pSprite->damage = damage;
 	pSprite->pf = tpf;
 	CCLOG("%p THIS WAS RECEIVED", attacker);
 	//pSprite->init(location, damage, attackType);
-	CCLOG("DUMMIED init");
 	return pSprite;
 }
 
 void AttackObjectNinjaStar::initAttack(){
-	CCLOG("DUMMIED here");
 	this->parent->getParent()->addChild(this);
 	auto eloc = parent->getPosition();
 	this->setPosition(eloc.x, eloc.y);
@@ -36,12 +34,11 @@ void AttackObjectNinjaStar::initAttack(){
 		this->parent->getParent()->removeChild(this);
 	});
 
-	auto jumpTo = cocos2d::JumpTo::create(1, parent->getCurrentEnemy()->getPosition(),100, 1);
-
-	auto seq = cocos2d::Sequence::create(jumpTo, callback, nullptr);
+	auto moveTo = cocos2d::MoveTo::create(0.5,parent->getCurrentEnemy()->getPosition());
+	auto rotateTo = cocos2d::RotateBy::create(0.5, 720);
+	auto spawn = cocos2d::Spawn::create(moveTo, rotateTo, nullptr);
+	auto seq = cocos2d::Sequence::create(spawn, callback, nullptr);
 	this->runAction(seq);
-
-	//this->parent->getParent()->removeChild(this);
 }
 
 void AttackObjectNinjaStar::attack(){

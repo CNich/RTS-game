@@ -269,6 +269,8 @@ bool HelloWorld::init() {
 	pf->setTileX(_tileMap->getTileSize().width);
 
 	this->setMap();
+	//this->setBFSMap();
+
 	cocos2d::Label *tileAtrs = Label::createWithTTF(ts2->getCString(),
 			"fonts/Marker Felt.ttf", winSize.height * SCORE_FONT_SIZE);
 	tileAtrs->setColor(Color3B::BLUE);
@@ -285,7 +287,8 @@ bool HelloWorld::init() {
 	ninja->setTileMap(_tileMap);
 	ninja->setTeam(0);
 	ninja->setPf(pf);
-	ninja->setScale(2);
+	ninja->setScale(1.5);
+	ninja->setBFSmap();
 
 	for(int i=0; i< 15; i++){
 		auto p = _plpos;

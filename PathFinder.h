@@ -25,6 +25,10 @@ public:
 	pathNode defaultPathNode();
 	void print();
 	void permaBlock(int x, int y);
+	bool checkPermaBlock(int x, int y) { return map[x][y].permaBlocked; };
+	void setBFSParent(int x, int y) { map[x][y].bfsParent.x = x; map[x][y].bfsParent.y = y; };
+	void setBFSDir(int x, int y, char *dir) { map[x][y].dir = dir; };
+	cocos2d::Point getBFSParent(int x, int y);
 	void block(int x, int y);
 	void unblock(int x, int y);
 	bool checkBlock(int x, int y);
@@ -162,6 +166,14 @@ template<class T>
 int PathFinder<T>::getCols(){
 	return cols;
 }
+
+template<class T>
+cocos2d::Point PathFinder<T>::getBFSParent(int x, int y){
+	cocos2d::Point t;
+	t.x = 16 + 32 * map[x][y].bfsParent.x;
+	t.y = 16 + 32 * map[x][y].bfsParent.y;
+	return t;
+};
 
 template<class T>
 pathNode PathFinder<T>::defaultPathNode(){

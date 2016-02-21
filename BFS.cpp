@@ -68,8 +68,10 @@ void BFS::checkNeighbour(int dx, int dy, mpair n, char* dir){
 			//cout << n.x << " " << n.y << "\t" << n.x + dx << " " << n.y + dy << endl;
 			map[n.x + dx][n.y + dy].parent.x = n.x;
 			map[n.x + dx][n.y + dy].parent.y = n.y;
+			pf->setBFSParent(n.x + dx, n.y + dy);
 			map[n.x + dx][n.y + dy].checked = true;
 			map[n.x + dx][n.y + dy].dir = dir;
+			pf->setBFSDir(n.x + dx, n.y + dy, dir);
 			mpair addToQueue;
 			addToQueue.x = n.x + dx;
 			addToQueue.y = n.y + dy;

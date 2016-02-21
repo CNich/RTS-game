@@ -3,7 +3,9 @@
 
 #include <vector>
 #include <iostream>
-#include "C:\Users\Sam\Desktop\New folder\LinkedList.h"
+#include "LinkedList.h"
+#include "PathFinder.h"
+#include "BasicUnit.h"
 
 struct mpair{
 	int x;
@@ -24,6 +26,9 @@ public:
 	void setStart(int x, int y) { start.x = x; start.y = y; };
 	void setChecked(int x, int y) { map[x][y].checked = true; };
 	bool getChecked(int x, int y) { return map[x][y].checked; };
+
+	void setPathFinder(PathFinder<BasicUnit> *tpf) { pf = tpf; };
+
 	void solve();
 	void print();
 	BFSMapNode getNode(int x, int y) { return map[x][y]; };
@@ -36,6 +41,8 @@ private:
 	mpair start;
 	int L;
 	int W;
+
+	PathFinder<BasicUnit> *pf;
 };
 
 #endif // __BFS__

@@ -2,6 +2,7 @@
 #define __NINJA__
 
 #include "BasicUnit.h"
+#include "BFS.h"
 
 class Ninja : public BasicUnit
 {
@@ -10,7 +11,8 @@ public:
 	~Ninja();
 	static Ninja* create();
 	static Ninja* create(cocos2d::Point tmp);
-	
+
+	void setBFSmap();
 
 	//void attack(BasicUnit *attacker, int damage, char attackType);
 	int attackRange = 6;
@@ -22,6 +24,10 @@ protected:
 	bool removeThisUnit = false;
 	bool removeFromPf = true;
 	int health = 200;
+
+private:
+	BFS *bfsMap;
+
 };
 
 #endif // __NINJA__

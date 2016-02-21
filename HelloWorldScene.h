@@ -74,6 +74,7 @@ public:
 	cocos2d::Vector<BasicUnit *> bvec2;
 	cocos2d::Vector<RangedBasicUnit *> rangedBasicUnitVec;
 	cocos2d::Vector<RangedBasicUnit *> rangedBasicUnitVec2;
+
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
     static cocos2d::Scene* createScene();
 
