@@ -41,7 +41,7 @@ public:
 	void returnHealth(int healthTaken, char attackType);
 
 	virtual void attack(BasicUnit *attacker, int damage, char attackType);
-	int attackRange = 6;
+	int attackRange = 7;
 
 	PathFinder<BasicUnit> *pf;
 	void setPf(PathFinder<BasicUnit> *tempPf);

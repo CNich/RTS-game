@@ -46,6 +46,7 @@ void BFS::solve(){
 			//check right
 			checkNeighbour(0, 1, n, "r");
 
+			/*
 			//check up left
 			checkNeighbour(-1, -1, n, "ul");
 			
@@ -57,7 +58,7 @@ void BFS::solve(){
 			
 			//check down right
 			checkNeighbour(1, 1, n, "dr");
-			
+			*/
 		}
 	}
 }

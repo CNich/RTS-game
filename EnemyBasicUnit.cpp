@@ -1,29 +1,28 @@
-#include "Ninja.h"
+#include "EnemyBasicUnit.h"
 #include "SimpleAudioEngine.h"
 #include "stdlib.h"
-#include "AttackObjectNinjaStar.h"
+#include "RangedAttackObject.h"
 
 USING_NS_CC;
 
-Ninja::Ninja() {
+EnemyBasicUnit::EnemyBasicUnit() {
 }
 
-Ninja::~Ninja() {
+EnemyBasicUnit::~EnemyBasicUnit() {
 	CCLOG("THIS GUY WAS DELETED!!!!!!!!!!!");
 	//delete tpf;
 	//delete lStack;
 	//this->getParent()->removeChild(this);
 }
 
-Ninja* Ninja::create() {
-	Ninja* pSprite = new Ninja();
-	pSprite->initWithFile("Player.png");
+EnemyBasicUnit* EnemyBasicUnit::create() {
+	EnemyBasicUnit* pSprite = new EnemyBasicUnit();
+	pSprite->initWithFile("029.png");
 	srand((unsigned) time(NULL));
 	pSprite->autorelease();
 	pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
 	pSprite->tpf->setTileX(32);
 	pSprite->tpf->setTileY(32);
-	pSprite->bfsMap = new BFS(50, 50);
 	pSprite->setScale(0.5);
 
 	pSprite->scheduleUpdate();
@@ -32,15 +31,14 @@ Ninja* Ninja::create() {
 
 }
 
-Ninja* Ninja::create(cocos2d::Point tmp){
-	Ninja* pSprite = new Ninja();
-	pSprite->initWithFile("Player.png");
+EnemyBasicUnit* EnemyBasicUnit::create(cocos2d::Point tmp){
+	EnemyBasicUnit* pSprite = new EnemyBasicUnit();
+	pSprite->initWithFile("029.png");
 	srand((unsigned) time(NULL));
 	pSprite->autorelease();
 	pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
 	pSprite->tpf->setTileX(32);
 	pSprite->tpf->setTileY(32);
-	pSprite->bfsMap = new BFS(50, 50);
 	pSprite->setScale(0.5);
 
 	pSprite->scheduleUpdate();
@@ -54,20 +52,7 @@ Ninja* Ninja::create(cocos2d::Point tmp){
 
 }
 
-void Ninja::setBFSmap(){
-	bfsMap->setPathFinder(pf);
-	auto L = 50;//pf->getRows();
-	auto W = 50;//pf->getCols();
-	for(int i = 0; i < L; i++){
-		for(int j = 0; j < W; j++){
-			if(pf->checkPermaBlock(i, j)){
-				bfsMap->setBlocked(i, j);
-			}
-		}
-	}
-}
-
-void Ninja::update(float dt) {
+void EnemyBasicUnit::update(float dt) {
 	cocos2d::Point currentEL;
 	if(currentEnemy != 0){
 		currentEL = convertToPf(currentEnemy->getPosition());
@@ -129,8 +114,8 @@ void Ninja::update(float dt) {
 			auto seq = Sequence::create(DelayTime::create(2), callback,
 					rotateTo, rotateBack, nullptr);
 			this->runAction(seq);
-			AttackObjectNinjaStar *atk = AttackObjectNinjaStar::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
-			//AttackObject* atk = AttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
+			//RangedAttackObject* atk = RangedAttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
+			AttackObject* atk = AttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
 			atk->initAttack();
 			lStack->reset();
 		}
@@ -147,7 +132,6 @@ void Ninja::update(float dt) {
 			auto t = convertToPf(currentEnemy->getPosition());
 			this->ASolve(t.x, t.y);
 			currentEnemyMoved = false;
-			CCLOG("doooops");
 		}
 
 		//the unit is in between movements and is not attacking
@@ -155,51 +139,17 @@ void Ninja::update(float dt) {
 		//i.e. in between moves, move to next location in stack
 		else if (!lStack->empty() && !moving) {
 			delayedMove();
-			auto p = this->convertToPf(this->getPosition());
-			bfsMap->setStart(p.x, p.y);
-			bfsMap->solve();
 			tempMoving = true;
 			movedYet = true;
 			badMove = 0;
-			CCLOG("BFS SOLVED");
 		}
 
-		else if(goalPositionAsolve){
-			goalPositionAsolve = false;
-			this->ASolve(goalPosition.x, goalPosition.y);
-		}
+		else if(lStack->empty() && !moving){
+			auto pos = this->convertToPf(this->getPosition());
+			char* dir = pf->getBFSDir(pos.x, pos.y);
+			CCLOG("%s %f, %f", dir, pf->getBFSParent(pos.x, pos.y).x, pf->getBFSParent(pos.x, pos.y).y);
 
-		/* if idleTrack is false then the unit should not be moving
-		 * it should be waiting until the timer is up before trying
-		 * to make it's next move*/
-
-		//if the unit thinks it has nowhere to go but isn't at it's proper location
-		//ie the movement stack is empty but it's not at its goal position
-		//this may happen if there is no path to it's goal location at the time
-		//it's pathfinder has been called
-
-		//gets unit to find path to it's goal position
-		/* A */
-		else if(lStack->empty() && idle == true && idleTrack == true){
-			idle = false;
-			badMove = 0;
-			this->ASolve(goalPosition.x, goalPosition.y);
-			//CCLOG("lStack->empty(): %d   %7.7f", lStack->empty(), dt);
-		}
-
-		//causes unit to wait for 1 second until trying *A* again
-		/* B */
-		else if(lStack->empty() && movedYet == true && idle == false && idleTrack == true){
-			badMove++;
-			/* makes sure *A* is not going while*/
-			idleTrack = false;
-			auto callback = CallFunc::create([this]() {
-				idle = true;
-				idleTrack = true;
-			});
-			auto seq = Sequence::create(DelayTime::create(1), callback, nullptr);
-			this->runAction(seq);
-			//CCLOG("%d", badMove);
+			lStack->addFront(pf->getBFSParent(pos.x, pos.y));
 		}
 	}
 
@@ -213,16 +163,20 @@ void Ninja::update(float dt) {
 	}
 }
 
-void Ninja::attack(BasicUnit * attacker, int damage, char attackType){
+void EnemyBasicUnit::attack(BasicUnit * attacker, int damage, char attackType){
 	health -= damage;
-	CCLOG("%p Ninja WAS ATTACKEDDDD for %d damage", this, damage);
-	CCLOG("%p's (Ninja) health: %d", this, health);
+	CCLOG("%p EnemyBasicUnit WAS ATTACKEDDDD for %d damage", this, damage);
+	CCLOG("%p's (EnemyBasicUnit) health: %d", this, health);
 }
 
-//Ranged
-bool Ninja::enemyIsAttackable(){
-	if(this->getCurrentEnemy() != 0 && unitToUnitDistance(this, getCurrentEnemy()) <= 6){
-		return true;
+//Melee
+bool EnemyBasicUnit::enemyIsAttackable(){
+	if(this->getCurrentEnemy() != 0){
+		auto enemyLoc = convertToPf(currentEnemy->getPosition());
+		auto thisLoc = convertToPf(this->getPosition());
+		if(abs(enemyLoc.x - thisLoc.x) <= 1 && abs(enemyLoc.y - thisLoc.y) <= 1){
+			return true;
+		}
 	}
 	return false;
 }

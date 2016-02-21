@@ -8,7 +8,9 @@
 #include "HeapPathFinder.h"
 #include "GlobalVariables.h"
 #include "BasicUnit.h"
+#include "EnemyBasicUnit.h"
 #include "RangedBasicUnit.h"
+#include "EnemyBasicUnitRanged.h"
 #include "Ninja.h"
 #include <vector>
 
@@ -67,13 +69,15 @@ private:
 
 	int numSoundsPlaying = 0;
 
+	void drawBFSMap();
+
 public:
 	PathFinder<BasicUnit> * pf;
 	Ninja *ninja;
 	cocos2d::Vector<BasicUnit *> bvec;
-	cocos2d::Vector<BasicUnit *> bvec2;
+	cocos2d::Vector<EnemyBasicUnit *> bvec2;
 	cocos2d::Vector<RangedBasicUnit *> rangedBasicUnitVec;
-	cocos2d::Vector<RangedBasicUnit *> rangedBasicUnitVec2;
+	cocos2d::Vector<EnemyBasicUnitRanged *> rangedBasicUnitVec2;
 
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
     static cocos2d::Scene* createScene();

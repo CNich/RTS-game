@@ -288,9 +288,14 @@ bool HelloWorld::init() {
 	ninja->setTeam(0);
 	ninja->setPf(pf);
 	ninja->setScale(1.5);
+	auto bfsp = ninja->convertToPf(ninja->getPosition());
 	ninja->setBFSmap();
+	ninja->BFSInit(bfsp.x, bfsp.y);
 
-	for(int i=0; i< 15; i++){
+	int t1 = 1;
+	int t2 = 3;
+
+	for(int i=0; i < t1; i++){
 		auto p = _plpos;
 		p.x = _plpos.x + 32 * i;
 		p.y = _plpos.y  - 32 * 11;
@@ -305,7 +310,7 @@ bool HelloWorld::init() {
 		r->setPf(pf);
 	}
 
-	for(int i=0; i< 15; i++){
+	for(int i=0; i < t1; i++){
 		auto p = _plpos;
 		p.x = _plpos.x + 32 * i;
 		p.y = _plpos.y  - 32 * 10;
@@ -321,7 +326,7 @@ bool HelloWorld::init() {
 		r->setPf(pf);
 	}
 
-	for(int i=0; i< 15; i++){
+	for(int i=0; i < t1; i++){
 		auto p = _plpos;
 		p.x = _plpos.x + 32 * i;
 		p.y = _plpos.y  - 32 * 9;
@@ -336,7 +341,7 @@ bool HelloWorld::init() {
 		r->setPf(pf);
 	}
 
-	for(int i=0; i< 15; i++){
+	for(int i=0; i < t1; i++){
 		auto p = _plpos;
 		p.x = _plpos.x + 32 * i;
 		p.y = _plpos.y  - 32 * 8;
@@ -352,11 +357,11 @@ bool HelloWorld::init() {
 		r->setPf(pf);
 	}
 
-	for(int i=0; i< 35; i++){
+	for(int i=0; i < t2; i++){
 		auto p = _plpos;
 		p.x = _plpos.x - 320 + 32 * i;
 		p.y = _plpos.y  - 32 * 13;
-		BasicUnit * r = BasicUnit::create(p);
+		EnemyBasicUnit * r = EnemyBasicUnit::create(p);
 		r->setColor(Color3B::BLUE);
 		bvec2.pushBack(r);
 		//r->setPosition(_plpos.x + 32 * i, _plpos.y  - 32 * 15 - 32 * 4);
@@ -368,29 +373,29 @@ bool HelloWorld::init() {
 		r->setPf(pf);
 	}
 
-	for(int i=0; i< 35; i++){
-		auto p = _plpos;
-		p.x = _plpos.x - 320 + 32 * i;
-		p.y = _plpos.y  - 32 * 14;
-		BasicUnit * r = BasicUnit::create(p);
-		r->setColor(Color3B::BLUE);
-		//RangedBasicUnit * r = RangedBasicUnit::create(p);
-		bvec2.pushBack(r);
-		//r->setPosition(_plpos.x + 32 * i, _plpos.y  - 32 * 15 - 32 * 4);
-		this->addChild(r, 2);
-		r->setBlockageMap(_blockage);
-		r->setForegroundMap(_foreground);
-		r->setTileMap(_tileMap);
-		r->setTeam(1);
-		r->setPf(pf);
-	}
-
-
-	for(int i=0; i< 35; i++){
+	for(int i=0; i < t2; i++){
 		auto p = _plpos;
 		p.x = _plpos.x - 320 + 32 * i;
 		p.y = _plpos.y  - 32 * 15;
-		RangedBasicUnit * r = RangedBasicUnit::create(p);
+		EnemyBasicUnit * r = EnemyBasicUnit::create(p);
+		r->setColor(Color3B::BLUE);
+		//RangedBasicUnit * r = RangedBasicUnit::create(p);
+		bvec2.pushBack(r);
+		//r->setPosition(_plpos.x + 32 * i, _plpos.y  - 32 * 15 - 32 * 4);
+		this->addChild(r, 2);
+		r->setBlockageMap(_blockage);
+		r->setForegroundMap(_foreground);
+		r->setTileMap(_tileMap);
+		r->setTeam(1);
+		r->setPf(pf);
+	}
+
+
+	for(int i=0; i < t2; i++){
+		auto p = _plpos;
+		p.x = _plpos.x - 320 + 32 * i;
+		p.y = _plpos.y  - 32 * 17;
+		EnemyBasicUnitRanged * r = EnemyBasicUnitRanged::create(p);
 		rangedBasicUnitVec2.pushBack(r);
 		r->setColor(Color3B::BLUE);
 		//r->setPosition(_plpos.x + 32 * i, _plpos.y  - 32 * 15 );
@@ -402,11 +407,11 @@ bool HelloWorld::init() {
 		r->setPf(pf);
 	}
 
-	for(int i=0; i< 35; i++){
+	for(int i=0; i < t2; i++){
 		auto p = _plpos;
 		p.x = _plpos.x - 320 + 32 * i;
-		p.y = _plpos.y  - 32 * 16;
-		RangedBasicUnit * r = RangedBasicUnit::create(p);
+		p.y = _plpos.y  - 32 * 19;
+		EnemyBasicUnitRanged * r = EnemyBasicUnitRanged::create(p);
 		rangedBasicUnitVec2.pushBack(r);
 		r->setColor(Color3B::BLUE);
 		//RangedBasicUnit * r = RangedBasicUnit::create(p);
@@ -418,6 +423,8 @@ bool HelloWorld::init() {
 		r->setTeam(1);
 		r->setPf(pf);
 	}
+
+	this->drawBFSMap();
 
 	return true;
 
@@ -580,14 +587,14 @@ void HelloWorld::enemyDistances(float dt){
 		}
 	}
 
-	for(BasicUnit * p : bvec2){
+	for(EnemyBasicUnit * p : bvec2){
 		if(p != 0 && !p->isDead()){
 			team2.pushBack(p);
 		}
 	}
 
-	cocos2d::Vector<RangedBasicUnit *> rangedBasicUnitVec2Delete;
-	for(RangedBasicUnit * p : rangedBasicUnitVec2){
+	cocos2d::Vector<EnemyBasicUnitRanged *> rangedBasicUnitVec2Delete;
+	for(EnemyBasicUnitRanged * p : rangedBasicUnitVec2){
 		if(p != 0 && !p->isDead()){
 			team2.pushBack(p);
 		} else{
@@ -635,7 +642,7 @@ void HelloWorld::enemyDistances(float dt){
 			}
 		}
 	}
-	for(RangedBasicUnit * p : rangedBasicUnitVec2Delete){
+	for(EnemyBasicUnitRanged * p : rangedBasicUnitVec2Delete){
 		//rangedBasicUnitVec2.eraseObject(p);
 	}
 }
@@ -791,6 +798,42 @@ void HelloWorld::checkMap() {
 			}
 		}
 	}
+}
+
+void HelloWorld::drawBFSMap() {
+	int tw = _tileMap->getTileSize().width;
+	int th = _tileMap->getTileSize().height;
+
+	for (int i = 0; i < 50; i++) {
+		for (int j = 0; j < 50; j++) {
+			if (pf->getBFSDir(i, j) == "u") {
+				auto arrow = Sprite::create("up.png");
+				arrow->setPosition(i * 32 + 16, j * 32 + 16);
+				this->addChild(arrow, 1);
+			}
+			else if(pf->getBFSDir(i, j) == "d"){
+				auto arrow = Sprite::create("up.png");
+				arrow->setPosition(i * 32 + 16, j * 32 + 16);
+				this->addChild(arrow, 1);
+			}
+			else if(pf->getBFSDir(i, j) == "l"){
+				auto arrow = Sprite::create("left.png");
+				arrow->setPosition(i * 32 + 16, j * 32 + 16);
+				this->addChild(arrow, 1);
+			}
+			else if(pf->getBFSDir(i, j) == "r"){
+				auto arrow = Sprite::create("right.png");
+				arrow->setPosition(i * 32 + 16, j * 32 + 16);
+				this->addChild(arrow, 1);
+			}
+			else{
+				auto drawNode = DrawNode::create();
+				drawNode->drawDot(Vec2(16 + i * 32, 16 + j * 32), 16, Color4F::GREEN);
+				this->addChild(drawNode, 1000);
+			}
+		}
+	}
+
 }
 
 void HelloWorld::menuCloseCallback(Ref* pSender) {

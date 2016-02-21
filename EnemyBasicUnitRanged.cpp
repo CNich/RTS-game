@@ -1,29 +1,28 @@
-#include "Ninja.h"
+#include "EnemyBasicUnitRanged.h"
 #include "SimpleAudioEngine.h"
 #include "stdlib.h"
-#include "AttackObjectNinjaStar.h"
+#include "RangedAttackObject.h"
 
 USING_NS_CC;
 
-Ninja::Ninja() {
+EnemyBasicUnitRanged::EnemyBasicUnitRanged() {
 }
 
-Ninja::~Ninja() {
+EnemyBasicUnitRanged::~EnemyBasicUnitRanged() {
 	CCLOG("THIS GUY WAS DELETED!!!!!!!!!!!");
 	//delete tpf;
 	//delete lStack;
 	//this->getParent()->removeChild(this);
 }
 
-Ninja* Ninja::create() {
-	Ninja* pSprite = new Ninja();
-	pSprite->initWithFile("Player.png");
+EnemyBasicUnitRanged* EnemyBasicUnitRanged::create() {
+	EnemyBasicUnitRanged* pSprite = new EnemyBasicUnitRanged();
+	pSprite->initWithFile("030.png");
 	srand((unsigned) time(NULL));
 	pSprite->autorelease();
 	pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
 	pSprite->tpf->setTileX(32);
 	pSprite->tpf->setTileY(32);
-	pSprite->bfsMap = new BFS(50, 50);
 	pSprite->setScale(0.5);
 
 	pSprite->scheduleUpdate();
@@ -32,15 +31,14 @@ Ninja* Ninja::create() {
 
 }
 
-Ninja* Ninja::create(cocos2d::Point tmp){
-	Ninja* pSprite = new Ninja();
-	pSprite->initWithFile("Player.png");
+EnemyBasicUnitRanged* EnemyBasicUnitRanged::create(cocos2d::Point tmp){
+	EnemyBasicUnitRanged* pSprite = new EnemyBasicUnitRanged();
+	pSprite->initWithFile("030.png");
 	srand((unsigned) time(NULL));
 	pSprite->autorelease();
 	pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
 	pSprite->tpf->setTileX(32);
 	pSprite->tpf->setTileY(32);
-	pSprite->bfsMap = new BFS(50, 50);
 	pSprite->setScale(0.5);
 
 	pSprite->scheduleUpdate();
@@ -54,20 +52,7 @@ Ninja* Ninja::create(cocos2d::Point tmp){
 
 }
 
-void Ninja::setBFSmap(){
-	bfsMap->setPathFinder(pf);
-	auto L = 50;//pf->getRows();
-	auto W = 50;//pf->getCols();
-	for(int i = 0; i < L; i++){
-		for(int j = 0; j < W; j++){
-			if(pf->checkPermaBlock(i, j)){
-				bfsMap->setBlocked(i, j);
-			}
-		}
-	}
-}
-
-void Ninja::update(float dt) {
+void EnemyBasicUnitRanged::update(float dt) {
 	cocos2d::Point currentEL;
 	if(currentEnemy != 0){
 		currentEL = convertToPf(currentEnemy->getPosition());
@@ -129,7 +114,7 @@ void Ninja::update(float dt) {
 			auto seq = Sequence::create(DelayTime::create(2), callback,
 					rotateTo, rotateBack, nullptr);
 			this->runAction(seq);
-			AttackObjectNinjaStar *atk = AttackObjectNinjaStar::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
+			RangedAttackObject* atk = RangedAttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
 			//AttackObject* atk = AttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
 			atk->initAttack();
 			lStack->reset();
@@ -155,13 +140,17 @@ void Ninja::update(float dt) {
 		//i.e. in between moves, move to next location in stack
 		else if (!lStack->empty() && !moving) {
 			delayedMove();
-			auto p = this->convertToPf(this->getPosition());
-			bfsMap->setStart(p.x, p.y);
-			bfsMap->solve();
 			tempMoving = true;
 			movedYet = true;
 			badMove = 0;
-			CCLOG("BFS SOLVED");
+		}
+
+		else if(lStack->empty() && !moving){
+			auto pos = this->convertToPf(this->getPosition());
+			char* dir = pf->getBFSDir(pos.x, pos.y);
+			CCLOG("%s %f, %f", dir, pf->getBFSParent(pos.x, pos.y).x, pf->getBFSParent(pos.x, pos.y).y);
+
+			lStack->addFront(pf->getBFSParent(pos.x, pos.y));
 		}
 
 		else if(goalPositionAsolve){
@@ -213,14 +202,14 @@ void Ninja::update(float dt) {
 	}
 }
 
-void Ninja::attack(BasicUnit * attacker, int damage, char attackType){
+void EnemyBasicUnitRanged::attack(BasicUnit * attacker, int damage, char attackType){
 	health -= damage;
-	CCLOG("%p Ninja WAS ATTACKEDDDD for %d damage", this, damage);
-	CCLOG("%p's (Ninja) health: %d", this, health);
+	CCLOG("%p EnemyBasicUnitRanged WAS ATTACKEDDDD for %d damage", this, damage);
+	CCLOG("%p's (EnemyBasicUnitRanged) health: %d", this, health);
 }
 
-//Ranged
-bool Ninja::enemyIsAttackable(){
+//Melee
+bool EnemyBasicUnitRanged::enemyIsAttackable(){
 	if(this->getCurrentEnemy() != 0 && unitToUnitDistance(this, getCurrentEnemy()) <= 6){
 		return true;
 	}
