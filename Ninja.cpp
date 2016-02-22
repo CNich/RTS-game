@@ -156,12 +156,12 @@ void Ninja::update(float dt) {
 		else if (!lStack->empty() && !moving) {
 			delayedMove();
 			auto p = this->convertToPf(this->getPosition());
-			bfsMap->setStart(p.x, p.y);
+			CCLOG("!lStack->empty() && !moving: %f %f", p.x, p.y);
+			bfsMap->setStart((int)p.x, (int)p.y);
 			bfsMap->solve();
 			tempMoving = true;
 			movedYet = true;
 			badMove = 0;
-			CCLOG("BFS SOLVED");
 		}
 
 		else if(goalPositionAsolve){

@@ -147,9 +147,10 @@ void EnemyBasicUnit::update(float dt) {
 		else if(lStack->empty() && !moving){
 			auto pos = this->convertToPf(this->getPosition());
 			char* dir = pf->getBFSDir(pos.x, pos.y);
-			CCLOG("%s %f, %f", dir, pf->getBFSParent(pos.x, pos.y).x, pf->getBFSParent(pos.x, pos.y).y);
-
-			lStack->addFront(pf->getBFSParent(pos.x, pos.y));
+			//CCLOG("%s %f, %f", dir, pf->getBFSParent(pos.x, pos.y).x, pf->getBFSParent(pos.x, pos.y).y);
+			//if(dir == "u" || dir == "d" || dir == "r" || dir == "l"){
+				lStack->addFront(pf->getBFSParent(pos.x, pos.y));
+			//}
 		}
 	}
 

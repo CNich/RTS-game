@@ -169,6 +169,7 @@ bool HelloWorld::init() {
 						i->goalPosition.x = tpos.x;
 						i->goalPosition.y = tpos.y;
 						i->setAsovle();
+						this->drawBFSMap();
 					}
 					/*for(RangedBasicUnit *i : rangedBasicUnitVec){
 						//i->ASolve(tpos.x, tpos.y);
@@ -292,8 +293,8 @@ bool HelloWorld::init() {
 	ninja->setBFSmap();
 	ninja->BFSInit(bfsp.x, bfsp.y);
 
-	int t1 = 1;
-	int t2 = 3;
+	int t1 = 15;
+	int t2 = 35;
 
 	for(int i=0; i < t1; i++){
 		auto p = _plpos;
@@ -424,7 +425,7 @@ bool HelloWorld::init() {
 		r->setPf(pf);
 	}
 
-	this->drawBFSMap();
+	//this->drawBFSMap();
 
 	return true;
 
@@ -806,31 +807,65 @@ void HelloWorld::drawBFSMap() {
 
 	for (int i = 0; i < 50; i++) {
 		for (int j = 0; j < 50; j++) {
-			if (pf->getBFSDir(i, j) == "u") {
-				auto arrow = Sprite::create("up.png");
-				arrow->setPosition(i * 32 + 16, j * 32 + 16);
-				this->addChild(arrow, 1);
+			auto t = pf->getBFSParent(i, j);
+			//auto t = pf->getBFSDir(i, j);
+			cocos2d::Point p;
+			p.x = 16 + 32 * i;
+			p.y = 16 + 32 * j;
+
+			CCLOG("%f %f, %f %f", p.x, p.y, t.x, t.y);
+
+			//up
+			if(t.x < p.x){
+				auto drawNode = DrawNode::create();
+				drawNode->drawDot(Vec2(16 + i * 32, 16 + j * 32), 16, Color4F::BLUE);
+				this->addChild(drawNode, 1000);
 			}
-			else if(pf->getBFSDir(i, j) == "d"){
-				auto arrow = Sprite::create("up.png");
-				arrow->setPosition(i * 32 + 16, j * 32 + 16);
-				this->addChild(arrow, 1);
+			//down
+			else if(t.x > p.x){
+				auto drawNode = DrawNode::create();
+				drawNode->drawDot(Vec2(16 + i * 32, 16 + j * 32), 16, Color4F::GRAY);
+				this->addChild(drawNode, 1000);
 			}
-			else if(pf->getBFSDir(i, j) == "l"){
-				auto arrow = Sprite::create("left.png");
-				arrow->setPosition(i * 32 + 16, j * 32 + 16);
-				this->addChild(arrow, 1);
-			}
-			else if(pf->getBFSDir(i, j) == "r"){
-				auto arrow = Sprite::create("right.png");
-				arrow->setPosition(i * 32 + 16, j * 32 + 16);
-				this->addChild(arrow, 1);
-			}
-			else{
+			//left
+			else if(t.y < p.y){
 				auto drawNode = DrawNode::create();
 				drawNode->drawDot(Vec2(16 + i * 32, 16 + j * 32), 16, Color4F::GREEN);
 				this->addChild(drawNode, 1000);
 			}
+			//right
+			else if(t.y > p.y){
+				auto drawNode = DrawNode::create();
+				drawNode->drawDot(Vec2(16 + i * 32, 16 + j * 32), 16, Color4F::RED);
+				this->addChild(drawNode, 1000);
+			}
+
+			/*if (pf->getBFSDir(i, j) == "u") {
+				auto drawNode = DrawNode::create();
+				drawNode->drawDot(Vec2(16 + i * 32, 16 + j * 32), 16, Color4F::BLUE);
+				this->addChild(drawNode, 1000);
+			}
+			else if(pf->getBFSDir(i, j) == "d"){
+				auto drawNode = DrawNode::create();
+				drawNode->drawDot(Vec2(16 + i * 32, 16 + j * 32), 16, Color4F::GRAY);
+				this->addChild(drawNode, 1000);
+			}
+			else if(pf->getBFSDir(i, j) == "l"){
+				auto drawNode = DrawNode::create();
+				drawNode->drawDot(Vec2(16 + i * 32, 16 + j * 32), 16, Color4F::GREEN);
+				this->addChild(drawNode, 1000);
+			}
+			else if(pf->getBFSDir(i, j) == "r"){
+				auto drawNode = DrawNode::create();
+				drawNode->drawDot(Vec2(16 + i * 32, 16 + j * 32), 16, Color4F::RED);
+				this->addChild(drawNode, 1000);
+			}
+			else{
+				auto drawNode = DrawNode::create();
+				drawNode->drawDot(Vec2(16 + i * 32, 16 + j * 32), 16, Color4F::BLACK);
+				this->addChild(drawNode, 1000);
+			}
+			*/
 		}
 	}
 

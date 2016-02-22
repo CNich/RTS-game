@@ -6,9 +6,9 @@ BFS::BFS(int l, int w)
 	L = l;
 	W = w;
 	map.resize(l);
-	for (int i = 0; i < l; i++){
+	for (int i = 0; i < L; i++){
 		map[i].resize(w);
-		for (int j = 0; j < w; j++){
+		for (int j = 0; j < W; j++){
 			map[i][j].parent.x = i;
 			map[i][j].parent.y = j;
 			map[i][j].dir = 0;
@@ -19,8 +19,18 @@ BFS::BFS(int l, int w)
 }
 
 void BFS::solve(){
+	CCLOG("BFS SOLVING");
+	for (int i = 0; i < L; i++){
+		for (int j = 0; j < W; j++){
+			map[i][j].parent.x = i;
+			map[i][j].parent.y = j;
+			map[i][j].dir = 0;
+			map[i][j].checked = false;
+		}
+	}
 	queueBFS->addBack(start);
 	setChecked(start.x, start.y);
+	CCLOG("solve start: %d, %d", start.x, start.y);
 	while (!queueBFS->empty()){
 		mpair n;
 
@@ -31,6 +41,7 @@ void BFS::solve(){
 		else {
 			n = queueBFS->get(1)->data;
 		}
+		CCLOG("%d, %d", n.x, n.y);
 
 		queueBFS->removeFront();
 		if (n.x >= 0 && n.x < L && n.y >= 0 && n.y < W){
@@ -61,6 +72,7 @@ void BFS::solve(){
 			*/
 		}
 	}
+	CCLOG("BFS SOLVED");
 }
 
 void BFS::checkNeighbour(int dx, int dy, mpair n, char* dir){
@@ -69,7 +81,7 @@ void BFS::checkNeighbour(int dx, int dy, mpair n, char* dir){
 			//cout << n.x << " " << n.y << "\t" << n.x + dx << " " << n.y + dy << endl;
 			map[n.x + dx][n.y + dy].parent.x = n.x;
 			map[n.x + dx][n.y + dy].parent.y = n.y;
-			pf->setBFSParent(n.x + dx, n.y + dy);
+			pf->setBFSParent(n.x, n.y, dx, dy);
 			map[n.x + dx][n.y + dy].checked = true;
 			map[n.x + dx][n.y + dy].dir = dir;
 			pf->setBFSDir(n.x + dx, n.y + dy, dir);
@@ -77,6 +89,8 @@ void BFS::checkNeighbour(int dx, int dy, mpair n, char* dir){
 			addToQueue.x = n.x + dx;
 			addToQueue.y = n.y + dy;
 			queueBFS->addBack(addToQueue);
+
+			CCLOG("%s", dir);
 
 			//print();
 			//std::cin.ignore();

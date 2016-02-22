@@ -23,7 +23,7 @@ class BFS {
 public:
 	BFS(int l, int w);
 	void setBlocked(int x, int y){ map[x][y].blocked = true; };
-	void setStart(int x, int y) { start.x = x; start.y = y; };
+	void setStart(int x, int y) { start.x = x; start.y = y; CCLOG("setStart: %f, %f", start.x, start.y); CCLOG("setStart x y: %f, %f", x, y); };
 	void setChecked(int x, int y) { map[x][y].checked = true; };
 	bool getChecked(int x, int y) { return map[x][y].checked; };
 
@@ -33,12 +33,12 @@ public:
 	void print();
 	BFSMapNode getNode(int x, int y) { return map[x][y]; };
 	~BFS();
+	mpair start;
 
 private:
 	std::vector < std::vector <BFSMapNode> > map;
 	LinkedList<mpair> *queueBFS = new LinkedList<mpair>;
 	void checkNeighbour(int dx, int dy, mpair n, char* dir);
-	mpair start;
 	int L;
 	int W;
 

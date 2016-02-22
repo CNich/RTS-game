@@ -13,7 +13,7 @@ public:
 	
 
 	//void attack(BasicUnit *attacker, int damage, char attackType);
-	int attackRange = 7;
+	int attackRange = 20;
 	virtual void attack(BasicUnit *attacker, int damage, char attackType);
 
 protected:

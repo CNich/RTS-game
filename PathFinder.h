@@ -26,7 +26,7 @@ public:
 	void print();
 	void permaBlock(int x, int y);
 	bool checkPermaBlock(int x, int y) { return map[x][y].permaBlocked; };
-	void setBFSParent(int x, int y) { map[x][y].bfsParent.x = x; map[x][y].bfsParent.y = y; };
+	void setBFSParent(int x, int y, int dx, int dy);
 	void setBFSDir(int x, int y, char *dir) { map[x][y].dir = dir; };
 	char* getBFSDir(int x, int y) { return map[x][y].dir; };
 	cocos2d::Point getBFSParent(int x, int y);
@@ -184,6 +184,12 @@ cocos2d::Point PathFinder<T>::getBFSParent(int x, int y){
 	temp.x = 16 + map[x][y].bfsParent.x * 32;
 
 	return temp;
+};
+
+template<class T>
+void PathFinder<T>::setBFSParent(int x, int y, int dx, int dy) {
+	map[x + dx][y + dy].bfsParent.x = x;
+	map[x + dx][y + dy].bfsParent.y = y;
 };
 
 template<class T>

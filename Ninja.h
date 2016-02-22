@@ -12,8 +12,8 @@ public:
 	static Ninja* create();
 	static Ninja* create(cocos2d::Point tmp);
 
-	void setBFSmap();
-	void BFSInit(int x, int y){ bfsMap->setStart(x, y); bfsMap->solve();};
+	virtual void setBFSmap();
+	virtual void BFSInit(int x, int y){ bfsMap->setStart(x, y); bfsMap->solve();};
 
 	//void attack(BasicUnit *attacker, int damage, char attackType);
 	int attackRange = 6;
