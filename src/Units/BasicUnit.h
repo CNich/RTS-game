@@ -2,10 +2,10 @@
 #define __BASIC_UNIT_H__
 
 #include "cocos2d.h"
-#include "pathNode.h"
-#include "PathFinder.h"
-#include "HeapPathFinder.h"
-#include "GlobalVariables.h"
+#include "src/Utilities/pathNode.h"
+#include "src/Utilities/PathFinder.h"
+#include "src/Utilities/HeapPathFinder.h"
+#include "src/Utilities/GlobalVariables.h"
 #include <vector>
 
 class BasicUnit : public cocos2d::Sprite

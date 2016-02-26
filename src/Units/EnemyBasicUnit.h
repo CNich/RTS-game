@@ -1,7 +1,7 @@
 #ifndef __ENEMY_BASIC_UNIT__
 #define __ENEMY_BASIC_UNIT__
 
-#include "BasicUnit.h"
+#include "src/Units/BasicUnit.h"
 
 class EnemyBasicUnit : public BasicUnit
 {

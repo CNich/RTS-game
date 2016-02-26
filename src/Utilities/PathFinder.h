@@ -1,9 +1,9 @@
 #ifndef __PATHFINDER_H__
 #define __PATHFINDER_H__
 
-#include "pathNode.h"
-#include "LinkedList.h"
-#include "HeapPathFinder.h"
+#include "src/Utilities/pathNode.h"
+#include "src/Utilities/LinkedList.h"
+#include "src/Utilities/HeapPathFinder.h"
 #include "cocos2d.h"
 #include <vector>
 

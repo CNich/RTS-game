@@ -1,5 +1,5 @@
-#include "AttackObjectNinjaStar.h"
-#include "BasicUnit.h"
+#include "src/AttackObjects/AttackObjectNinjaStar.h"
+#include "src/Units/BasicUnit.h"
 
 USING_NS_CC;
 

@@ -1,7 +1,7 @@
-#include "EnemyBasicUnitRanged.h"
+#include "src/Units/EnemyBasicUnitRanged.h"
 #include "SimpleAudioEngine.h"
 #include "stdlib.h"
-#include "RangedAttackObject.h"
+#include "src/AttackObjects/RangedAttackObject.h"
 
 USING_NS_CC;
 

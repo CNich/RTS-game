@@ -1,5 +1,5 @@
-#include "AttackObject.h"
-#include "BasicUnit.h"
+#include "src/AttackObjects/AttackObject.h"
+#include "src/Units/BasicUnit.h"
 
 
 AttackObject::AttackObject() {

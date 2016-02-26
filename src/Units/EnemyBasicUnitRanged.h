@@ -1,7 +1,7 @@
 #ifndef __ENEMY_BASIC_UNIT_RANGED__
 #define __ENEMY_BASIC_UNIT_RANGED__
 
-#include "BasicUnit.h"
+#include "src/Units/BasicUnit.h"
 
 class EnemyBasicUnitRanged : public BasicUnit
 {

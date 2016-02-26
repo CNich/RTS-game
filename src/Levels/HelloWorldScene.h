@@ -2,16 +2,16 @@
 #define __HELLOWORLD_SCENE_H__
 
 #include "cocos2d.h"
-#include "LinkedList.h"
-#include "pathNode.h"
-#include "PathFinder.h"
-#include "HeapPathFinder.h"
-#include "GlobalVariables.h"
-#include "BasicUnit.h"
-#include "EnemyBasicUnit.h"
-#include "RangedBasicUnit.h"
-#include "EnemyBasicUnitRanged.h"
-#include "Ninja.h"
+#include "src/Utilities/LinkedList.h"
+#include "src/Utilities/pathNode.h"
+#include "src/Utilities/PathFinder.h"
+#include "src/Utilities/HeapPathFinder.h"
+#include "src/Utilities/GlobalVariables.h"
+#include "src/Units/BasicUnit.h"
+#include "src/Units/EnemyBasicUnit.h"
+#include "src/Units/RangedBasicUnit.h"
+#include "src/Units/EnemyBasicUnitRanged.h"
+#include "src/Units/Ninja.h"
 #include <vector>
 
 #define SCORE_FONT_SIZE 0.1

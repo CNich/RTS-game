@@ -1,9 +1,9 @@
 #ifndef __RANGEDRangedAttackObject_H__
 #define __RANGEDRangedAttackObject_H__
 
-#include "GlobalVariables.h"
-#include "AttackObject.h"
-#include "pathNode.h"
+#include "src/Utilities/GlobalVariables.h"
+#include "src/AttackObjects/AttackObject.h"
+#include "src/Utilities/pathNode.h"
 #include "cocos2d.h"
 
 class RangedAttackObject : public AttackObject {

@@ -1,7 +1,7 @@
 #ifndef __GLOBAL_VARIABLES_H__
 #define __GLOBAL_VARIABLES_H__
 
-#include "PathFinder.h"
+#include "src/Utilities/PathFinder.h"
 #include <functional>
 
 class BasicUnit;

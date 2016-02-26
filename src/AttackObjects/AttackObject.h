@@ -1,8 +1,8 @@
 #ifndef __ATTACKOBJECT_H__
 #define __ATTACKOBJECT_H__
 
-#include "GlobalVariables.h"
-#include "pathNode.h"
+#include "src/Utilities/GlobalVariables.h"
+#include "src/Utilities/pathNode.h"
 #include "cocos2d.h"
 
 class AttackObject : public cocos2d::Sprite {

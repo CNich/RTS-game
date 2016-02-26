@@ -1,7 +1,7 @@
 #ifndef __HEAPPATHFINDER_H__
 #define __HEAPPATHFINDER_H__
 
-#include "pathNode.h"
+#include "src/Utilities/pathNode.h"
 #include <vector>
 
 class HeapPathFinder {

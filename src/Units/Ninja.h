@@ -1,8 +1,8 @@
 #ifndef __NINJA__
 #define __NINJA__
 
-#include "BasicUnit.h"
-#include "BFS.h"
+#include "src/Units/BasicUnit.h"
+#include "src/Utilities/BFS.h"
 
 class Ninja : public BasicUnit
 {

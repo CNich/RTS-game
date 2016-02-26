@@ -3,9 +3,9 @@
 
 #include <vector>
 #include <iostream>
-#include "LinkedList.h"
-#include "PathFinder.h"
-#include "BasicUnit.h"
+#include "src/Utilities/LinkedList.h"
+#include "src/Utilities/PathFinder.h"
+#include "src/Units/BasicUnit.h"
 
 struct mpair{
 	int x;

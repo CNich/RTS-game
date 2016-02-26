@@ -1,9 +1,9 @@
-#include "BasicUnit.h"
+#include "src/Units/BasicUnit.h"
 #include "SimpleAudioEngine.h"
 #include "stdlib.h"
-#include "AttackObject.h"
-#include "RangedAttackObject.h"
-#include "GlobalVariables.h"
+#include "src/AttackObjects/AttackObject.h"
+#include "src/AttackObjects/RangedAttackObject.h"
+#include "src/Utilities/GlobalVariables.h"
 
 #include <AudioEngine.h>
 

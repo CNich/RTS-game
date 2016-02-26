@@ -1,9 +1,9 @@
 #ifndef __NINJA_STAR_ATTACK_OBJECT__
 #define __NINJA_STAR_ATTACK_OBJECT__
 
-#include "GlobalVariables.h"
-#include "AttackObject.h"
-#include "pathNode.h"
+#include "src/Utilities/GlobalVariables.h"
+#include "src/AttackObjects/AttackObject.h"
+#include "src/Utilities/pathNode.h"
 #include "cocos2d.h"
 
 class AttackObjectNinjaStar : public AttackObject {
