@@ -19,6 +19,11 @@ public:
 	void setTileY(int y);
 	void setOffX(int x);
 	void setOffY(int y);
+	int getTileX(){return tileX;};
+	int getTileY(){return tileY;};
+	int getOffX(){ return offX;};
+	int getOffY(){ return offY;};
+
 	//~PathFinder();
 	PathFinder create();
 	void set(int x, int y, pathNode a);

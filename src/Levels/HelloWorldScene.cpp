@@ -34,6 +34,7 @@ bool HelloWorld::init() {
 
 	//cocos2d::experimental::AudioEngine::setMaxAudioInstance(1);
 
+	/**********************************************************************/
 	//load tilemap
 	std::string file = "TileMap.tmx";
 	auto str =
@@ -54,6 +55,19 @@ bool HelloWorld::init() {
 	CCASSERT(NULL != objects, "'Object-Player' object group not found");
 	auto playerShowUpPoint = objects->getObject("PlayerShowUpPoint");
 	CCASSERT(!playerShowUpPoint.empty(), "PlayerShowUpPoint object not found");
+
+	/**********************************************************************/
+
+	__String *ts2 = __String::createWithFormat("%2.0f %2.0f, %2.0f %2.0f",
+			_tileMap->getMapSize().height, _tileMap->getMapSize().width,
+			_tileMap->getTileSize().height, _tileMap->getTileSize().width);
+
+	pf = new PathFinder<BasicUnit>(_tileMap->getMapSize().height,
+			_tileMap->getMapSize().width);
+	pf->setTileX(_tileMap->getTileSize().height);
+	pf->setTileY(_tileMap->getTileSize().width);
+
+	this->setMap();
 
 	int x = playerShowUpPoint["x"].asInt();
 	int y = playerShowUpPoint["y"].asInt();
@@ -84,23 +98,14 @@ bool HelloWorld::init() {
 
 	setViewPointCenter(_plpos);
 
+	//create and set up sprites for controlling unit movement
+	auto sprite1 = setMovementSprites("Cyansquare.png", Point(x + 16, y + 16));
+	auto sprite2 = setMovementSprites("Redsquare.png", Point(x + 16, y + 48));
+	auto sprite3 = setMovementSprites("Yellowsquare.png", Point(x + 48, y + 48));
+
 	/*********************************************************************************************/
 	//Event Listener: http://www.cocos2d-x.org/wiki/EventDispatcher_Mechanism
 	/*********************************************************************************************/
-	auto sprite1 = Sprite::create("Cyansquare.png");
-	sprite1->setPosition(Point(x + 16, y + 16));
-	sprite1->setScale(0.5);
-	addChild(sprite1, 1);
-
-	auto sprite2 = Sprite::create("Redsquare.png");
-	sprite2->setPosition(Point(x + 48, y + 16));
-	sprite2->setScale(0.5);
-	addChild(sprite2, 1);
-
-	auto sprite3 = Sprite::create("Yellowsquare.png");
-	sprite3->setPosition(Point(x + 48, y + 48));
-	sprite3->setScale(0.5);
-	addChild(sprite3, 1);
 
 	//Create a "one by one" touch event listener (processes one touch at a time)
 	auto listener1 = EventListenerTouchOneByOne::create();
@@ -156,52 +161,17 @@ bool HelloWorld::init() {
 
 			if (tpos.x >= 0 && tpos.x < 50 && tpos.y >= 0 && tpos.y < 50) {
 
-				pf->setTileX(32);
-				pf->setTileY(32);
-				pf->setOffX(16);
-				pf->setOffY(16);
-
-				lStack = pf->solve();
-
 				if(target == sprite1){
 					for(BasicUnit *i : bvec){
-						//i->ASolve(tpos.x, tpos.y);
-						i->goalPosition.x = tpos.x;
-						i->goalPosition.y = tpos.y;
-						i->setAsovle();
-						this->drawBFSMap();
+						goToMovementSprite(i, tpos);
 					}
-					/*for(RangedBasicUnit *i : rangedBasicUnitVec){
-						//i->ASolve(tpos.x, tpos.y);
-						i->goalPosition.x = tpos.x;
-						i->goalPosition.y = tpos.y;
-						i->setAsovle();
-					}*/
 				} else if(target == sprite2){
 					for(RangedBasicUnit *i : rangedBasicUnitVec){
-						//i->ASolve(tpos.x, tpos.y);
-						i->goalPosition.x = tpos.x;
-						i->goalPosition.y = tpos.y;
-						i->setAsovle();
+						goToMovementSprite(i, tpos);
 					}
-					/*for(BasicUnit *i : bvec2){
-						//i->ASolve(tpos.x, tpos.y);
-						i->goalPosition.x = tpos.x;
-						i->goalPosition.y = tpos.y;
-						i->setAsovle();
-					}
-					for(RangedBasicUnit *i : rangedBasicUnitVec2){
-						//i->ASolve(tpos.x, tpos.y);
-						i->goalPosition.x = tpos.x;
-						i->goalPosition.y = tpos.y;
-						i->setAsovle();
-					}
-					*/
 				}
 				else{
-					ninja->goalPosition.x = tpos.x;
-					ninja->goalPosition.y = tpos.y;
-					ninja->setAsovle();
+					goToMovementSprite(ninja, tpos);
 				}
 			}
 		};
@@ -250,7 +220,6 @@ bool HelloWorld::init() {
 			lStack->empty(), lStack->Hempty(), lStack->Tempty());
 
 	Size visibleSize = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	auto winSize = Director::getInstance()->getWinSize() * this->getScale();
 	scoreLabel = Label::createWithTTF(tempScore->getCString(),
 			"fonts/Marker Felt.ttf", winSize.height * SCORE_FONT_SIZE);
@@ -259,18 +228,6 @@ bool HelloWorld::init() {
 	scoreLabel->setPosition(Point(winSize.width / 2, winSize.height));
 
 	this->addChild(scoreLabel, 10000);
-
-	__String *ts2 = __String::createWithFormat("%2.0f %2.0f, %2.0f %2.0f",
-			_tileMap->getMapSize().height, _tileMap->getMapSize().width,
-			_tileMap->getTileSize().height, _tileMap->getTileSize().width);
-
-	pf = new PathFinder<BasicUnit>(_tileMap->getMapSize().height,
-			_tileMap->getMapSize().width);
-	pf->setTileX(_tileMap->getTileSize().height);
-	pf->setTileX(_tileMap->getTileSize().width);
-
-	this->setMap();
-	//this->setBFSMap();
 
 	cocos2d::Label *tileAtrs = Label::createWithTTF(ts2->getCString(),
 			"fonts/Marker Felt.ttf", winSize.height * SCORE_FONT_SIZE);
@@ -282,13 +239,10 @@ bool HelloWorld::init() {
 	ninjaPos.x = _plpos.x + 320;
 	ninjaPos.y = _plpos.y  - 32 * 6;
 	ninja = Ninja::create(ninjaPos);
-	this->addChild(ninja, 2);
-	ninja->setBlockageMap(_blockage);
-	ninja->setForegroundMap(_foreground);
-	ninja->setTileMap(_tileMap);
-	ninja->setTeam(0);
-	ninja->setPf(pf);
+	initUnit(ninja, 0);
 	ninja->setScale(1.5);
+
+	//init enemy following
 	auto bfsp = ninja->convertToPf(ninja->getPosition());
 	ninja->setBFSmap();
 	ninja->BFSInit(bfsp.x, bfsp.y);
@@ -298,137 +252,109 @@ bool HelloWorld::init() {
 
 	for(int i=0; i < t1; i++){
 		auto p = _plpos;
-		p.x = _plpos.x + 32 * i;
-		p.y = _plpos.y  - 32 * 11;
+		p.x = _plpos.x + pf->getTileX() * i;
+		p.y = _plpos.y  - pf->getTileY() * 11;
 		BasicUnit * r = BasicUnit::create(p);
 		bvec.pushBack(r);
-		//r->setPosition(_plpos.x + 32 * i, _plpos.y  - 32 * 15 );
-		this->addChild(r, 2);
-		r->setBlockageMap(_blockage);
-		r->setForegroundMap(_foreground);
-		r->setTileMap(_tileMap);
-		r->setTeam(0);
-		r->setPf(pf);
+		initUnit(r, 0);
 	}
 
 	for(int i=0; i < t1; i++){
 		auto p = _plpos;
-		p.x = _plpos.x + 32 * i;
-		p.y = _plpos.y  - 32 * 10;
+		p.x = _plpos.x + pf->getTileX() * i;
+		p.y = _plpos.y  - pf->getTileY() * 10;
 		BasicUnit * r = BasicUnit::create(p);
-		//RangedBasicUnit * r = RangedBasicUnit::create(p);
 		bvec.pushBack(r);
-		//r->setPosition(_plpos.x + 32 * i, _plpos.y  - 32 * 15 );
-		this->addChild(r, 2);
-		r->setBlockageMap(_blockage);
-		r->setForegroundMap(_foreground);
-		r->setTileMap(_tileMap);
-		r->setTeam(0);
-		r->setPf(pf);
+		initUnit(r, 0);
 	}
 
 	for(int i=0; i < t1; i++){
 		auto p = _plpos;
-		p.x = _plpos.x + 32 * i;
-		p.y = _plpos.y  - 32 * 9;
+		p.x = _plpos.x + pf->getTileX() * i;
+		p.y = _plpos.y  - pf->getTileY() * 9;
 		RangedBasicUnit * r = RangedBasicUnit::create(p);
 		rangedBasicUnitVec.pushBack(r);
-		//r->setPosition(_plpos.x + 32 * i, _plpos.y  - 32 * 15 );
-		this->addChild(r, 2);
-		r->setBlockageMap(_blockage);
-		r->setForegroundMap(_foreground);
-		r->setTileMap(_tileMap);
-		r->setTeam(0);
-		r->setPf(pf);
+		initUnit(r, 0);
 	}
 
 	for(int i=0; i < t1; i++){
 		auto p = _plpos;
-		p.x = _plpos.x + 32 * i;
-		p.y = _plpos.y  - 32 * 8;
+		p.x = _plpos.x + pf->getTileX() * i;
+		p.y = _plpos.y  - pf->getTileY() * 8;
 		RangedBasicUnit * r = RangedBasicUnit::create(p);
 		rangedBasicUnitVec.pushBack(r);
-		//RangedBasicUnit * r = RangedBasicUnit::create(p);
-		//r->setPosition(_plpos.x + 32 * i, _plpos.y  - 32 * 15 );
-		this->addChild(r, 2);
-		r->setBlockageMap(_blockage);
-		r->setForegroundMap(_foreground);
-		r->setTileMap(_tileMap);
-		r->setTeam(0);
-		r->setPf(pf);
+		initUnit(r, 0);
 	}
 
 	for(int i=0; i < t2; i++){
 		auto p = _plpos;
-		p.x = _plpos.x - 320 + 32 * i;
-		p.y = _plpos.y  - 32 * 13;
+		p.x = _plpos.x + pf->getTileX() * (i - 10);
+		p.y = _plpos.y  - pf->getTileY() * 13;
 		EnemyBasicUnit * r = EnemyBasicUnit::create(p);
 		r->setColor(Color3B::BLUE);
 		bvec2.pushBack(r);
-		//r->setPosition(_plpos.x + 32 * i, _plpos.y  - 32 * 15 - 32 * 4);
-		this->addChild(r, 2);
-		r->setBlockageMap(_blockage);
-		r->setForegroundMap(_foreground);
-		r->setTileMap(_tileMap);
-		r->setTeam(1);
-		r->setPf(pf);
+		initUnit(r, 1);
 	}
 
 	for(int i=0; i < t2; i++){
 		auto p = _plpos;
-		p.x = _plpos.x - 320 + 32 * i;
-		p.y = _plpos.y  - 32 * 15;
+		p.x = _plpos.x + pf->getTileX() * (i - 10);
+		p.y = _plpos.y  - pf->getTileY() * 15;
 		EnemyBasicUnit * r = EnemyBasicUnit::create(p);
 		r->setColor(Color3B::BLUE);
-		//RangedBasicUnit * r = RangedBasicUnit::create(p);
 		bvec2.pushBack(r);
-		//r->setPosition(_plpos.x + 32 * i, _plpos.y  - 32 * 15 - 32 * 4);
-		this->addChild(r, 2);
-		r->setBlockageMap(_blockage);
-		r->setForegroundMap(_foreground);
-		r->setTileMap(_tileMap);
-		r->setTeam(1);
-		r->setPf(pf);
+		initUnit(r, 1);
 	}
 
 
 	for(int i=0; i < t2; i++){
 		auto p = _plpos;
-		p.x = _plpos.x - 320 + 32 * i;
-		p.y = _plpos.y  - 32 * 17;
+		p.x = _plpos.x + pf->getTileX() * (i - 10);
+		p.y = _plpos.y  - pf->getTileY() * 17;
 		EnemyBasicUnitRanged * r = EnemyBasicUnitRanged::create(p);
 		rangedBasicUnitVec2.pushBack(r);
 		r->setColor(Color3B::BLUE);
-		//r->setPosition(_plpos.x + 32 * i, _plpos.y  - 32 * 15 );
-		this->addChild(r, 2);
-		r->setBlockageMap(_blockage);
-		r->setForegroundMap(_foreground);
-		r->setTileMap(_tileMap);
-		r->setTeam(1);
-		r->setPf(pf);
+		initUnit(r, 1);
 	}
 
 	for(int i=0; i < t2; i++){
 		auto p = _plpos;
-		p.x = _plpos.x - 320 + 32 * i;
-		p.y = _plpos.y  - 32 * 19;
+		p.x = _plpos.x + pf->getTileX() * (i - 10);
+		p.y = _plpos.y  - pf->getTileY() * 19;
 		EnemyBasicUnitRanged * r = EnemyBasicUnitRanged::create(p);
 		rangedBasicUnitVec2.pushBack(r);
 		r->setColor(Color3B::BLUE);
-		//RangedBasicUnit * r = RangedBasicUnit::create(p);
-		//r->setPosition(_plpos.x + 32 * i, _plpos.y  - 32 * 15 );
-		this->addChild(r, 2);
-		r->setBlockageMap(_blockage);
-		r->setForegroundMap(_foreground);
-		r->setTileMap(_tileMap);
-		r->setTeam(1);
-		r->setPf(pf);
+		initUnit(r, 1);
 	}
 
 	//this->drawBFSMap();
 
 	return true;
 
+}
+
+cocos2d::Sprite * HelloWorld::setMovementSprites(char *str, cocos2d::Point pt){
+	auto spr = cocos2d::Sprite::create(str);
+	spr->setPosition(pt);
+	spr->setScale(0.5);
+	this->addChild(spr, 1);
+	return spr;
+}
+
+void HelloWorld::goToMovementSprite(BasicUnit *i, cocos2d::Point tpos){
+	i->goalPosition.x = tpos.x;
+	i->goalPosition.y = tpos.y;
+	i->setAsovle();
+}
+
+void HelloWorld::initUnit(BasicUnit *r, char team){
+	this->addChild(r, 2);
+	//this->setPosition(p);
+	r->setBlockageMap(_blockage);
+	r->setForegroundMap(_foreground);
+	r->setTileMap(_tileMap);
+	r->setTeam(team);
+	r->setPf(pf);
 }
 
 void HelloWorld::setViewPointCenter(Point position) {
@@ -509,63 +435,6 @@ void HelloWorld::onTouchMoved(Touch *touch, Event *unused_event) {
 		}
 		moveDiff = cdiff;
 	}
-}
-
-void HelloWorld::onTouchesEnded(const std::vector<Touch *> &touches,
-		Event *unused_event) {
-	numTouch--;
-}
-
-void HelloWorld::onTouchesBegan(const std::vector<Touch *> &touches,
-		Event *unused_event) {
-	numTouch++;
-	touchBeganPoint = touches[0]->getLocation();
-}
-
-
-void HelloWorld::setPlayerPosition(Point position) {
-	if (!moving) {
-		Point tileCoord = this->tileCoordForPosition(position);
-		int tileGid = _blockage->getTileGIDAt(tileCoord);
-
-		if (tileGid) {
-			auto properties =
-					_tileMap->getPropertiesForGID(tileGid).asValueMap();
-			if (!properties.empty()) {
-				auto collision = properties["Collidable"].asString();
-				if ("True" == collision) {
-					SimpleAudioEngine::getInstance()->playEffect("error.mp3");
-					return;
-				}
-				auto collectable = properties["Collectable"].asString();
-				if ("True" == collectable) {
-					_blockage->removeTileAt(tileCoord);
-					_foreground->removeTileAt(tileCoord);
-					//_player->setPosition(position);
-					this->_numCollected++;
-					this->_hud->numCollectedChanged(_numCollected);
-					SimpleAudioEngine::getInstance()->playEffect("item.mp3");
-				}
-			}
-		}
-
-		CCFiniteTimeAction* actionMove = CCMoveTo::create(0.2, position);
-
-		auto callback = CallFunc::create([this]() {
-			this->setMoving();
-		});
-
-		moving = true;
-
-		//auto seq = Sequence::create(actionMove, callback, nullptr);
-		//_player->runAction(seq);
-
-	}
-//_player->setPosition(position);
-}
-
-void HelloWorld::setMoving() {
-	moving = false;
 }
 
 void HelloWorld::enemyDistances(float dt){
@@ -650,24 +519,8 @@ void HelloWorld::enemyDistances(float dt){
 
 void HelloWorld::update(float dt) {
 	elapsedTime += dt;
-	if (!lStack->empty() && !moving) {
-		//delayedMove();
-		Point tmp;
-		if (!lStack->get(0)->empty) {
-			tmp = lStack->get(0)->data;
-		} else {
-			tmp = lStack->get(1)->data;
-		}
-	}
 	testCollisions(dt);
 	enemyDistances(dt);
-	__String *tempScore = __String::createWithFormat("%i %i, h:%i t:%i", moving,
-			lStack->empty(), lStack->Hempty(), lStack->Tempty());
-	scoreLabel->setString(tempScore->getCString());
-}
-
-void HelloWorld::addToStack(Point position) {
-	lStack->addBack(position);
 }
 
 Point HelloWorld::tileCoordForPosition(Point position) {
@@ -813,7 +666,7 @@ void HelloWorld::drawBFSMap() {
 			p.x = 16 + 32 * i;
 			p.y = 16 + 32 * j;
 
-			CCLOG("%f %f, %f %f", p.x, p.y, t.x, t.y);
+			//CCLOG("%f %f, %f %f", p.x, p.y, t.x, t.y);
 
 			//up
 			if(t.x < p.x){

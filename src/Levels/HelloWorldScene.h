@@ -40,14 +40,12 @@ private:
 	cocos2d::Point _bottomLeft;
 	cocos2d::Point _bottomRight;
 	//cocos2d::DrawNode drawNode;
-	void setMoving();
+
 	bool moving = false;
 	LinkedList<cocos2d::Point> * lStack = new LinkedList<cocos2d::Point>;
-	void addToStack(cocos2d::Point);
 	void update(float dt);
 	cocos2d::Label *scoreLabel;
 	void delayedMove();
-	void setPlayerPosition(cocos2d::Point position);
 	void setMap();
 	void checkMap();
 	bool firstTouch = false;
@@ -71,6 +69,11 @@ private:
 
 	void drawBFSMap();
 
+	cocos2d::Sprite* setMovementSprites(char* str, cocos2d::Point pt);
+	void goToMovementSprite(BasicUnit *i, cocos2d::Point tpos);
+
+	void initUnit(BasicUnit *r, char team);
+
 public:
 	PathFinder<BasicUnit> * pf;
 	Ninja *ninja;
@@ -91,10 +94,6 @@ public:
     void setViewPointCenter(cocos2d::Point position);
     void onTouchEnded(cocos2d::Touch *touch, cocos2d::Event *unused_event);
     void onTouchMoved(cocos2d::Touch *touch, cocos2d::Event *unused_event);
-
-    void onTouchesBegan(const std::vector<cocos2d::Touch *> &touches, cocos2d::Event *event);
-    //void onTouchesMoved(cocos2d::Touch *touches, cocos2d::Event *unused_event);
-    void onTouchesEnded(const std::vector<cocos2d::Touch *> &touches, cocos2d::Event *unused_event);
 
     //void setPlayerPosition(cocos2d::Point position);
     void addPlayerStack(cocos2d::Point position);

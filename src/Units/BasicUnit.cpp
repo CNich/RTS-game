@@ -39,24 +39,9 @@ BasicUnit* BasicUnit::create() {
 }
 
 BasicUnit* BasicUnit::create(cocos2d::Point tmp){
-	BasicUnit* pSprite = new BasicUnit();
-	pSprite->initWithFile("029.png");
-	srand((unsigned) time(NULL));
-	pSprite->autorelease();
-	pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
-	pSprite->tpf->setTileX(32);
-	pSprite->tpf->setTileY(32);
-	pSprite->setScale(0.5);
-
-	pSprite->scheduleUpdate();
+	BasicUnit* pSprite = create();
 	pSprite->setPosition(tmp);
-
-	//pf->block(pSprite->convertToPf(tmp).x, pSprite->convertToPf(tmp).y);
-	//pf->taken(pSprite->convertToPf(tmp).x, pSprite->convertToPf(tmp).y);
-	//pf->setUnit(pSprite->convertToPf(tmp).x, pSprite->convertToPf(tmp).y, pSprite);
-
 	return pSprite;
-
 }
 
 void BasicUnit::setPf(PathFinder<BasicUnit> *tempPf){

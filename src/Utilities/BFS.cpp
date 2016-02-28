@@ -41,7 +41,7 @@ void BFS::solve(){
 		else {
 			n = queueBFS->get(1)->data;
 		}
-		CCLOG("%d, %d", n.x, n.y);
+		//CCLOG("%d, %d", n.x, n.y);
 
 		queueBFS->removeFront();
 		if (n.x >= 0 && n.x < L && n.y >= 0 && n.y < W){
