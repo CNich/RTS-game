@@ -84,7 +84,7 @@ protected:
 	BasicUnit *currentEnemy = 0;
 	cocos2d::Point currentEnemyLocation;
 
-	int health = 100;
+	int health = 240;
 	bool attacking = false;
 	bool dead = false;
 

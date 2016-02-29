@@ -154,12 +154,12 @@ bool HelloWorld::init() {
 			auto tpos = touch->getLocation();
 			tpos = convertToNodeSpace(tpos);
 
-			ppos.x = (ppos.x - 16) / 32;
-			ppos.y = (ppos.y - 16) / 32;
-			tpos.x = (tpos.x - 16) / 32;
-			tpos.y = (tpos.y - 16) / 32;
+			ppos.x = (ppos.x - pf->getOffY()) / pf->getTileX();
+			ppos.y = (ppos.y - pf->getOffY()) / pf->getTileY();
+			tpos.x = (tpos.x - pf->getOffY()) / pf->getTileX();
+			tpos.y = (tpos.y - pf->getOffY()) / pf->getTileY();
 
-			if (tpos.x >= 0 && tpos.x < 50 && tpos.y >= 0 && tpos.y < 50) {
+			if (tpos.x >= 0 && tpos.x < pf->getRows() && tpos.y >= 0 && tpos.y < pf->getCols()) {
 
 				if(target == sprite1){
 					for(BasicUnit *i : bvec){
@@ -221,23 +221,24 @@ bool HelloWorld::init() {
 
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	auto winSize = Director::getInstance()->getWinSize() * this->getScale();
+
 	scoreLabel = Label::createWithTTF(tempScore->getCString(),
 			"fonts/Marker Felt.ttf", winSize.height * SCORE_FONT_SIZE);
 	//scoreLabel = Label::createWithTTF("hi", "fonts/Marker Felt.ttf", visibleSize.height * SCORE_FONT_SIZE);
 	scoreLabel->setColor(Color3B::WHITE);
 	scoreLabel->setPosition(Point(winSize.width / 2, winSize.height));
 
-	this->addChild(scoreLabel, 10000);
+	//this->addChild(scoreLabel, 10000);
 
 	cocos2d::Label *tileAtrs = Label::createWithTTF(ts2->getCString(),
 			"fonts/Marker Felt.ttf", winSize.height * SCORE_FONT_SIZE);
 	tileAtrs->setColor(Color3B::BLUE);
 	tileAtrs->setPosition(Point(winSize.width / 2, winSize.height * 0.75));
-	this->addChild(tileAtrs, 10000);
+	//this->addChild(tileAtrs, 10000);
 
 	auto ninjaPos = _plpos;
 	ninjaPos.x = _plpos.x + 320;
-	ninjaPos.y = _plpos.y  - 32 * 6;
+	ninjaPos.y = _plpos.y  - 32;
 	ninja = Ninja::create(ninjaPos);
 	initUnit(ninja, 0);
 	ninja->setScale(1.5);
@@ -249,6 +250,23 @@ bool HelloWorld::init() {
 
 	int t1 = 15;
 	int t2 = 35;
+
+	for(int i=0; i < t1/4; i++){
+		auto p = _plpos;
+		p.x = _plpos.x + pf->getTileX() * i;
+		p.y = _plpos.y  - pf->getTileY();
+		BasicUnit * r = BasicUnit::create(p);
+		bvec.pushBack(r);
+		initUnit(r, 0);
+	}
+	for(int i=0; i < t1/4; i++){
+		auto p = _plpos;
+		p.x = _plpos.x + pf->getTileX() * i;
+		p.y = _plpos.y  - pf->getTileY() * 2;
+		RangedBasicUnit * r = RangedBasicUnit::create(p);
+		rangedBasicUnitVec.pushBack(r);
+		initUnit(r, 0);
+	}
 
 	for(int i=0; i < t1; i++){
 		auto p = _plpos;
@@ -642,8 +660,8 @@ void HelloWorld::checkMap() {
 	int th = _tileMap->getTileSize().height;
 	if (!checked) {
 		checked = true;
-		for (int i = 0; i < 50; i++) {
-			for (int j = 0; j < 50; j++) {
+		for (int i = 0; i < pf->getRows(); i++) {
+			for (int j = 0; j < pf->getCols(); j++) {
 				if (pf->checkBlock(i, j)) {
 					//auto drawNode = DrawNode::create();
 					//drawNode->drawDot(Vec2(16 + i * 32, 16 + j * 32), 16, Color4F::GREEN);
@@ -658,8 +676,8 @@ void HelloWorld::drawBFSMap() {
 	int tw = _tileMap->getTileSize().width;
 	int th = _tileMap->getTileSize().height;
 
-	for (int i = 0; i < 50; i++) {
-		for (int j = 0; j < 50; j++) {
+	for (int i = 0; i < pf->getRows(); i++) {
+		for (int j = 0; j < pf->getCols(); j++) {
 			auto t = pf->getBFSParent(i, j);
 			//auto t = pf->getBFSDir(i, j);
 			cocos2d::Point p;
@@ -692,33 +710,6 @@ void HelloWorld::drawBFSMap() {
 				drawNode->drawDot(Vec2(16 + i * 32, 16 + j * 32), 16, Color4F::RED);
 				this->addChild(drawNode, 1000);
 			}
-
-			/*if (pf->getBFSDir(i, j) == "u") {
-				auto drawNode = DrawNode::create();
-				drawNode->drawDot(Vec2(16 + i * 32, 16 + j * 32), 16, Color4F::BLUE);
-				this->addChild(drawNode, 1000);
-			}
-			else if(pf->getBFSDir(i, j) == "d"){
-				auto drawNode = DrawNode::create();
-				drawNode->drawDot(Vec2(16 + i * 32, 16 + j * 32), 16, Color4F::GRAY);
-				this->addChild(drawNode, 1000);
-			}
-			else if(pf->getBFSDir(i, j) == "l"){
-				auto drawNode = DrawNode::create();
-				drawNode->drawDot(Vec2(16 + i * 32, 16 + j * 32), 16, Color4F::GREEN);
-				this->addChild(drawNode, 1000);
-			}
-			else if(pf->getBFSDir(i, j) == "r"){
-				auto drawNode = DrawNode::create();
-				drawNode->drawDot(Vec2(16 + i * 32, 16 + j * 32), 16, Color4F::RED);
-				this->addChild(drawNode, 1000);
-			}
-			else{
-				auto drawNode = DrawNode::create();
-				drawNode->drawDot(Vec2(16 + i * 32, 16 + j * 32), 16, Color4F::BLACK);
-				this->addChild(drawNode, 1000);
-			}
-			*/
 		}
 	}
 
