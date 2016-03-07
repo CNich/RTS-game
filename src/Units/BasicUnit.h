@@ -51,7 +51,7 @@ protected:
 	bool enemy = false;
 	bool moving = false;
 	void setStartingPos();
-	void setPlayerPosition(cocos2d::Point position);
+	void setPlayerPosition(cocos2d::Point position, bool diag);
 	void setStartingPosCustom(cocos2d::Point tmp);
 	void getMap();
 	void getMap(PathFinder<BasicUnit> *tpf2);

@@ -90,7 +90,7 @@ void BFS::checkNeighbour(int dx, int dy, mpair n, char* dir){
 			addToQueue.y = n.y + dy;
 			queueBFS->addBack(addToQueue);
 
-			CCLOG("%s", dir);
+			//CCLOG("%s", dir);
 
 			//print();
 			//std::cin.ignore();

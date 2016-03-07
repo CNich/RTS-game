@@ -296,16 +296,16 @@ LinkedList<cocos2d::Point> * PathFinder<T>::solve(){
 		checkAdj(curr.x, curr.y + 1, curr.x, curr.y);
 
 		//check upper left
-		//checkAdj(curr.x - 1, curr.y - 1, curr.x, curr.y);
+		checkAdj(curr.x - 1, curr.y - 1, curr.x, curr.y);
 
 		//check upper right
-		//checkAdj(curr.x + 1, curr.y - 1, curr.x, curr.y);
+		checkAdj(curr.x + 1, curr.y - 1, curr.x, curr.y);
 
 		//check lower left
-		//checkAdj(curr.x - 1, curr.y + 1, curr.x, curr.y);
+		checkAdj(curr.x - 1, curr.y + 1, curr.x, curr.y);
 
 		//check lower right
-		//checkAdj(curr.x + 1, curr.y + 1, curr.x, curr.y);
+		checkAdj(curr.x + 1, curr.y + 1, curr.x, curr.y);
 		
 	}
 	pathNode curr = map[end.x][end.y];

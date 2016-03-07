@@ -400,6 +400,7 @@ void HelloWorld::onTouchEnded(Touch *touch, Event *unused_event) {
 		//this->setMap();
 		CCLOG("first touch of the game................");
 		this->firstTouch = true;
+		//checkMap();
 	}
 
 	auto ttouch = touch->getLocation();
@@ -646,8 +647,10 @@ void HelloWorld::setMap() {
 				if (!properties.empty()) {
 					auto collision = properties["Collidable"].asString();
 					if ("True" == collision) {
-						pf->block(tileCoord.x - 1, -1 * (tileCoord.y - 25) + 25 - 1);
-						pf->permaBlock(tileCoord.x - 1, -1 * (tileCoord.y - 25) + 25 - 1);
+						//pf->block(tileCoord.x - 1, -1 * (tileCoord.y - 25) + 25 - 1);
+						//pf->permaBlock(tileCoord.x - 1, -1 * (tileCoord.y - 25) + 25 - 1);
+						pf->block(tileCoord.x, -1 * (tileCoord.y - 25) + 25 - 1);
+						pf->permaBlock(tileCoord.x, -1 * (tileCoord.y - 25) + 25 - 1);
 					}
 				}
 			}
@@ -663,9 +666,9 @@ void HelloWorld::checkMap() {
 		for (int i = 0; i < pf->getRows(); i++) {
 			for (int j = 0; j < pf->getCols(); j++) {
 				if (pf->checkBlock(i, j)) {
-					//auto drawNode = DrawNode::create();
-					//drawNode->drawDot(Vec2(16 + i * 32, 16 + j * 32), 16, Color4F::GREEN);
-					//this->addChild(drawNode, 1000);
+					auto drawNode = DrawNode::create();
+					drawNode->drawDot(Vec2(16 + i * 32, 16 + j * 32), 16, Color4F::GREEN);
+					this->addChild(drawNode, 1000);
 				}
 			}
 		}

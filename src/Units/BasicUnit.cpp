@@ -181,8 +181,78 @@ void BasicUnit::delayedMove() {
 			touchLocation = lStack->get(1)->data;
 		}
 		lStack->removeFront();
+		//auto drawNode = DrawNode::create();
+		//drawNode->drawDot(touchLocation, 16, Color4F::BLUE);
+		//this->getParent()->addChild(drawNode, 1000);
+
 		auto playerPos = this->getPosition();
 		auto diff = touchLocation - playerPos;
+
+		//depoending on x movement, change the way the unit faces
+		if (diff.x > 0) {
+			this->runAction(actionTo2);
+		} else {
+			this->runAction(actionTo1);
+		}
+
+		//move right
+		if(abs(abs(diff.x) - abs(diff.y)) > 15){
+			if (abs(diff.x) > abs(diff.y)) {
+				if (diff.x > 0) {
+					playerPos.x += 32;
+					//this->runAction(actionTo2);
+				} else {
+					playerPos.x -= 32;
+					//this->runAction(actionTo1);
+				}
+			} else {
+				if (diff.y > 0) {
+					playerPos.y += 32;
+				} else {
+					playerPos.y -= 32;
+				}
+			}
+			/*if(diff.x > 17 && diff.y < 17 && diff.y > -17){
+				playerPos.x += 32;
+			}
+			//move left
+			else if(diff.x < -17 && diff.y < 17 && diff.y > -17){
+				playerPos.x -= 32;
+			}
+			//move down
+			else if(diff.x < 17 && diff.x > -17 && diff.y > 17){
+				playerPos.y += 32;
+			}
+			//move up
+			else if(diff.x < 17 && diff.x > -17 && diff.y < - 17){
+				playerPos.y -= 32;
+			}*/
+		}
+		/***************************************/
+		else{
+			//move right down
+			if(diff.x > 17 && diff.y > 17){
+				playerPos.x += 32;
+				playerPos.y += 32;
+			}
+			//move left down
+			else if(diff.x < -17 && diff.y > 17){
+				playerPos.x -= 32;
+				playerPos.y += 32;
+			}
+			//move right up
+			if(diff.x > 17 && diff.y < -17){
+				playerPos.x += 32;
+				playerPos.y -= 32;
+			}
+			//move left up
+			else if(diff.x < -17 && diff.y < -17){
+				playerPos.x -= 32;
+				playerPos.y -= 32;
+			}
+		}
+
+		/*
 		if (abs(diff.x) > abs(diff.y)) {
 			if (diff.x > 0) {
 				playerPos.x += 32;
@@ -197,17 +267,25 @@ void BasicUnit::delayedMove() {
 			} else {
 				playerPos.y -= 32;
 			}
-		}
+		}*/
+
+
 		if (playerPos.x < (50 * 32) && playerPos.y < (50 * 32)
 				&& playerPos.y >= 0 && playerPos.x >= 0) {
 			//CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("step.mp3");
 
-			this->setPlayerPosition(playerPos);
+			if(abs(abs(diff.x) + abs(diff.y)) > 64){
+				this->setPlayerPosition(playerPos, abs(diff.x) > 0 && abs(diff.y) > 0);
+			} else{
+				this->setPlayerPosition(touchLocation, abs(diff.x) > 0 && abs(diff.y) > 0);
+			}
+
+			//this->setPlayerPosition(touchLocation, abs(diff.x) > 0 && abs(diff.y) > 0);
 		}
 	}
 }
 
-void BasicUnit::setPlayerPosition(Point position) {
+void BasicUnit::setPlayerPosition(Point position, bool diag) {
 	int x = convertToPf(position).x;
 	int y = convertToPf(position).y;
 
@@ -224,9 +302,18 @@ void BasicUnit::setPlayerPosition(Point position) {
 		pf->setUnit(convertToPf(position).x, convertToPf(position).y, this);
 		pf->setUnitZero(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
 
+		CCFiniteTimeAction* actionMove;
+		//auto drawNode = DrawNode::create();
 
-		CCFiniteTimeAction* actionMove = CCMoveTo::create(0.2, position);
-
+		if(diag){
+			actionMove = CCMoveTo::create(0.2 * 1.4, position);
+			//drawNode->drawDot(position, 16, Color4F::RED);
+			//this->getParent()->addChild(drawNode, 1000);
+		} else{
+			actionMove = CCMoveTo::create(0.2, position);
+			//drawNode->drawDot(position, 16, Color4F::RED);
+			//this->getParent()->addChild(drawNode, 1000);
+		}
 		auto callback = CallFunc::create([this]() {
 			this->setMoving();
 		});
@@ -263,7 +350,7 @@ void BasicUnit::setPlayerPosition(Point position) {
 			auto callback = CallFunc::create([this]() {
 							this->moving = false;
 						});
-			//CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("error.mp3");
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("error.mp3");
 			auto seq = Sequence::create(DelayTime::create(0.5), callback, nullptr);
 			this->runAction(seq);
 			lStack->addFront(position);
