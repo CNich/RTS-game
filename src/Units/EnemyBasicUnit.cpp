@@ -146,11 +146,133 @@ void EnemyBasicUnit::update(float dt) {
 
 		else if(lStack->empty() && !moving){
 			auto pos = this->convertToPf(this->getPosition());
-			char* dir = pf->getBFSDir(pos.x, pos.y);
-			//CCLOG("%s %f, %f", dir, pf->getBFSParent(pos.x, pos.y).x, pf->getBFSParent(pos.x, pos.y).y);
-			//if(dir == "u" || dir == "d" || dir == "r" || dir == "l"){
-				lStack->addFront(pf->getBFSParent(pos.x, pos.y));
-			//}
+			std::string dir = pf->getBFSDir(pos.x, pos.y);
+			auto bfsp = pf->getBFSParent(pos.x, pos.y);
+
+			if(dir == "u"){
+				CCLOG("u");
+				if(!pf->checkBlock(pos.x - 1, pos.y)){
+					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
+				} else if(!pf->checkBlock(pos.x - 1, pos.y + 1)){
+					pos.x -= 32;
+					pos.y += 32;
+					lStack->addFront(pos);
+				} else{
+					pos.x -= 32;
+					pos.y -= 32;
+					lStack->addFront(pos);
+				}
+			}
+
+			else if(dir == "d"){
+				CCLOG("d");
+				if(!pf->checkBlock(pos.x + 1, pos.y)){
+					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
+				} else if(!pf->checkBlock(pos.x + 1, pos.y + 1)){
+					pos.x += 32;
+					pos.y += 32;
+					lStack->addFront(pos);
+				} else{
+					pos.x += 32;
+					pos.y -= 32;
+					lStack->addFront(pos);
+				}
+			}
+
+			else if(dir == "r"){
+				CCLOG("r");
+				if(!pf->checkBlock(pos.x, pos.y + 1)){
+					lStack->addFront(pf->getBFSParent(pos.x, pos.y + 1));
+				} else if(!pf->checkBlock(pos.x + 1, pos.y + 1)){
+					pos.x += 32;
+					pos.y += 32;
+					lStack->addFront(pos);
+				} else{
+					pos.x -= 32;
+					pos.y += 32;
+					lStack->addFront(pos);
+				}
+			}
+
+			else if(dir == "l"){
+				CCLOG("l");
+				if(!pf->checkBlock(pos.x, pos.y - 1)){
+					lStack->addFront(pf->getBFSParent(pos.x, pos.y - 1));
+				} else if(!pf->checkBlock(pos.x + 1, pos.y - 1)){
+					pos.x += 32;
+					pos.y -= 32;
+					lStack->addFront(pos);
+				} else{
+					pos.x -= 32;
+					pos.y -= 32;
+					lStack->addFront(pos);
+				}
+			}
+
+			else if(dir == "ul"){
+				CCLOG("ul");
+				if(!pf->checkBlock(pos.x - 1, pos.y - 1)){
+					lStack->addFront(pf->getBFSParent(pos.x - 1, pos.y - 1));
+				} else if(!pf->checkBlock(pos.x - 1, pos.y)){
+					pos.x -= 32;
+					pos.y -= 0;
+					lStack->addFront(pos);
+				} else{
+					pos.x -= 0;
+					pos.y -= 32;
+					lStack->addFront(pos);
+				}
+			}
+
+			else if(dir == "ur"){
+				CCLOG("ur");
+				if(!pf->checkBlock(pos.x - 1, pos.y + 1)){
+					lStack->addFront(pf->getBFSParent(pos.x - 1, pos.y + 1));
+				} else if(!pf->checkBlock(pos.x, pos.y + 1)){
+					pos.x += 0;
+					pos.y += 32;
+					lStack->addFront(pos);
+				} else{
+					pos.x -= 32;
+					pos.y -= 0;
+					lStack->addFront(pos);
+				}
+			}
+
+			else if(dir == "dl"){
+				CCLOG("dl");
+				if(!pf->checkBlock(pos.x + 1, pos.y - 1)){
+					lStack->addFront(pf->getBFSParent(pos.x + 1, pos.y - 1));
+				} else if(!pf->checkBlock(pos.x + 1, pos.y)){
+					pos.x += 32;
+					pos.y += 0;
+					lStack->addFront(pos);
+				} else{
+					pos.x -= 0;
+					pos.y -= 32;
+					lStack->addFront(pos);
+				}
+			}
+
+			else if(dir == "dr"){
+				CCLOG("dr");
+				if(!pf->checkBlock(pos.x + 1, pos.y + 1)){
+					lStack->addFront(pf->getBFSParent(pos.x + 1, pos.y + 1));
+				} else if(!pf->checkBlock(pos.x + 1, pos.y)){
+					pos.x += 32;
+					pos.y += 0;
+					lStack->addFront(pos);
+				} else{
+					pos.x -= 0;
+					pos.y += 32;
+					lStack->addFront(pos);
+				}
+			}
+
+
+
+			//lStack->addFront(pf->getBFSParent(pos.x, pos.y));
+
 		}
 	}
 

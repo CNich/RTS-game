@@ -10,6 +10,8 @@
 struct mpair{
 	int x;
 	int y;
+	inline bool operator==(mpair a){ return (a.x == x && a.y == y); };
+	inline bool operator!=(mpair a){ return !(a.x == x && a.y == y); };
 };
 
 struct BFSMapNode{
