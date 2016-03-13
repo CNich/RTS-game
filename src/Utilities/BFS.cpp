@@ -45,6 +45,57 @@ void BFS::solve(){
 
 		queueBFS->removeFront();
 		if (n.x >= 0 && n.x < L && n.y >= 0 && n.y < W){
+
+			/*   l
+			 * d   u
+			 *   r
+			 */
+
+
+			//check up
+			checkNeighbour(-1, 0, n, "l");
+
+			//check down
+			checkNeighbour(1, 0, n, "r");
+
+			//check left
+			checkNeighbour(0, -1, n, "d");
+
+			//check right
+			checkNeighbour(0, 1, n, "d");
+
+			//check up left
+			if (n.x > 1 && n.x < W - 1 && n.y > 0 && n.y < L - 1){
+				if (n == start ||
+					(map[n.x][n.y].dir != map[n.x - 1][n.y].dir && map[n.x][n.y].dir != map[n.x][n.y - 1].dir) ||
+					(map[n.x - 1][n.y].dir == 0 || map[n.x][n.y - 1].dir == 0) ){
+					checkNeighbour(-1, -1, n, "dl");
+				}
+
+				//check up right
+				if (n == start ||
+					(map[n.x][n.y].dir != map[n.x - 1][n.y].dir && map[n.x][n.y].dir != map[n.x][n.y + 1].dir) ||
+					(map[n.x - 1][n.y].dir == 0 || map[n.x][n.y + 1].dir == 0) ){
+					checkNeighbour(-1, 1, n, "ul");
+				}
+
+				//check down left
+				if (n == start ||
+					(map[n.x][n.y].dir != map[n.x + 1][n.y].dir && map[n.x][n.y].dir != map[n.x][n.y - 1].dir) ||
+					(map[n.x + 1][n.y].dir == 0 || map[n.x][n.y - 1].dir == 0) ){
+					checkNeighbour(1, -1, n, "dr");
+				}
+
+				//check down right
+				if (n == start ||
+					(map[n.x][n.y].dir != map[n.x + 1][n.y].dir && map[n.x][n.y].dir != map[n.x][n.y + 1].dir) ||
+					(map[n.x + 1][n.y].dir == 0 || map[n.x][n.y + 1].dir == 0) ){
+					checkNeighbour(1, 1, n, "ur");
+				}
+			}
+
+
+			/*
 			//check up
 			checkNeighbour(-1, 0, n, "u");
 
@@ -86,9 +137,10 @@ void BFS::solve(){
 					checkNeighbour(1, 1, n, "dr");
 				}
 			}
+			*/
 		}
 	}
-	CCLOG("BFS SOLVED");
+	//CCLOG("BFS SOLVED");
 }
 
 void BFS::checkNeighbour(int dx, int dy, mpair n, char* dir){
