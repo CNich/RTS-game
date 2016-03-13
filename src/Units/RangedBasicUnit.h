@@ -11,17 +11,23 @@ public:
 	static RangedBasicUnit* create();
 	static RangedBasicUnit* create(cocos2d::Point tmp);
 	
+	//virtual int getAttackRange();
+	//virtual int getMovementRange();
 
 	//void attack(BasicUnit *attacker, int damage, char attackType);
-	int attackRange = 6;
-	virtual void attack(BasicUnit *attacker, int damage, char attackType);
+	//virtual void attack(BasicUnit *attacker, int damage, char attackType);
 
 protected:
-	bool enemyIsAttackable();
-	virtual void update(float dt);
+	virtual bool enemyIsAttackable();
+	//virtual void update(float dt);
 	bool removeThisUnit = false;
 	bool removeFromPf = true;
-	int health = 80;
+	int initHealth = 40;
+	virtual void makeAttack();
+
+	int initAttackRange = 3;
+	int initMovementRange = 20;
+
 };
 
 #endif // __RANGED_BASIC_UNIT_H__

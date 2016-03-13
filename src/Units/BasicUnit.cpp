@@ -416,23 +416,34 @@ void BasicUnit::update(float dt) {
 	}
 
 	//check if dead
-	if(!dead && health <= 0){
+	if(!dead && this->getHealth() <= 0){
 		dead = true;
 		auto rotateTo = RotateTo::create(1.5, 90);
 		this->runAction(rotateTo);
 	}
 
 	//if dead, die
-	else if(dead){
+	if(dead){
 		//figure out how to delete
 		//delete this;
 
-		delete tpf;
-		delete lStack;
-		pf->unblock(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
-		pf->untaken(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
-		pf->setUnitZero(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
-		this->getParent()->removeChild(this);
+		//delete tpf;
+		//delete lStack;
+		if(removeFromPf){
+			auto callback = CallFunc::create([this]() {
+				delete tpf;
+				delete lStack;
+				pf->unblock(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
+				pf->untaken(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
+				pf->setUnitZero(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
+				this->getParent()->removeChild(this);
+			});
+
+			auto seq = Sequence::create(DelayTime::create(3), callback, nullptr);
+			this->runAction(seq);
+			removeFromPf = false;
+		}
+		//this->getParent()->removeChild(this);
 	}
 
 	//if attacking, nothing should be done
@@ -456,9 +467,9 @@ void BasicUnit::update(float dt) {
 			auto seq = Sequence::create(DelayTime::create(2), callback,
 					rotateTo, rotateBack, nullptr);
 			this->runAction(seq);
-			//RangedAttackObject* atk = RangedAttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm');
-			AttackObject* atk = AttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
-			atk->initAttack();
+
+			this->makeAttack();
+
 			lStack->reset();
 		}
 
@@ -470,7 +481,7 @@ void BasicUnit::update(float dt) {
 		}*/
 
 		//else if(currentEnemyIsCloseEnough && !currentEnemyMoved && unitToUnitDistance(this, currentEnemy) < attackRange){
-		else if(currentEnemy != 0 && currentEnemyMoved && unitToUnitDistance(this, currentEnemy) < attackRange){
+		else if(currentEnemy != 0 && currentEnemyMoved && unitToUnitDistance(this, currentEnemy) < movementRange){
 			auto t = convertToPf(currentEnemy->getPosition());
 			this->ASolve(t.x, t.y);
 			currentEnemyMoved = false;
@@ -561,22 +572,23 @@ bool BasicUnit::enemyIsAttackable(){
 	return false;
 }
 
-/*
-//Ranged
-bool BasicUnit::enemyIsAttackable(){
-	if(this->getCurrentEnemy() != 0 && unitToUnitDistance(this, getCurrentEnemy()) <= 6){
-		return true;
-	}
-	return false;
-}
-*/
 //WILL BUILD ON LATER
 void BasicUnit::attack(BasicUnit * attacker, int damage, char attackType){
+	if(health > 0) CCLOG("%p's health: %d", this, health);
 	health = health - damage;
 	//CCLOG("%p WAS ATTACKEDDDD for %d damage", this, damage);
-	//CCLOG("%p's health: %d", this, health);
+	if(health >= 0) CCLOG("%p's health after attack: %d", this, health);
+}
+
+void BasicUnit::makeAttack(){
+	AttackObject* atk = AttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
+	atk->initAttack();
 }
 
 void BasicUnit::returnHealth(int healthTaken, char attackType){
 	health += healthTaken;
+}
+
+int BasicUnit::getHealth(){
+	return this->health;
 }

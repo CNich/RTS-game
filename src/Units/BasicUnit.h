@@ -42,6 +42,7 @@ public:
 
 	virtual void attack(BasicUnit *attacker, int damage, char attackType);
 	int attackRange = 7;
+	int movementRange = 7;
 
 	PathFinder<BasicUnit> *pf;
 	void setPf(PathFinder<BasicUnit> *tempPf);
@@ -63,7 +64,7 @@ protected:
 	bool idle = true;
 	bool idleTrack = true;
 	char badMove = 0;
-	bool enemyIsAttackable();
+	virtual bool enemyIsAttackable();
 
 	char blockedCount = 0;
 	bool giveup = false;
@@ -84,7 +85,6 @@ protected:
 	BasicUnit *currentEnemy = 0;
 	cocos2d::Point currentEnemyLocation;
 
-	int health = 240;
 	bool attacking = false;
 	bool dead = false;
 
@@ -92,6 +92,14 @@ protected:
 
 	bool currentEnemyIsCloseEnough = false;
 	bool currentEnemyMoved = false;
+
+	bool removeThisUnit = false;
+	bool removeFromPf = true;
+
+	virtual void makeAttack();
+
+	virtual int getHealth();
+	int health = 240;
 
 	virtual void update(float dt);
 };
