@@ -248,8 +248,8 @@ bool HelloWorld::init() {
 	ninja->setBFSmap();
 	ninja->BFSInit(bfsp.x, bfsp.y);
 
-	int t1 = 15;
-	int t2 = 35;
+	int t1 = 1;
+	int t2 = 6;
 
 	for(int i=0; i < t1/4; i++){
 		auto p = _plpos;
@@ -304,7 +304,7 @@ bool HelloWorld::init() {
 		initUnit(r, 0);
 	}
 
-	for(int i=0; i < t2; i++){
+	for(int i=0; i < t2; i+=2){
 		auto p = _plpos;
 		p.x = _plpos.x + pf->getTileX() * (i - 10);
 		p.y = _plpos.y  - pf->getTileY() * 13;
@@ -314,7 +314,7 @@ bool HelloWorld::init() {
 		initUnit(r, 1);
 	}
 
-	for(int i=0; i < t2; i++){
+	for(int i=0; i < t2; i+=2){
 		auto p = _plpos;
 		p.x = _plpos.x + pf->getTileX() * (i - 10);
 		p.y = _plpos.y  - pf->getTileY() * 15;
@@ -325,7 +325,7 @@ bool HelloWorld::init() {
 	}
 
 
-	for(int i=0; i < t2; i++){
+	for(int i=0; i < t2; i+=2){
 		auto p = _plpos;
 		p.x = _plpos.x + pf->getTileX() * (i - 10);
 		p.y = _plpos.y  - pf->getTileY() * 17;
@@ -335,7 +335,7 @@ bool HelloWorld::init() {
 		initUnit(r, 1);
 	}
 
-	for(int i=0; i < t2; i++){
+	for(int i=0; i < t2; i+=2){
 		auto p = _plpos;
 		p.x = _plpos.x + pf->getTileX() * (i - 10);
 		p.y = _plpos.y  - pf->getTileY() * 19;
@@ -344,6 +344,15 @@ bool HelloWorld::init() {
 		r->setColor(Color3B::BLUE);
 		initUnit(r, 1);
 	}
+
+	auto p = _plpos;
+	p.x = pf->getTileX();
+	p.y = _plpos.y  - pf->getTileY() * 18;
+	EnemyBasicUnitRanged * r = EnemyBasicUnitRanged::create(p);
+	rangedBasicUnitVec2.pushBack(r);
+	r->setColor(Color3B::GREEN);
+	initUnit(r, 1);
+	r->tracked = true;
 
 	//this->drawBFSMap();
 

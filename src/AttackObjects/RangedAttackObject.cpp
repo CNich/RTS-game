@@ -19,14 +19,12 @@ RangedAttackObject* RangedAttackObject::create(BasicUnit * attacker, cocos2d::Po
 	pSprite->location = location;
 	pSprite->damage = damage;
 	pSprite->pf = tpf;
-	CCLOG("%p THIS WAS RECEIVED", attacker);
-	//pSprite->init(location, damage, attackType);
-	CCLOG("DUMMIED init");
+	//CCLOG("%p THIS WAS RECEIVED", attacker);
 	return pSprite;
 }
 
 void RangedAttackObject::initAttack(){
-	CCLOG("DUMMIED here");
+
 	this->parent->getParent()->addChild(this);
 	auto eloc = parent->getPosition();
 	this->setPosition(eloc.x, eloc.y);

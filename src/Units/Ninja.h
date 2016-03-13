@@ -24,7 +24,7 @@ protected:
 	virtual void update(float dt);
 	bool removeThisUnit = false;
 	bool removeFromPf = true;
-	int health = 500;
+	int health = 50000;
 
 private:
 	BFS *bfsMap;

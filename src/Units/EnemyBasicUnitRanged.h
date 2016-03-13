@@ -16,6 +16,8 @@ public:
 	int attackRange = 6;
 	virtual void attack(BasicUnit *attacker, int damage, char attackType);
 
+	bool tracked = false;
+
 protected:
 	bool enemyIsAttackable();
 	virtual void update(float dt);

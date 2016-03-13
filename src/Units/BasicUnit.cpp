@@ -328,7 +328,8 @@ void BasicUnit::setPlayerPosition(Point position, bool diag) {
 
 			numSounds++;
 			//auto id = cocos2d::experimental::AudioEngineImpl::play2d("step.mp3");
-			auto soundId = cocos2d::experimental::AudioEngine::play2d("step.mp3");
+
+			//auto soundId = cocos2d::experimental::AudioEngine::play2d("step.mp3");
 
 
 
@@ -355,7 +356,7 @@ void BasicUnit::setPlayerPosition(Point position, bool diag) {
 			this->runAction(seq);
 			lStack->addFront(position);
 		} else if(giveup == false){
-			CCLOG("HERE HERE HERE");
+			//CCLOG("HERE HERE HERE");
 			giveup = true;
 			blockedCount = 0;
 			setBasicUnitPF();
@@ -443,7 +444,7 @@ void BasicUnit::update(float dt) {
 				this->enemyIsAttackable()){
 			attacking = true;
 			//currentEnemyMoved = false;
-			CCLOG("ATTACKED");
+
 			auto callback = CallFunc::create([this]() {
 				//if(currentEnemy != 0 && !currentEnemy->isDead()){
 				//	currentEnemy->attack(this, 40, 'a');
@@ -473,7 +474,6 @@ void BasicUnit::update(float dt) {
 			auto t = convertToPf(currentEnemy->getPosition());
 			this->ASolve(t.x, t.y);
 			currentEnemyMoved = false;
-			CCLOG("doooops");
 		}
 
 		//the unit is in between movements and is not attacking
@@ -573,8 +573,8 @@ bool BasicUnit::enemyIsAttackable(){
 //WILL BUILD ON LATER
 void BasicUnit::attack(BasicUnit * attacker, int damage, char attackType){
 	health = health - damage;
-	CCLOG("%p WAS ATTACKEDDDD for %d damage", this, damage);
-	CCLOG("%p's health: %d", this, health);
+	//CCLOG("%p WAS ATTACKEDDDD for %d damage", this, damage);
+	//CCLOG("%p's health: %d", this, health);
 }
 
 void BasicUnit::returnHealth(int healthTaken, char attackType){

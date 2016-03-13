@@ -102,7 +102,7 @@ void EnemyBasicUnitRanged::update(float dt) {
 				this->enemyIsAttackable()){
 			attacking = true;
 			//currentEnemyMoved = false;
-			CCLOG("ATTACKED");
+
 			auto callback = CallFunc::create([this]() {
 				//if(currentEnemy != 0 && !currentEnemy->isDead()){
 				//	currentEnemy->attack(this, 40, 'a');
@@ -132,7 +132,6 @@ void EnemyBasicUnitRanged::update(float dt) {
 			auto t = convertToPf(currentEnemy->getPosition());
 			this->ASolve(t.x, t.y);
 			currentEnemyMoved = false;
-			CCLOG("doooops");
 		}
 
 		//the unit is in between movements and is not attacking
@@ -150,127 +149,146 @@ void EnemyBasicUnitRanged::update(float dt) {
 			std::string dir = pf->getBFSDir(pos.x, pos.y);
 			auto bfsp = pf->getBFSParent(pos.x, pos.y);
 
+
+
 			if(dir == "u"){
-				CCLOG("u");
+				if(tracked) CCLOG("u");
 				if(!pf->checkBlock(pos.x - 1, pos.y)){
 					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
 				} else if(!pf->checkBlock(pos.x - 1, pos.y + 1)){
 					pos.x -= 32;
 					pos.y += 32;
 					lStack->addFront(pos);
+					if(tracked) CCLOG("u to ur");
 				} else{
 					pos.x -= 32;
 					pos.y -= 32;
 					lStack->addFront(pos);
+					if(tracked) CCLOG("u to ul");
 				}
 			}
 
 			else if(dir == "d"){
-				CCLOG("d");
+				if(tracked) CCLOG("d");
 				if(!pf->checkBlock(pos.x + 1, pos.y)){
 					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
 				} else if(!pf->checkBlock(pos.x + 1, pos.y + 1)){
 					pos.x += 32;
 					pos.y += 32;
 					lStack->addFront(pos);
+					if(tracked) CCLOG("d to dr");
 				} else{
 					pos.x += 32;
 					pos.y -= 32;
 					lStack->addFront(pos);
+					if(tracked) CCLOG("d to dl");
 				}
 			}
 
 			else if(dir == "r"){
-				CCLOG("r");
+				if(tracked) CCLOG("r");
 				if(!pf->checkBlock(pos.x, pos.y + 1)){
-					lStack->addFront(pf->getBFSParent(pos.x, pos.y + 1));
+					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
 				} else if(!pf->checkBlock(pos.x + 1, pos.y + 1)){
 					pos.x += 32;
 					pos.y += 32;
 					lStack->addFront(pos);
+					if(tracked) CCLOG("r to dr");
 				} else{
 					pos.x -= 32;
 					pos.y += 32;
 					lStack->addFront(pos);
+					if(tracked) CCLOG("r to ur");
 				}
 			}
 
 			else if(dir == "l"){
-				CCLOG("l");
+				if(tracked) CCLOG("l");
 				if(!pf->checkBlock(pos.x, pos.y - 1)){
-					lStack->addFront(pf->getBFSParent(pos.x, pos.y - 1));
+					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
 				} else if(!pf->checkBlock(pos.x + 1, pos.y - 1)){
 					pos.x += 32;
 					pos.y -= 32;
 					lStack->addFront(pos);
+					if(tracked) CCLOG("l to dl");
 				} else{
 					pos.x -= 32;
 					pos.y -= 32;
 					lStack->addFront(pos);
+					if(tracked) CCLOG("l to ul");
 				}
 			}
 
 			else if(dir == "ul"){
-				CCLOG("ul");
+				if(tracked) CCLOG("ul");
 				if(!pf->checkBlock(pos.x - 1, pos.y - 1)){
-					lStack->addFront(pf->getBFSParent(pos.x - 1, pos.y - 1));
+					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
 				} else if(!pf->checkBlock(pos.x - 1, pos.y)){
 					pos.x -= 32;
 					pos.y -= 0;
 					lStack->addFront(pos);
+					if(tracked) CCLOG("ul to u");
 				} else{
 					pos.x -= 0;
 					pos.y -= 32;
 					lStack->addFront(pos);
+					if(tracked) CCLOG("ul to l");
 				}
 			}
 
 			else if(dir == "ur"){
-				CCLOG("ur");
+				if(tracked) CCLOG("ur");
 				if(!pf->checkBlock(pos.x - 1, pos.y + 1)){
-					lStack->addFront(pf->getBFSParent(pos.x - 1, pos.y + 1));
+					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
 				} else if(!pf->checkBlock(pos.x, pos.y + 1)){
 					pos.x += 0;
 					pos.y += 32;
 					lStack->addFront(pos);
+					if(tracked) CCLOG("ur to r");
 				} else{
 					pos.x -= 32;
 					pos.y -= 0;
 					lStack->addFront(pos);
+					if(tracked) CCLOG("ur to u");
 				}
 			}
 
 			else if(dir == "dl"){
-				CCLOG("dl");
+				if(tracked) CCLOG("dl");
 				if(!pf->checkBlock(pos.x + 1, pos.y - 1)){
-					lStack->addFront(pf->getBFSParent(pos.x + 1, pos.y - 1));
+					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
 				} else if(!pf->checkBlock(pos.x + 1, pos.y)){
 					pos.x += 32;
 					pos.y += 0;
 					lStack->addFront(pos);
+					if(tracked) CCLOG("dl to d");
 				} else{
 					pos.x -= 0;
 					pos.y -= 32;
 					lStack->addFront(pos);
+					if(tracked) CCLOG("dl to l");
 				}
 			}
 
 			else if(dir == "dr"){
-				CCLOG("dr");
+				if(tracked) CCLOG("dr");
 				if(!pf->checkBlock(pos.x + 1, pos.y + 1)){
-					lStack->addFront(pf->getBFSParent(pos.x + 1, pos.y + 1));
+					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
 				} else if(!pf->checkBlock(pos.x + 1, pos.y)){
 					pos.x += 32;
 					pos.y += 0;
 					lStack->addFront(pos);
+					if(tracked) CCLOG("dr to d");
 				} else{
 					pos.x -= 0;
 					pos.y += 32;
 					lStack->addFront(pos);
+					if(tracked) CCLOG("dr to r");
 				}
 			}
 
 
+			//CCLOG("%s", pf->getBFSDir(pos.x, pos.y));
 
 			//lStack->addFront(pf->getBFSParent(pos.x, pos.y));
 
@@ -327,8 +345,8 @@ void EnemyBasicUnitRanged::update(float dt) {
 
 void EnemyBasicUnitRanged::attack(BasicUnit * attacker, int damage, char attackType){
 	health -= damage;
-	CCLOG("%p EnemyBasicUnitRanged WAS ATTACKEDDDD for %d damage", this, damage);
-	CCLOG("%p's (EnemyBasicUnitRanged) health: %d", this, health);
+	//CCLOG("%p EnemyBasicUnitRanged WAS ATTACKEDDDD for %d damage", this, damage);
+	//CCLOG("%p's (EnemyBasicUnitRanged) health: %d", this, health);
 }
 
 //Melee

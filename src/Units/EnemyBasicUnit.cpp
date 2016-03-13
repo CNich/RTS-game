@@ -102,7 +102,7 @@ void EnemyBasicUnit::update(float dt) {
 				this->enemyIsAttackable()){
 			attacking = true;
 			//currentEnemyMoved = false;
-			CCLOG("ATTACKED");
+
 			auto callback = CallFunc::create([this]() {
 				//if(currentEnemy != 0 && !currentEnemy->isDead()){
 				//	currentEnemy->attack(this, 40, 'a');
@@ -150,7 +150,6 @@ void EnemyBasicUnit::update(float dt) {
 			auto bfsp = pf->getBFSParent(pos.x, pos.y);
 
 			if(dir == "u"){
-				CCLOG("u");
 				if(!pf->checkBlock(pos.x - 1, pos.y)){
 					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
 				} else if(!pf->checkBlock(pos.x - 1, pos.y + 1)){
@@ -165,7 +164,6 @@ void EnemyBasicUnit::update(float dt) {
 			}
 
 			else if(dir == "d"){
-				CCLOG("d");
 				if(!pf->checkBlock(pos.x + 1, pos.y)){
 					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
 				} else if(!pf->checkBlock(pos.x + 1, pos.y + 1)){
@@ -180,9 +178,8 @@ void EnemyBasicUnit::update(float dt) {
 			}
 
 			else if(dir == "r"){
-				CCLOG("r");
 				if(!pf->checkBlock(pos.x, pos.y + 1)){
-					lStack->addFront(pf->getBFSParent(pos.x, pos.y + 1));
+					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
 				} else if(!pf->checkBlock(pos.x + 1, pos.y + 1)){
 					pos.x += 32;
 					pos.y += 32;
@@ -195,9 +192,8 @@ void EnemyBasicUnit::update(float dt) {
 			}
 
 			else if(dir == "l"){
-				CCLOG("l");
 				if(!pf->checkBlock(pos.x, pos.y - 1)){
-					lStack->addFront(pf->getBFSParent(pos.x, pos.y - 1));
+					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
 				} else if(!pf->checkBlock(pos.x + 1, pos.y - 1)){
 					pos.x += 32;
 					pos.y -= 32;
@@ -210,9 +206,8 @@ void EnemyBasicUnit::update(float dt) {
 			}
 
 			else if(dir == "ul"){
-				CCLOG("ul");
 				if(!pf->checkBlock(pos.x - 1, pos.y - 1)){
-					lStack->addFront(pf->getBFSParent(pos.x - 1, pos.y - 1));
+					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
 				} else if(!pf->checkBlock(pos.x - 1, pos.y)){
 					pos.x -= 32;
 					pos.y -= 0;
@@ -225,9 +220,8 @@ void EnemyBasicUnit::update(float dt) {
 			}
 
 			else if(dir == "ur"){
-				CCLOG("ur");
 				if(!pf->checkBlock(pos.x - 1, pos.y + 1)){
-					lStack->addFront(pf->getBFSParent(pos.x - 1, pos.y + 1));
+					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
 				} else if(!pf->checkBlock(pos.x, pos.y + 1)){
 					pos.x += 0;
 					pos.y += 32;
@@ -240,9 +234,8 @@ void EnemyBasicUnit::update(float dt) {
 			}
 
 			else if(dir == "dl"){
-				CCLOG("dl");
 				if(!pf->checkBlock(pos.x + 1, pos.y - 1)){
-					lStack->addFront(pf->getBFSParent(pos.x + 1, pos.y - 1));
+					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
 				} else if(!pf->checkBlock(pos.x + 1, pos.y)){
 					pos.x += 32;
 					pos.y += 0;
@@ -255,9 +248,8 @@ void EnemyBasicUnit::update(float dt) {
 			}
 
 			else if(dir == "dr"){
-				CCLOG("dr");
 				if(!pf->checkBlock(pos.x + 1, pos.y + 1)){
-					lStack->addFront(pf->getBFSParent(pos.x + 1, pos.y + 1));
+					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
 				} else if(!pf->checkBlock(pos.x + 1, pos.y)){
 					pos.x += 32;
 					pos.y += 0;
@@ -288,8 +280,8 @@ void EnemyBasicUnit::update(float dt) {
 
 void EnemyBasicUnit::attack(BasicUnit * attacker, int damage, char attackType){
 	health -= damage;
-	CCLOG("%p EnemyBasicUnit WAS ATTACKEDDDD for %d damage", this, damage);
-	CCLOG("%p's (EnemyBasicUnit) health: %d", this, health);
+	//CCLOG("%p EnemyBasicUnit WAS ATTACKEDDDD for %d damage", this, damage);
+	//CCLOG("%p's (EnemyBasicUnit) health: %d", this, health);
 }
 
 //Melee

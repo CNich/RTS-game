@@ -19,7 +19,6 @@ AttackObjectNinjaStar* AttackObjectNinjaStar::create(BasicUnit * attacker, cocos
 	pSprite->location = location;
 	pSprite->damage = damage;
 	pSprite->pf = tpf;
-	CCLOG("%p THIS WAS RECEIVED", attacker);
 	//pSprite->init(location, damage, attackType);
 	return pSprite;
 }

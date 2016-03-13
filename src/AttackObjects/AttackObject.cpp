@@ -17,14 +17,13 @@ AttackObject* AttackObject::create(BasicUnit * attacker, cocos2d::Point location
 	pSprite->location = location;
 	pSprite->damage = damage;
 	pSprite->pf = tpf;
-	CCLOG("%p THIS WAS RECEIVED", attacker);
+	//CCLOG("%p THIS WAS RECEIVED", attacker);
 	//pSprite->init(location, damage, attackType);
-	CCLOG("DUMMIED init");
 	return pSprite;
 }
 
 void AttackObject::initAttack(){
-	CCLOG("DUMMIED here");
+
 	this->parent->getParent()->addChild(this);
 	auto eloc = parent->getCurrentEnemy()->getPosition();
 	this->setPosition(eloc.x, eloc.y);

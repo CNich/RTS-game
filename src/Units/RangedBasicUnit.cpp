@@ -102,7 +102,7 @@ void RangedBasicUnit::update(float dt) {
 				this->enemyIsAttackable()){
 			attacking = true;
 			//currentEnemyMoved = false;
-			CCLOG("ATTACKED");
+
 			auto callback = CallFunc::create([this]() {
 				//if(currentEnemy != 0 && !currentEnemy->isDead()){
 				//	currentEnemy->attack(this, 40, 'a');
@@ -132,7 +132,6 @@ void RangedBasicUnit::update(float dt) {
 			auto t = convertToPf(currentEnemy->getPosition());
 			this->ASolve(t.x, t.y);
 			currentEnemyMoved = false;
-			CCLOG("doooops");
 		}
 
 		//the unit is in between movements and is not attacking
@@ -257,8 +256,8 @@ void RangedBasicUnit::update(float dt) {
 
 void RangedBasicUnit::attack(BasicUnit * attacker, int damage, char attackType){
 	health -= damage;
-	CCLOG("%p RangedBasicUnit WAS ATTACKEDDDD for %d damage", this, damage);
-	CCLOG("%p's (RangedBasicUnit) health: %d", this, health);
+	//CCLOG("%p RangedBasicUnit WAS ATTACKEDDDD for %d damage", this, damage);
+	//CCLOG("%p's (RangedBasicUnit) health: %d", this, health);
 }
 
 //Ranged
