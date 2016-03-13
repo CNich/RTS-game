@@ -34,6 +34,8 @@ public:
 	void setBFSParent(int x, int y, int dx, int dy);
 	void setBFSDir(int x, int y, char *dir) { map[x][y].dir = dir; };
 	char* getBFSDir(int x, int y) { return map[x][y].dir; };
+	void setBFSStart(int x, int y) { BFSStart.x = x; BFSStart.y = y; };
+	cocos2d::Point getBFSStart() { return BFSStart; };
 	cocos2d::Point getBFSParent(int x, int y);
 	void block(int x, int y);
 	void unblock(int x, int y);
@@ -64,6 +66,7 @@ private:
 	int tileY = 1;
 	int offX = 0;
 	int offY = 0;
+	cocos2d::Point BFSStart;
 
 };
 

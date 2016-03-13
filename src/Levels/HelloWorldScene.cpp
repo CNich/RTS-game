@@ -249,7 +249,7 @@ bool HelloWorld::init() {
 	ninja->BFSInit(bfsp.x, bfsp.y);
 
 	int t1 = 1;
-	int t2 = 6;
+	int t2 = 15;
 
 	for(int i=0; i < t1/4; i++){
 		auto p = _plpos;

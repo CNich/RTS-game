@@ -25,7 +25,8 @@ class BFS {
 public:
 	BFS(int l, int w);
 	void setBlocked(int x, int y){ map[x][y].blocked = true; };
-	void setStart(int x, int y) { start.x = x; start.y = y; CCLOG("setStart: %f, %f", start.x, start.y); CCLOG("setStart x y: %f, %f", x, y); };
+	void setStart(int x, int y);
+	//cocos2d::Point getStart() { return start; };
 	void setChecked(int x, int y) { map[x][y].checked = true; };
 	bool getChecked(int x, int y) { return map[x][y].checked; };
 
