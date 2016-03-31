@@ -7,6 +7,8 @@
 class BasicUnit;
 //PathFinder<BasicUnit> * pf;
 
+#define PI 3.14159265;
+
 int numSounds = 0;
 static void decNumSounds(){ numSounds--; }
 

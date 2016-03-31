@@ -47,6 +47,8 @@ public:
 	PathFinder<BasicUnit> *pf;
 	void setPf(PathFinder<BasicUnit> *tempPf);
 
+	float getAngle(cocos2d::Point a, cocos2d::Point b);
+
 protected:
 	cocos2d::Point startingPos;
 	bool enemy = false;

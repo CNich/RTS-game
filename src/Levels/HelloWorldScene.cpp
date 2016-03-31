@@ -32,6 +32,11 @@ bool HelloWorld::init() {
 		return false;
 	}
 
+	auto wframeCache = SpriteFrameCache::getInstance();
+	wframeCache->addSpriteFramesWithFile("Units/Troll/Troll.plist");
+	wframeCache->addSpriteFramesWithFile("Units/Elf/Elf.plist");
+	wframeCache->addSpriteFramesWithFile("Units/Wizard/Wizard.plist");
+
 	//cocos2d::experimental::AudioEngine::setMaxAudioInstance(1);
 
 	/**********************************************************************/
@@ -249,7 +254,7 @@ bool HelloWorld::init() {
 	ninja->BFSInit(bfsp.x, bfsp.y);
 
 	int t1 = 1;
-	int t2 = 15;
+	int t2 = 1;
 
 	for(int i=0; i < t1/4; i++){
 		auto p = _plpos;
@@ -268,6 +273,7 @@ bool HelloWorld::init() {
 		initUnit(r, 0);
 	}
 
+
 	for(int i=0; i < t1; i++){
 		auto p = _plpos;
 		p.x = _plpos.x + pf->getTileX() * i;
@@ -276,7 +282,7 @@ bool HelloWorld::init() {
 		bvec.pushBack(r);
 		initUnit(r, 0);
 	}
-
+/*
 	for(int i=0; i < t1; i++){
 		auto p = _plpos;
 		p.x = _plpos.x + pf->getTileX() * i;
@@ -284,7 +290,7 @@ bool HelloWorld::init() {
 		BasicUnit * r = BasicUnit::create(p);
 		bvec.pushBack(r);
 		initUnit(r, 0);
-	}
+	}*/
 
 	for(int i=0; i < t1; i++){
 		auto p = _plpos;

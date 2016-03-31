@@ -58,6 +58,18 @@ RangedBasicUnit* RangedBasicUnit::create(cocos2d::Point tmp){
 void RangedBasicUnit::makeAttack(){
 	RangedAttackObject* atk = RangedAttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
 	atk->initAttack();
+
+	Vector<SpriteFrame *> trollFrames;
+	for (int i = 0; i <= 8; i++){
+		auto *filename = __String::createWithFormat("attack0001%d.png", i);
+		CCLOG("%s", filename->getCString());
+		auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
+		trollFrames.pushBack(wframe);
+		CCLOG("Made troll %d", i);
+	}
+	auto wrunAnim = Animation::createWithSpriteFrames(trollFrames, 0.08);
+	auto animate = Animate::create(wrunAnim);
+	this->runAction(animate);
 }
 
 //Ranged

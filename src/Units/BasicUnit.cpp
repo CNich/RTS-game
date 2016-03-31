@@ -1,6 +1,8 @@
 #include "src/Units/BasicUnit.h"
 #include "SimpleAudioEngine.h"
 #include "stdlib.h"
+#include "src/Utilities/GlobalVariables.h"
+#include "math.h"
 #include "src/AttackObjects/AttackObject.h"
 #include "src/AttackObjects/RangedAttackObject.h"
 #include "src/Utilities/GlobalVariables.h"
@@ -270,19 +272,40 @@ void BasicUnit::delayedMove() {
 		}*/
 
 
+
 		if (playerPos.x < (50 * 32) && playerPos.y < (50 * 32)
 				&& playerPos.y >= 0 && playerPos.x >= 0) {
 			//CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("step.mp3");
 
-			if(abs(abs(diff.x) + abs(diff.y)) > 64){
+			if(abs(diff.x) >= 32 || abs(diff.y) >= 32){
 				this->setPlayerPosition(playerPos, abs(diff.x) > 0 && abs(diff.y) > 0);
+				getAngle(this->getPosition(), playerPos);
 			} else{
 				this->setPlayerPosition(touchLocation, abs(diff.x) > 0 && abs(diff.y) > 0);
+				getAngle(this->getPosition(), touchLocation);
 			}
 
 			//this->setPlayerPosition(touchLocation, abs(diff.x) > 0 && abs(diff.y) > 0);
 		}
 	}
+}
+
+float BasicUnit::getAngle(cocos2d::Point a, cocos2d::Point b){
+	cocos2d::Point centered;
+
+	centered.x = b.x - a.x;
+	centered.y = b.y - a.y;
+
+	float hyp = sqrt(pow(centered.x, 2) + pow(centered.y, 2));
+
+	float fact = 1.0f;
+	if(centered.y < 0){
+		fact = -1;
+	}
+
+	float ang = fact * acos(centered.x / hyp) * 180 / PI;
+	CCLOG("(%3.3f,%3.3f) (%3.3f,%3.3f) angle: %f",a.x, a.y, b.x, b.y, ang);
+	return ang;
 }
 
 void BasicUnit::setPlayerPosition(Point position, bool diag) {
@@ -583,6 +606,17 @@ void BasicUnit::attack(BasicUnit * attacker, int damage, char attackType){
 void BasicUnit::makeAttack(){
 	AttackObject* atk = AttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
 	atk->initAttack();
+
+	Vector<SpriteFrame *> trollFrames;
+	for (int i = 0; i <= 8; i++){
+		auto *filename = __String::createWithFormat("attack0001%d.png", i);
+		CCLOG("%s", filename->getCString());
+		auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
+		trollFrames.pushBack(wframe);
+	}
+	auto wrunAnim = Animation::createWithSpriteFrames(trollFrames, 0.08);
+	auto animate = Animate::create(wrunAnim);
+	this->runAction(animate);
 }
 
 void BasicUnit::returnHealth(int healthTaken, char attackType){
