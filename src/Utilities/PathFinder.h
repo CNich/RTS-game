@@ -70,6 +70,9 @@ private:
 
 };
 
+/*
+ * Initialize the pathfinder's map
+ */
 template<class T>
 PathFinder<T>::PathFinder(int a, int b, pairC s, pairC e){
 	map.resize(a);
@@ -78,25 +81,36 @@ PathFinder<T>::PathFinder(int a, int b, pairC s, pairC e){
 		map[i].resize(b);
 		//map[i] = new pathNode[b];
 		for (int j = 0; j < b; j++){
+			//set map coordinate to default values
 			map[i][j] = defaultPathNode();
+
+			//calculate distance to travel from current node to the end
 			map[i][j].H = 10 * (abs(i - e.x) + abs(j - e.y));
+
+			//set map coordinate's pathNode's coordinate
 			map[i][j].x = i;
 			map[i][j].y = j;
 		}
 	}
+	//initialize start node and end coordinate
 	start = s;
 	end = e;
 	map[s.x][s.y].parent = s;
 	map[s.x][s.y].G = 0;
 	map[s.x][s.y].F = map[s.x][s.y].H;
 
+	//save size of map
 	rows = a;
 	cols = b;
 
+	//initialize heap and queue
 	openL = new HeapPathFinder(a*b);
 	queueP = new LinkedList<cocos2d::Point>();
 }
 
+/*
+ * Initialize the pathfinder's map WITHOUT a start and end
+ */
 template<class T>
 PathFinder<T>::PathFinder(int a, int b){
 	map.resize(a);
@@ -119,7 +133,7 @@ PathFinder<T>::PathFinder(int a, int b){
 }
 
 /*
- * set all map nodes to defaultPathNode
+ * Set all map nodes to defaultPathNode
  */
 template<class T>
 void PathFinder<T>::resetMap(){
@@ -220,16 +234,11 @@ template<class T>
 cocos2d::Point PathFinder<T>::getBFSParent(int x, int y){
 	cocos2d::Point temp;
 
+	//convert BFS parent from map to game coordinates
 	temp.x = map[x][y].bfsParent.x * tileX + offX;
 	temp.y = map[x][y].bfsParent.y * tileY + offY;
-	/*GOING
-	 * TO
-	 * HAVE
-	 * TO
-	 * FIX
-	 * THIS*/
-	temp.y = 16 + map[x][y].bfsParent.y * 32;
-	temp.x = 16 + map[x][y].bfsParent.x * 32;
+	//temp.y = 16 + map[x][y].bfsParent.y * 32;
+	//temp.x = 16 + map[x][y].bfsParent.x * 32;
 
 	return temp;
 };
@@ -428,20 +437,10 @@ LinkedList<cocos2d::Point> * PathFinder<T>::solve(){
 	while (!map[curr.x][curr.y].success && map[curr.x][curr.y].parent.x != -1
 			&& (curr.x != start.x || curr.y != start.y)){
 		cocos2d::Point temp;
-		/*temp.x = curr.x * tileX + offX;
-		temp.y = curr.y * tileY + offY;
-		/*GOING
-		 * TO
-		 * HAVE
-		 * TO
-		 * FIX
-		 * THIS * /
-		temp.y = -1 * (temp.y - 750) + 750;
-		*/
 
 		//need to convert from the map coordinates (0, 1, 2...tileX) to the game coordinates (tilemap)
-		temp.y = 16 + curr.y * 32;
-		temp.x = 16 + curr.x * 32;
+		temp.x = curr.x * tileX + offX;
+		temp.y = curr.y * tileY + offY;
 
 		queueP->addFront(temp);
 
@@ -450,8 +449,6 @@ LinkedList<cocos2d::Point> * PathFinder<T>::solve(){
 
 		//set current node to it's parent
 		curr = map[curr.parent.x][curr.parent.y];
-		////cout << curr.x << " " << curr.y << "\t" << map[curr.x][curr.y].x << " " << map[curr.x][curr.y].y << endl
-
 	}
 
 	//for printing purposes
@@ -474,11 +471,6 @@ template<class T>
 void PathFinder<T>::checkAdj(int x1, int y1, int x2, int y2){
 	//cout << openL->getLength() << endl;
 
-	/*
-	 * 14 10 14
-	 * 10 x  10
-	 * 14 10 14
-	 */
 	//diagonal neighbors cost are 14
 	//straight neighbors cost are 10
 	int cost = 14;
@@ -489,29 +481,39 @@ void PathFinder<T>::checkAdj(int x1, int y1, int x2, int y2){
 	//check if node is within the bounds, already visited, or blocked
 	if (x1 >= 0 && y1 >= 0 && x1 <= rows - 1 && y1 <= cols - 1 && !map[x1][y1].closed && !map[x1][y1].blocked){
 
+		//if the cost to get to the neighbor's node is currently greater than getting there
+		//through the current node, switch it's G value and update it's position in the heap
 		if (map[x1][y1].G > map[x2][y2].G + cost){
+
+			//set new cost of neighbor to current node's cost + 10 or 14
 			map[x1][y1].G = map[x2][y2].G + cost;
+
+			//set parent of neighbor to current node
 			map[x1][y1].parent.x = x2;
 			map[x1][y1].parent.y = y2;
+
+			//calculate new F value
 			map[x1][y1].F = map[x1][y1].G + map[x1][y1].H;
 			
 			//for debugging
 			map[x1][y1].checked = true;
 			
-			//check to see if left is in heap. If not, add it
+			//check to see if neighbor is in heap. If not, add it
+			//items not in the heap have heapPos = -1
 			if (map[x1][y1].heapPos == -1){
-				////cout << "insert " << map[x1][y1].parent.x << " " << map[x1][y1].parent.y;
 				openL->insert(&map[x1][y1]);
 			}
+			//if the neighbor is already in the heap, update it's position
 			else{
-				////cout << "change";
 				openL->change(&map[x1][y1]);
 			}
 		}
-		////cout << endl;
 	}
 }
 
+/*
+ * Return positive value of a number
+ */
 template<class T>
 int PathFinder<T>::abs(int a){
 	if(a > 0){
