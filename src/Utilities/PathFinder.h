@@ -89,6 +89,7 @@ PathFinder<T>::PathFinder(int a, int b, pairC s, pairC e){
 	map[s.x][s.y].parent = s;
 	map[s.x][s.y].G = 0;
 	map[s.x][s.y].F = map[s.x][s.y].H;
+
 	rows = a;
 	cols = b;
 
@@ -117,12 +118,17 @@ PathFinder<T>::PathFinder(int a, int b){
 	queueP = new LinkedList<cocos2d::Point>();
 }
 
+/*
+ * set all map nodes to defaultPathNode
+ */
 template<class T>
 void PathFinder<T>::resetMap(){
 	for (int i = 0; i < rows; i++){
 		for (int j = 0; j < cols; j++){
 			map[i][j] = defaultPathNode();
-			map[i][j].H = 10 * (abs(i - end.x) + abs(j - end.y));
+			map[i][j].H = 10 * (abs(i - end.x) + abs(j - end.y));//distance to end * 10
+
+			//set pathNode's location
 			map[i][j].x = i;
 			map[i][j].y = j;
 		}
@@ -130,15 +136,28 @@ void PathFinder<T>::resetMap(){
 	setStart(start.x, start.y);
 }
 
+/*
+ * Initialize start node
+ */
 template<class T>
 void PathFinder<T>::setStart(int a, int b){
 	start.x = a;
 	start.y = b;
+
+	//set parent to self at the start
 	map[start.x][start.y].parent = start;
+
+	//cost to get to the start node = 0
 	map[start.x][start.y].G = 0;
+
+	//since F(start) = H(start) + ( G(start) = 0)
 	map[start.x][start.y].F = map[start.x][start.y].H;
 }
 
+/*
+ * Whenever we set a new end, the entire map has to be recalculated as
+ * all of the H values are now different
+ */
 template<class T>
 void PathFinder<T>::setEnd(int a, int b){
 	end.x = a;
@@ -146,36 +165,57 @@ void PathFinder<T>::setEnd(int a, int b){
 	resetMap();
 }
 
+/*
+ * Set size of X tile
+ */
 template<class T>
 void PathFinder<T>::setTileX(int x){
 	tileX = x;
 }
 
+/*
+ * Set size of Y tile
+ */
 template<class T>
 void PathFinder<T>::setTileY(int y){
 	tileY = y;
 }
 
+/*
+ * Set size of X tile offset
+ */
 template<class T>
 void PathFinder<T>::setOffX(int x){
 	offX = x;
 }
 
+/*
+ * Set size of Y tile offset
+ */
 template<class T>
 void PathFinder<T>::setOffY(int y){
 	offY = y;
 }
 
+/*
+ * Set map size
+ */
 template<class T>
 int PathFinder<T>::getRows(){
 	return rows;
 }
 
+/*
+ * Set map size
+ */
 template<class T>
 int PathFinder<T>::getCols(){
 	return cols;
 }
 
+/*
+ * Get next coordinate of BFS path
+ */
 template<class T>
 cocos2d::Point PathFinder<T>::getBFSParent(int x, int y){
 	cocos2d::Point temp;
@@ -194,37 +234,67 @@ cocos2d::Point PathFinder<T>::getBFSParent(int x, int y){
 	return temp;
 };
 
+/*
+ * Set BFS node's parent
+ */
 template<class T>
 void PathFinder<T>::setBFSParent(int x, int y, int dx, int dy) {
 	map[x + dx][y + dy].bfsParent.x = x;
 	map[x + dx][y + dy].bfsParent.y = y;
 };
 
+/*
+ * Initialize path node
+ * Sets the blocked status to false
+ * Sets the pathfinder F G H to "infinity"
+ */
 template<class T>
 pathNode PathFinder<T>::defaultPathNode(){
 	pathNode p;
 	p.blocked = false;
 	p.permaBlocked = false;
 	p.closed = false;
+
+	//F(n) = G(n) + H(n)
 	p.F = 10000;
+
+	//G(n) = total cost to get to the current node
+	//eg. G(start) = 0
 	p.G = 10000;
+
+	//H(n) = distance from node n to the end node
 	p.H = 10000;
+
+	//position in the heap
 	p.heapPos = -1;
+
+	//node n's parent
+	//if parent = -1, this node hasn't been visited yet
 	pairC pt; pt.x = -1; pt.y = -1;
 	p.parent = pt;
+
 	p.taken = false;
 	p.success = false;
 	p.checked = false;
+
+	//who occupies this current node (in this case it is a BasicUnit
 	p.unit = 0;
 
 	return p;
 }
 
+/*
+ * Set map coordinate's pathNode
+ */
 template<class T>
 void PathFinder<T>::set(int x, int y, pathNode a){
 	map[x][y] = a;
 }
 
+/*
+ * Dynamically block a map point (not a valid point on any path finder)
+ * Generally done when a unit is moving
+ */
 template<class T>
 void PathFinder<T>::block(int x, int y){
 	if (!(x == end.x && y == end.y) && !(x == start.x && y == start.y) && x >= 0 && x < rows && y >= 0 && y < cols){
@@ -232,6 +302,12 @@ void PathFinder<T>::block(int x, int y){
 	}
 }
 
+/*
+ * Block map point (not a valid point on any path finder)
+ * Permablock means that it CANNOT be unblocked
+ * This is only called at the init() of a Scene by it's setMap() call
+ * Only blocked points on the tilemap are permablocked
+ */
 template<class T>
 void PathFinder<T>::permaBlock(int x, int y){
 	if (!(x == end.x && y == end.y) && !(x == start.x && y == start.y) && x >= 0 && x < rows && y >= 0 && y < cols){
@@ -239,6 +315,10 @@ void PathFinder<T>::permaBlock(int x, int y){
 	}
 }
 
+/*
+ * Unblock a map coordinate
+ * Called during unit's movement
+ */
 template<class T>
 void PathFinder<T>::unblock(int x, int y){
 	if (!map[x][y].permaBlocked && !(x == end.x && y == end.y) && !(x == start.x && y == start.y) && x >= 0 && x < rows && y >= 0 && y < cols){
@@ -246,11 +326,17 @@ void PathFinder<T>::unblock(int x, int y){
 	}
 }
 
+/*
+ * Check if a map coordinate is blocked
+ */
 template<class T>
 bool PathFinder<T>::checkBlock(int x, int y){
 	return map[x][y].blocked;
 }
 
+/*
+ * Set a map coordinate to taken (not yet implemented)
+ */
 template<class T>
 void PathFinder<T>::taken(int x, int y){
 	if (!(x == end.x && y == end.y) && !(x == start.x && y == start.y) && x >= 0 && x < rows && y >= 0 && y < cols){
@@ -258,6 +344,9 @@ void PathFinder<T>::taken(int x, int y){
 	}
 }
 
+/*
+ * Set a map coordinate to untaken (not yet implemented)
+ */
 template<class T>
 void PathFinder<T>::untaken(int x, int y){
 	if (!map[x][y].permaBlocked && !(x == end.x && y == end.y) && !(x == start.x && y == start.y) && x >= 0 && x < rows && y >= 0 && y < cols){
@@ -265,27 +354,45 @@ void PathFinder<T>::untaken(int x, int y){
 	}
 }
 
+/*
+ * Check if map coordinate is taken (not yet implemented)
+ */
 template<class T>
 bool PathFinder<T>::checkTaken(int x, int y){
 	return map[x][y].taken;
 }
 
-//Be careful about the new change function!!!
+/*
+ * Be careful about the new change function!!!
+ * Find the shorted path from the start node to the end node
+ * This is the actual implementation of the A* Search algorithm
+ */
 template<class T>
 LinkedList<cocos2d::Point> * PathFinder<T>::solve(){
+	//reset the queue
 	queueP->reset();
+
+	//insert start into the heap
 	openL->insert(&map[start.x][start.y]);
+
+	//main A* loop
+	//check the first item on the heap/mark it as visited
+	//add it's unchecked neighbors to the heap
+	//keep doing this until the heap is empty or we get to the finish (end) node
 	while (openL->getLength() > 0){
+
+		//extract the first item in the heap
 		pathNode curr = openL->extract();
+
+		//if we have reached the end node, then no need to check the rest of the heap
 		if (curr.x == end.x && curr.y == end.y){
 			map[curr.x][curr.y].closed = true;
-			//map[end.x][end.y].parent.x = curr.x;
-			//map[end.x][end.y].parent.y = curr.y;
-			////cout << "breaking" << endl;
 			break;
 		}
+		//mark current node as visited
 		map[curr.x][curr.y].closed = true;
 		
+		//check all 8 adjacent nodes to see if they can be added to the heap
 		//check left
 		checkAdj(curr.x - 1, curr.y, curr.x, curr.y);
 		
@@ -311,29 +418,43 @@ LinkedList<cocos2d::Point> * PathFinder<T>::solve(){
 		checkAdj(curr.x + 1, curr.y + 1, curr.x, curr.y);
 		
 	}
+	//either the end node was reached or the the heap ran out
 	pathNode curr = map[end.x][end.y];
+
+	//travel parent to parent starting from the end node until the start node
+	//break if current node is already a success (should never happen)
+	//break if parent = -1 (should only happen if the end node was never reached)
+	//Results are recorded as pathNodes in the queue (queueP)
 	while (!map[curr.x][curr.y].success && map[curr.x][curr.y].parent.x != -1
 			&& (curr.x != start.x || curr.y != start.y)){
 		cocos2d::Point temp;
-		temp.x = curr.x * tileX + offX;
+		/*temp.x = curr.x * tileX + offX;
 		temp.y = curr.y * tileY + offY;
 		/*GOING
 		 * TO
 		 * HAVE
 		 * TO
 		 * FIX
-		 * THIS*/
+		 * THIS * /
 		temp.y = -1 * (temp.y - 750) + 750;
+		*/
 
+		//need to convert from the map coordinates (0, 1, 2...tileX) to the game coordinates (tilemap)
 		temp.y = 16 + curr.y * 32;
 		temp.x = 16 + curr.x * 32;
 
 		queueP->addFront(temp);
+
+		//set current node to a success node (it is in the final solution)
 		map[curr.x][curr.y].success = true;
+
+		//set current node to it's parent
 		curr = map[curr.parent.x][curr.parent.y];
 		////cout << curr.x << " " << curr.y << "\t" << map[curr.x][curr.y].x << " " << map[curr.x][curr.y].y << endl
 
 	}
+
+	//for printing purposes
 	if (curr.x == start.x && curr.y == start.y){
 		//cout << "SUCCESS!!!" << endl;
 	}
@@ -344,17 +465,31 @@ LinkedList<cocos2d::Point> * PathFinder<T>::solve(){
 	return queueP;
 }
 
+/*
+ * Check node's neighbors
+ * (x1,y1) = neighbor
+ * (x2,y2) = current node
+ */
 template<class T>
 void PathFinder<T>::checkAdj(int x1, int y1, int x2, int y2){
 	//cout << openL->getLength() << endl;
+
+	/*
+	 * 14 10 14
+	 * 10 x  10
+	 * 14 10 14
+	 */
+	//diagonal neighbors cost are 14
+	//straight neighbors cost are 10
 	int cost = 14;
 	if (x1 == x2 || y1 == y2){
 		cost = 10;
 	}
+
+	//check if node is within the bounds, already visited, or blocked
 	if (x1 >= 0 && y1 >= 0 && x1 <= rows - 1 && y1 <= cols - 1 && !map[x1][y1].closed && !map[x1][y1].blocked){
-		////cout <<cost << "  " <<  x1 << "," << y1 << "\t" << x2 << "," << y2 << "\t" << map[x1][y1].G << " " << map[x2][y2].G + cost << "\t";
+
 		if (map[x1][y1].G > map[x2][y2].G + cost){
-			////cout << "true ";
 			map[x1][y1].G = map[x2][y2].G + cost;
 			map[x1][y1].parent.x = x2;
 			map[x1][y1].parent.y = y2;

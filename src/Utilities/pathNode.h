@@ -21,8 +21,11 @@ struct pathNode{
 	bool closed;
 	bool success;
 	bool checked;
+
+	//pathNode's location
 	int x;
 	int y;
+
 	BasicUnit *unit;
 
 	//BFS map
