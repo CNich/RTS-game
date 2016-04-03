@@ -62,10 +62,10 @@ void RangedBasicUnit::makeAttack(){
 	Vector<SpriteFrame *> trollFrames;
 	for (int i = 0; i <= 8; i++){
 		auto *filename = __String::createWithFormat("attack0001%d.png", i);
-		CCLOG("%s", filename->getCString());
+		//CCLOG("%s", filename->getCString());
 		auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
 		trollFrames.pushBack(wframe);
-		CCLOG("Made troll %d", i);
+		//CCLOG("Made troll %d", i);
 	}
 	auto wrunAnim = Animation::createWithSpriteFrames(trollFrames, 0.08);
 	auto animate = Animate::create(wrunAnim);

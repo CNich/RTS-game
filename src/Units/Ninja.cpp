@@ -215,7 +215,7 @@ void Ninja::update(float dt) {
 void Ninja::attack(BasicUnit * attacker, int damage, char attackType){
 	health -= damage;
 	//CCLOG("%p Ninja WAS ATTACKEDDDD for %d damage", this, damage);
-	//CCLOG("%p's (Ninja) health: %d", this, health);
+	CCLOG("%p's (Ninja) health: %d", this, health);
 }
 
 //Ranged

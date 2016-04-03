@@ -255,8 +255,8 @@ bool HelloWorld::init() {
 	ninja->setBFSmap();
 	ninja->BFSInit(bfsp.x, bfsp.y);
 
-	int t1 = 3;
-	int t2 = 30;
+	int t1 = 1;
+	int t2 = 0;
 
 	for(int i=0; i < t1/4; i++){
 		auto p = _plpos;
@@ -360,7 +360,7 @@ bool HelloWorld::init() {
 	rangedBasicUnitVec2.pushBack(r);
 	r->setColor(Color3B::GREEN);
 	initUnit(r, 1);
-	r->tracked = true;
+	//r->tracked = true;
 
 	//this->drawBFSMap();
 

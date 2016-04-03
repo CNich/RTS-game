@@ -341,7 +341,7 @@ void BasicUnit::setUnitDir(float ang){
 		walkingAnimationFlag = true;
 		unitDir = tmp;
 	}
-	CCLOG("angle: %3.0f, unitDir: %d", ang, unitDir);
+	//CCLOG("angle: %3.0f, unitDir: %d", ang, unitDir);
 	if(ang > 360){
 		unitDir = 9;
 	}
@@ -363,8 +363,8 @@ cocos2d::Animate* BasicUnit::animationWalk(){
 			walkFrames.pushBack(wframe);
 		}
 		float duration =  walkingSpeed / animationLength;
-		//if(unitDir % 2 == 1) duration *= 1.4;
-		auto walkAnim = Animation::createWithSpriteFrames(walkFrames, duration * 1.4);
+		if(unitDir % 2 == 1) duration *= 1.4;
+		auto walkAnim = Animation::createWithSpriteFrames(walkFrames, duration);
 		auto animate = Animate::create(walkAnim);
 		//auto waction = RepeatForever::create(animate);
 		//this->runAction(animate);
@@ -410,14 +410,15 @@ void BasicUnit::setPlayerPosition(Point position, bool diag) {
 		moving = true;
 
 		auto seq = Sequence::create(actionMove, callback, nullptr);
-		if(walkingAnimationFlag){
-			this->stopAllActions();
+		this->runAction(seq);
+		this->runAction(this->animationWalk());
+		/*if(walkingAnimationFlag){
 			this->runAction(seq);
 			auto waction = RepeatForever::create(this->animationWalk());
 			this->runAction(waction);
 		} else{
 			this->runAction(seq);
-		}
+		}*/
 
 
 
@@ -457,7 +458,6 @@ void BasicUnit::setPlayerPosition(Point position, bool diag) {
 						});
 			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("error.mp3");
 			auto seq = Sequence::create(DelayTime::create(0.5), callback, nullptr);
-			this->stopAllActions();
 			this->runAction(seq);
 			lStack->addFront(position);
 		} else if(giveup == false){
@@ -524,8 +524,8 @@ void BasicUnit::update(float dt) {
 	if(!dead && this->getHealth() <= 0){
 		dead = true;
 		auto rotateTo = RotateTo::create(1.5, 90);
-		this->stopAllActions();
 		this->runAction(rotateTo);
+		CCLOG("check if dead: dead:%d health:%d removeFromPf:%d %p", dead, this->getHealth(), removeFromPf, this);
 	}
 
 	//if dead, die
@@ -544,12 +544,13 @@ void BasicUnit::update(float dt) {
 				pf->setUnitZero(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
 				this->getParent()->removeChild(this);
 			});
-			this->stopAllActions();
 			auto seq = Sequence::create(DelayTime::create(3), callback, nullptr);
 			this->runAction(seq);
 			removeFromPf = false;
+			CCLOG("DEAD DEAD DEAD dead:%d health:%d removeFromPf:%d %p", dead, this->getHealth(), removeFromPf, this);
 		}
 		//this->getParent()->removeChild(this);
+		CCLOG("number of running actions: %d", this->numberOfRunningActions());
 	}
 
 	//if attacking, nothing should be done
@@ -567,17 +568,18 @@ void BasicUnit::update(float dt) {
 				//	currentEnemy->attack(this, 40, 'a');
 				//}
 				attacking = false;
+				CCLOG("ATTACKKKKK FALSE dead:%d health:%d removeFromPf:%d %p", dead, this->getHealth(), removeFromPf, this);
 			});
-			this->stopAllActions();
-			auto rotateTo = RotateTo::create(0.1, 0, 20.0f);
-			auto rotateBack = RotateTo::create(0.1, 0, 0);
-			auto seq = Sequence::create(DelayTime::create(2), callback,
-					rotateTo, rotateBack, nullptr);
+			lStack->reset();
+			CCLOG("attack number of running actions: %d", this->numberOfRunningActions());
+			CCLOG("ATTACKKKKK dead:%d health:%d removeFromPf:%d %p", dead, this->getHealth(), removeFromPf, this);
+			//auto rotateTo = RotateTo::create(0.1, 0, 20.0f);
+			//auto rotateBack = RotateTo::create(0.1, 0, 0);
+			auto seq = Sequence::create(DelayTime::create(2), callback, nullptr);
+					//rotateTo, rotateBack, nullptr);
 			this->runAction(seq);
 
 			this->makeAttack();
-
-			lStack->reset();
 		}
 
 		/*
@@ -649,7 +651,6 @@ void BasicUnit::update(float dt) {
 		if(tempMoving){
 			pf->block(convertToPf(this->getPosition()).x, convertToPf(this->getPosition()).y);
 			tempMoving = false;
-			this->stopAllActions();
 		}
 	}
 }
@@ -682,10 +683,10 @@ bool BasicUnit::enemyIsAttackable(){
 
 //WILL BUILD ON LATER
 void BasicUnit::attack(BasicUnit * attacker, int damage, char attackType){
-	if(health > 0) CCLOG("%p's health: %d", this, health);
+	//if(health > 0) CCLOG("%p's health: %d", this, health);
 	health = health - damage;
-	//CCLOG("%p WAS ATTACKEDDDD for %d damage", this, damage);
-	if(health >= 0) CCLOG("%p's health after attack: %d", this, health);
+	CCLOG("%p WAS ATTACKEDDDD for %d damage", this, damage);
+	//if(health >= 0) CCLOG("%p's health after attack: %d", this, health);
 }
 
 void BasicUnit::makeAttack(){
@@ -695,14 +696,13 @@ void BasicUnit::makeAttack(){
 	Vector<SpriteFrame *> trollFrames;
 	for (int i = 0; i <= 8; i++){
 		auto *filename = __String::createWithFormat("attack%d001%d.png", unitDir, i);
-		CCLOG("%s", filename->getCString());
+		//CCLOG("%s", filename->getCString());
 		auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
 		trollFrames.pushBack(wframe);
 	}
 	auto wrunAnim = Animation::createWithSpriteFrames(trollFrames, 0.08);
 	auto animate = Animate::create(wrunAnim);
 
-	this->stopAllActions();
 	this->runAction(animate);
 }
 
