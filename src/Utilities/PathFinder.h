@@ -235,8 +235,11 @@ cocos2d::Point PathFinder<T>::getBFSParent(int x, int y){
 	cocos2d::Point temp;
 
 	//convert BFS parent from map to game coordinates
-	temp.x = map[x][y].bfsParent.x * tileX + offX;
-	temp.y = map[x][y].bfsParent.y * tileY + offY;
+	temp.y = offY + map[x][y].bfsParent.y * tileY;
+	temp.x = offX + map[x][y].bfsParent.x * tileX;
+
+	//CCLOG("offY: %d, tileY: %d, offX: %d, tileX: %d", offY, tileY, offX, tileX);
+
 	//temp.y = 16 + map[x][y].bfsParent.y * 32;
 	//temp.x = 16 + map[x][y].bfsParent.x * 32;
 

@@ -191,11 +191,12 @@ void BasicUnit::delayedMove() {
 		auto diff = touchLocation - playerPos;
 
 		//depoending on x movement, change the way the unit faces
-		if (diff.x > 0) {
+		/*if (diff.x > 0) {
 			this->runAction(actionTo2);
 		} else {
 			this->runAction(actionTo1);
 		}
+		*/
 
 		//move right
 		if(abs(abs(diff.x) - abs(diff.y)) > 15){
@@ -278,11 +279,11 @@ void BasicUnit::delayedMove() {
 			//CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("step.mp3");
 
 			if(abs(diff.x) >= 32 || abs(diff.y) >= 32){
+				setUnitDir(getAngle(this->getPosition(), playerPos));
 				this->setPlayerPosition(playerPos, abs(diff.x) > 0 && abs(diff.y) > 0);
-				getAngle(this->getPosition(), playerPos);
 			} else{
+				setUnitDir(getAngle(this->getPosition(), touchLocation));
 				this->setPlayerPosition(touchLocation, abs(diff.x) > 0 && abs(diff.y) > 0);
-				getAngle(this->getPosition(), touchLocation);
 			}
 
 			//this->setPlayerPosition(touchLocation, abs(diff.x) > 0 && abs(diff.y) > 0);
@@ -290,22 +291,87 @@ void BasicUnit::delayedMove() {
 	}
 }
 
+/*
+ * Get the counter clockwise angle between two points, with 0 degrees being down
+ */
 float BasicUnit::getAngle(cocos2d::Point a, cocos2d::Point b){
 	cocos2d::Point centered;
 
-	centered.x = b.x - a.x;
-	centered.y = b.y - a.y;
+	//centered.x = b.x - a.x;
+	//centered.y = b.y - a.y;
+	//rotate -90 degrees
 
-	float hyp = sqrt(pow(centered.x, 2) + pow(centered.y, 2));
+	if(a.x == b.x && a.y == b.y){
+		return 361;
+	} else{
+		//get point b wrt point a and rotate by 90 degrees
+		centered.x = -(b.y - a.y);
+		centered.y = b.x - a.x;
 
-	float fact = 1.0f;
-	if(centered.y < 0){
-		fact = -1;
+		//get the hypotenuse
+		float hyp = sqrt(pow(centered.x, 2) + pow(centered.y, 2));
+
+		//calculate the angle
+		float ang = acos(centered.x / hyp) * 180 / PI;
+
+		//if y is negative, flip the angle + 180
+		if(centered.y < 0){
+			ang = 360 - ang;
+		}
+		//CCLOG("(%3.3f,%3.3f) (%3.3f,%3.3f) angle: %f",a.x, a.y, b.x, b.y, ang);
+		return ang;
 	}
+}
 
-	float ang = fact * acos(centered.x / hyp) * 180 / PI;
-	CCLOG("(%3.3f,%3.3f) (%3.3f,%3.3f) angle: %f",a.x, a.y, b.x, b.y, ang);
-	return ang;
+/*
+ * Set the unit's direction for it's sprite based on the angle it is traveling
+ */
+void BasicUnit::setUnitDir(float ang){
+	float diff = 360;
+	int tmp = 0;
+	for(int i = 0; i < 8; i++){
+		if(abs(ang - i * 45) < diff){
+			diff = abs(ang - i * 45);
+			tmp = i;
+		}
+	}
+	if(tmp == unitDir){
+		walkingAnimationFlag = false;
+	} else{
+		walkingAnimationFlag = true;
+		unitDir = tmp;
+	}
+	CCLOG("angle: %3.0f, unitDir: %d", ang, unitDir);
+	if(ang > 360){
+		unitDir = 9;
+	}
+}
+
+/*
+ * Set the walking animation
+ */
+cocos2d::Animate* BasicUnit::animationWalk(){
+	if(unitDir <=8){
+		Vector<SpriteFrame *> walkFrames;
+
+		//length of animation sequence
+		float animationLength = 6.0f;
+
+		for (int i = 0; i <= animationLength; i++){
+			auto *filename = __String::createWithFormat("walk%d000%d.png", unitDir, i);
+			auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
+			walkFrames.pushBack(wframe);
+		}
+		float duration =  walkingSpeed / animationLength;
+		//if(unitDir % 2 == 1) duration *= 1.4;
+		auto walkAnim = Animation::createWithSpriteFrames(walkFrames, duration * 1.4);
+		auto animate = Animate::create(walkAnim);
+		//auto waction = RepeatForever::create(animate);
+		//this->runAction(animate);
+		return animate;
+	} else{
+		return nullptr;
+	}
 }
 
 void BasicUnit::setPlayerPosition(Point position, bool diag) {
@@ -329,11 +395,11 @@ void BasicUnit::setPlayerPosition(Point position, bool diag) {
 		//auto drawNode = DrawNode::create();
 
 		if(diag){
-			actionMove = CCMoveTo::create(0.2 * 1.4, position);
+			actionMove = CCMoveTo::create(walkingSpeed * 1.4, position);
 			//drawNode->drawDot(position, 16, Color4F::RED);
 			//this->getParent()->addChild(drawNode, 1000);
 		} else{
-			actionMove = CCMoveTo::create(0.2, position);
+			actionMove = CCMoveTo::create(walkingSpeed, position);
 			//drawNode->drawDot(position, 16, Color4F::RED);
 			//this->getParent()->addChild(drawNode, 1000);
 		}
@@ -344,7 +410,22 @@ void BasicUnit::setPlayerPosition(Point position, bool diag) {
 		moving = true;
 
 		auto seq = Sequence::create(actionMove, callback, nullptr);
-		this->runAction(seq);
+		if(walkingAnimationFlag){
+			this->stopAllActions();
+			this->runAction(seq);
+			auto waction = RepeatForever::create(this->animationWalk());
+			this->runAction(waction);
+		} else{
+			this->runAction(seq);
+		}
+
+
+
+		//auto spawn = cocos2d::Spawn::create(seq, this->animationWalk(), nullptr);
+		//this->runAction(spawn);
+
+
+
 		//if(numSounds <= 10){
 			//CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("step.mp3");
 			//auto id = CocosDenshion::AudioEngine::play2d(_files[index], false, 1.0f, &_audioProfile);
@@ -376,6 +457,7 @@ void BasicUnit::setPlayerPosition(Point position, bool diag) {
 						});
 			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("error.mp3");
 			auto seq = Sequence::create(DelayTime::create(0.5), callback, nullptr);
+			this->stopAllActions();
 			this->runAction(seq);
 			lStack->addFront(position);
 		} else if(giveup == false){
@@ -442,6 +524,7 @@ void BasicUnit::update(float dt) {
 	if(!dead && this->getHealth() <= 0){
 		dead = true;
 		auto rotateTo = RotateTo::create(1.5, 90);
+		this->stopAllActions();
 		this->runAction(rotateTo);
 	}
 
@@ -461,7 +544,7 @@ void BasicUnit::update(float dt) {
 				pf->setUnitZero(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
 				this->getParent()->removeChild(this);
 			});
-
+			this->stopAllActions();
 			auto seq = Sequence::create(DelayTime::create(3), callback, nullptr);
 			this->runAction(seq);
 			removeFromPf = false;
@@ -485,6 +568,7 @@ void BasicUnit::update(float dt) {
 				//}
 				attacking = false;
 			});
+			this->stopAllActions();
 			auto rotateTo = RotateTo::create(0.1, 0, 20.0f);
 			auto rotateBack = RotateTo::create(0.1, 0, 0);
 			auto seq = Sequence::create(DelayTime::create(2), callback,
@@ -565,6 +649,7 @@ void BasicUnit::update(float dt) {
 		if(tempMoving){
 			pf->block(convertToPf(this->getPosition()).x, convertToPf(this->getPosition()).y);
 			tempMoving = false;
+			this->stopAllActions();
 		}
 	}
 }
@@ -609,13 +694,15 @@ void BasicUnit::makeAttack(){
 
 	Vector<SpriteFrame *> trollFrames;
 	for (int i = 0; i <= 8; i++){
-		auto *filename = __String::createWithFormat("attack0001%d.png", i);
+		auto *filename = __String::createWithFormat("attack%d001%d.png", unitDir, i);
 		CCLOG("%s", filename->getCString());
 		auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
 		trollFrames.pushBack(wframe);
 	}
 	auto wrunAnim = Animation::createWithSpriteFrames(trollFrames, 0.08);
 	auto animate = Animate::create(wrunAnim);
+
+	this->stopAllActions();
 	this->runAction(animate);
 }
 

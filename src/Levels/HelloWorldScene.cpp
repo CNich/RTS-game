@@ -71,6 +71,8 @@ bool HelloWorld::init() {
 			_tileMap->getMapSize().width);
 	pf->setTileX(_tileMap->getTileSize().height);
 	pf->setTileY(_tileMap->getTileSize().width);
+	pf->setOffX(pf->getTileX()/2);
+	pf->setOffY(pf->getTileY()/2);
 
 	this->setMap();
 
@@ -253,8 +255,8 @@ bool HelloWorld::init() {
 	ninja->setBFSmap();
 	ninja->BFSInit(bfsp.x, bfsp.y);
 
-	int t1 = 1;
-	int t2 = 1;
+	int t1 = 3;
+	int t2 = 30;
 
 	for(int i=0; i < t1/4; i++){
 		auto p = _plpos;
@@ -561,6 +563,7 @@ Point HelloWorld::tileCoordForPosition(Point position) {
 	int x = position.x / _tileMap->getTileSize().width;
 	int y = ((_tileMap->getMapSize().height * _tileMap->getTileSize().height)
 			- position.y) / _tileMap->getTileSize().height;
+	//int y = position.y / _tileMap->getTileSize().height;
 	return Point(x, y);
 }
 
@@ -664,8 +667,12 @@ void HelloWorld::setMap() {
 					if ("True" == collision) {
 						//pf->block(tileCoord.x - 1, -1 * (tileCoord.y - 25) + 25 - 1);
 						//pf->permaBlock(tileCoord.x - 1, -1 * (tileCoord.y - 25) + 25 - 1);
+
 						pf->block(tileCoord.x, -1 * (tileCoord.y - 25) + 25 - 1);
 						pf->permaBlock(tileCoord.x, -1 * (tileCoord.y - 25) + 25 - 1);
+
+						//pf->block(tileCoord.x, tileCoord.y);
+						//pf->permaBlock(tileCoord.x, tileCoord.y);
 					}
 				}
 			}

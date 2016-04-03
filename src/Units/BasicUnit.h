@@ -48,6 +48,7 @@ public:
 	void setPf(PathFinder<BasicUnit> *tempPf);
 
 	float getAngle(cocos2d::Point a, cocos2d::Point b);
+	void setUnitDir(float angle);
 
 protected:
 	cocos2d::Point startingPos;
@@ -102,6 +103,11 @@ protected:
 
 	virtual int getHealth();
 	int health = 240;
+
+	int unitDir = 0;
+	virtual cocos2d::Animate* animationWalk();
+	float walkingSpeed = 0.2;
+	bool walkingAnimationFlag = false;
 
 	virtual void update(float dt);
 };
