@@ -109,6 +109,9 @@ protected:
 	float walkingSpeed = 0.2;
 	bool walkingAnimationFlag = false;
 
+	virtual void animationDie();
+	float dieDuration = 0.07;
+
 	virtual void update(float dt);
 };
 

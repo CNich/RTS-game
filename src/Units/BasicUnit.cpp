@@ -523,8 +523,9 @@ void BasicUnit::update(float dt) {
 	//check if dead
 	if(!dead && this->getHealth() <= 0){
 		dead = true;
-		auto rotateTo = RotateTo::create(1.5, 90);
-		this->runAction(rotateTo);
+		//auto rotateTo = RotateTo::create(1.5, 90);
+		//this->runAction(rotateTo);
+		this->animationDie();
 		CCLOG("check if dead: dead:%d health:%d removeFromPf:%d %p", dead, this->getHealth(), removeFromPf, this);
 	}
 
@@ -652,6 +653,27 @@ void BasicUnit::update(float dt) {
 			pf->block(convertToPf(this->getPosition()).x, convertToPf(this->getPosition()).y);
 			tempMoving = false;
 		}
+	}
+}
+
+void BasicUnit::animationDie(){
+	if(unitDir <=8){
+		Vector<SpriteFrame *> dieFrames;
+
+		//length of animation sequence
+		int animationLength = 30;
+		int start = 20;
+
+		for (int i = start; i <= animationLength; i++){
+			auto *filename = __String::createWithFormat("die%d00%d.png", unitDir, i);
+			auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
+			CCLOG("%s", filename->getCString());
+			dieFrames.pushBack(wframe);
+		}
+		auto dieAnim = Animation::createWithSpriteFrames(dieFrames, dieDuration);
+		auto animate = Animate::create(dieAnim);
+		//auto waction = RepeatForever::create(animate);
+		this->runAction(animate);
 	}
 }
 

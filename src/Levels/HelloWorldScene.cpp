@@ -255,8 +255,8 @@ bool HelloWorld::init() {
 	ninja->setBFSmap();
 	ninja->BFSInit(bfsp.x, bfsp.y);
 
-	int t1 = 1;
-	int t2 = 0;
+	int t1 = 4;
+	int t2 = 10;
 
 	for(int i=0; i < t1/4; i++){
 		auto p = _plpos;
