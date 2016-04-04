@@ -248,14 +248,13 @@ bool HelloWorld::init() {
 	ninjaPos.y = _plpos.y  - 32;
 	ninja = Ninja::create(ninjaPos);
 	initUnit(ninja, 0);
-	ninja->setScale(1.5);
 
 	//init enemy following
 	auto bfsp = ninja->convertToPf(ninja->getPosition());
 	ninja->setBFSmap();
 	ninja->BFSInit(bfsp.x, bfsp.y);
 
-	int t1 = 4;
+	int t1 = 5;
 	int t2 = 10;
 
 	for(int i=0; i < t1/4; i++){

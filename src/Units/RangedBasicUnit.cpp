@@ -30,6 +30,7 @@ RangedBasicUnit* RangedBasicUnit::create() {
 	pSprite->health = pSprite->initHealth;
 	pSprite->attackRange = pSprite->initAttackRange;
 	pSprite->movementRange = pSprite->initMovementRange;
+	pSprite->walkingSpeed = pSprite->initWalkingSpeed;
 
 	return pSprite;
 
@@ -51,25 +52,82 @@ RangedBasicUnit* RangedBasicUnit::create(cocos2d::Point tmp){
 	pSprite->health = pSprite->initHealth;
 	pSprite->attackRange = pSprite->initAttackRange;
 	pSprite->movementRange = pSprite->initMovementRange;
+	pSprite->walkingSpeed = pSprite->initWalkingSpeed;
 	return pSprite;
 
 }
 
-void RangedBasicUnit::makeAttack(){
+/*
+ * Set attack animation
+ */
+void RangedBasicUnit::animationAttack(){
 	RangedAttackObject* atk = RangedAttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
 	atk->initAttack();
 
-	Vector<SpriteFrame *> trollFrames;
-	for (int i = 0; i <= 8; i++){
-		auto *filename = __String::createWithFormat("attack0001%d.png", i);
+	Vector<SpriteFrame *> attackFrames;
+	for (int i = 13; i <= 25; i++){
+		auto *filename = __String::createWithFormat("ElfAttack%d00%d.png", unitDir, i);
 		//CCLOG("%s", filename->getCString());
 		auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
-		trollFrames.pushBack(wframe);
+		attackFrames.pushBack(wframe);
 		//CCLOG("Made troll %d", i);
 	}
-	auto wrunAnim = Animation::createWithSpriteFrames(trollFrames, 0.08);
+	auto wrunAnim = Animation::createWithSpriteFrames(attackFrames, attackDuration);
 	auto animate = Animate::create(wrunAnim);
 	this->runAction(animate);
+}
+
+/*
+ * Set the walking animation
+ */
+cocos2d::Animate* RangedBasicUnit::animationWalk(){
+	if(unitDir <=8){
+		Vector<SpriteFrame *> walkFrames;
+
+		//length of animation sequence
+		int animationLength = 22;
+		int startFrame = 16;
+
+		for (int i = startFrame; i <= animationLength; i++){
+			auto *filename = __String::createWithFormat("ElfWalk%d00%d.png", unitDir, i);
+			auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
+			walkFrames.pushBack(wframe);
+		}
+		float duration =  walkingSpeed / (animationLength - startFrame);
+		if(unitDir % 2 == 1) duration *= 1.4;
+		auto walkAnim = Animation::createWithSpriteFrames(walkFrames, duration);
+		auto animate = Animate::create(walkAnim);
+		//auto waction = RepeatForever::create(animate);
+		//this->runAction(animate);
+		return animate;
+	} else{
+		return nullptr;
+	}
+}
+
+
+/*
+ * Set dying animation
+ */
+void RangedBasicUnit::animationDie(){
+	if(unitDir <=8){
+		Vector<SpriteFrame *> dieFrames;
+
+		//length of animation sequence
+		int animationLength = 24;
+		int startFrame = 13;
+
+		for (int i = startFrame; i <= animationLength; i++){
+			auto *filename = __String::createWithFormat("ElfDie%d00%d.png", unitDir, i);
+			auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
+			//CCLOG("%s", filename->getCString());
+			dieFrames.pushBack(wframe);
+		}
+		auto dieAnim = Animation::createWithSpriteFrames(dieFrames, dieDuration);
+		auto animate = Animate::create(dieAnim);
+		//auto waction = RepeatForever::create(animate);
+		this->runAction(animate);
+	}
 }
 
 //Ranged

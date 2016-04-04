@@ -17,14 +17,27 @@ public:
 
 	//void attack(BasicUnit *attacker, int damage, char attackType);
 	int attackRange = 6;
-	virtual void attack(BasicUnit *attacker, int damage, char attackType);
+	//virtual void attack(BasicUnit *attacker, int damage, char attackType);
 
 protected:
 	bool enemyIsAttackable();
-	virtual void update(float dt);
+	//virtual void update(float dt);
 	bool removeThisUnit = false;
 	bool removeFromPf = true;
-	int health = 50000;
+	int initHealth = 200;
+
+	float initAttackSpeed = 1.2;
+
+	/*Animation section*/
+	/********************************************/
+	virtual cocos2d::Animate* animationWalk();
+	float initWalkingSpeed = 0.25;
+	bool walkingAnimationFlag = false;
+
+	virtual void animationDie();
+
+	virtual void animationAttack();
+	/********************************************/
 
 private:
 	BFS *bfsMap;

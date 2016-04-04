@@ -99,11 +99,13 @@ protected:
 	bool removeThisUnit = false;
 	bool removeFromPf = true;
 
-	virtual void makeAttack();
-
 	virtual int getHealth();
 	int health = 240;
 
+	float attackSpeed = 2.0f;
+
+	/*Animation section*/
+	/********************************************/
 	int unitDir = 0;
 	virtual cocos2d::Animate* animationWalk();
 	float walkingSpeed = 0.2;
@@ -112,6 +114,9 @@ protected:
 	virtual void animationDie();
 	float dieDuration = 0.07;
 
+	virtual void animationAttack();
+	float attackDuration = 0.08;
+	/********************************************/
 	virtual void update(float dt);
 };
 

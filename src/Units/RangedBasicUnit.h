@@ -23,7 +23,17 @@ protected:
 	bool removeThisUnit = false;
 	bool removeFromPf = true;
 	int initHealth = 40;
-	virtual void makeAttack();
+
+	/*Animation section*/
+	/********************************************/
+	virtual cocos2d::Animate* animationWalk();
+	float initWalkingSpeed = 0.15;
+	bool walkingAnimationFlag = false;
+
+	virtual void animationDie();
+
+	virtual void animationAttack();
+	/********************************************/
 
 	int initAttackRange = 3;
 	int initMovementRange = 20;

@@ -17,14 +17,16 @@ Ninja::~Ninja() {
 
 Ninja* Ninja::create() {
 	Ninja* pSprite = new Ninja();
-	pSprite->initWithFile("Player.png");
+	pSprite->initWithFile("Units/Wizard/WizardWalk00000.png");
 	srand((unsigned) time(NULL));
 	pSprite->autorelease();
 	pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
 	pSprite->tpf->setTileX(32);
 	pSprite->tpf->setTileY(32);
 	pSprite->bfsMap = new BFS(50, 50);
-	pSprite->setScale(0.5);
+
+	pSprite->health = pSprite->initHealth;
+	pSprite->attackSpeed = pSprite->initAttackSpeed;
 
 	pSprite->scheduleUpdate();
 
@@ -34,14 +36,16 @@ Ninja* Ninja::create() {
 
 Ninja* Ninja::create(cocos2d::Point tmp){
 	Ninja* pSprite = new Ninja();
-	pSprite->initWithFile("Player.png");
+	pSprite->initWithFile("Units/Wizard/WizardWalk00000.png");
 	srand((unsigned) time(NULL));
 	pSprite->autorelease();
 	pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
 	pSprite->tpf->setTileX(32);
 	pSprite->tpf->setTileY(32);
 	pSprite->bfsMap = new BFS(50, 50);
-	pSprite->setScale(0.5);
+
+	pSprite->health = pSprite->initHealth;
+	pSprite->attackSpeed = pSprite->initAttackSpeed;
 
 	pSprite->scheduleUpdate();
 	pSprite->setPosition(tmp);
@@ -67,6 +71,7 @@ void Ninja::setBFSmap(){
 	}
 }
 
+/*
 void Ninja::update(float dt) {
 	cocos2d::Point currentEL;
 	if(currentEnemy != 0){
@@ -140,7 +145,7 @@ void Ninja::update(float dt) {
 			currentEnemyIsCloseEnough = false;
 			currentEnemyMoved = false;
 			CCLOG("drp");
-		}*/
+		}* /
 
 		//else if(currentEnemyIsCloseEnough && !currentEnemyMoved && unitToUnitDistance(this, currentEnemy) < attackRange){
 		else if(currentEnemy != 0 && currentEnemyMoved && unitToUnitDistance(this, currentEnemy) < attackRange){
@@ -178,7 +183,7 @@ void Ninja::update(float dt) {
 		//it's pathfinder has been called
 
 		//gets unit to find path to it's goal position
-		/* A */
+		/* A * /
 		else if(lStack->empty() && idle == true && idleTrack == true){
 			idle = false;
 			badMove = 0;
@@ -187,10 +192,10 @@ void Ninja::update(float dt) {
 		}
 
 		//causes unit to wait for 1 second until trying *A* again
-		/* B */
+		/* B * /
 		else if(lStack->empty() && movedYet == true && idle == false && idleTrack == true){
 			badMove++;
-			/* makes sure *A* is not going while*/
+			/* makes sure *A* is not going while* /
 			idleTrack = false;
 			auto callback = CallFunc::create([this]() {
 				idle = true;
@@ -211,12 +216,93 @@ void Ninja::update(float dt) {
 		}
 	}
 }
+*/
 
-void Ninja::attack(BasicUnit * attacker, int damage, char attackType){
+
+/*
+ * Set attack animation
+ */
+void Ninja::animationAttack(){
+	AttackObjectNinjaStar *atk = AttackObjectNinjaStar::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
+	atk->initAttack();
+
+	Vector<SpriteFrame *> attackFrames;
+	for (int i = 0; i < 10; i++){
+		auto *filename = __String::createWithFormat("WizardAttack%d000%d.png", unitDir, i);
+		//CCLOG("%s", filename->getCString());
+		auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
+		attackFrames.pushBack(wframe);
+		//CCLOG("Made troll %d", i);
+	}
+
+	auto *filename = __String::createWithFormat("WizardAttack%d0010.png", unitDir);
+	//CCLOG("%s", filename->getCString());
+	auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
+	attackFrames.pushBack(wframe);
+
+	auto wrunAnim = Animation::createWithSpriteFrames(attackFrames, attackDuration);
+	auto animate = Animate::create(wrunAnim);
+	this->runAction(animate);
+}
+
+/*
+ * Set the walking animation
+ */
+cocos2d::Animate* Ninja::animationWalk(){
+	if(unitDir <=8){
+		Vector<SpriteFrame *> walkFrames;
+
+		//length of animation sequence
+		int animationLength = 7;
+		int startFrame = 0;
+
+		for (int i = startFrame; i <= animationLength; i++){
+			auto *filename = __String::createWithFormat("WizardWalk%d000%d.png", unitDir, i);
+			auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
+			walkFrames.pushBack(wframe);
+		}
+		float duration =  walkingSpeed / (animationLength - startFrame);
+		if(unitDir % 2 == 1) duration *= 1.4;
+		auto walkAnim = Animation::createWithSpriteFrames(walkFrames, duration);
+		auto animate = Animate::create(walkAnim);
+		//auto waction = RepeatForever::create(animate);
+		//this->runAction(animate);
+		return animate;
+	} else{
+		return nullptr;
+	}
+}
+
+
+/*
+ * Set dying animation
+ */
+void Ninja::animationDie(){
+	if(unitDir <=8){
+		Vector<SpriteFrame *> dieFrames;
+
+		//length of animation sequence
+		int animationLength = 8;
+		int startFrame = 0;
+
+		for (int i = startFrame; i <= animationLength; i++){
+			auto *filename = __String::createWithFormat("WizardDie%d000%d.png", unitDir, i);
+			auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
+			//CCLOG("%s", filename->getCString());
+			dieFrames.pushBack(wframe);
+		}
+		auto dieAnim = Animation::createWithSpriteFrames(dieFrames, dieDuration);
+		auto animate = Animate::create(dieAnim);
+		//auto waction = RepeatForever::create(animate);
+		this->runAction(animate);
+	}
+}
+
+/*void Ninja::attack(BasicUnit * attacker, int damage, char attackType){
 	health -= damage;
 	//CCLOG("%p Ninja WAS ATTACKEDDDD for %d damage", this, damage);
 	CCLOG("%p's (Ninja) health: %d", this, health);
-}
+}*/
 
 //Ranged
 bool Ninja::enemyIsAttackable(){

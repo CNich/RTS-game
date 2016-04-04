@@ -358,7 +358,7 @@ cocos2d::Animate* BasicUnit::animationWalk(){
 		float animationLength = 6.0f;
 
 		for (int i = 0; i <= animationLength; i++){
-			auto *filename = __String::createWithFormat("walk%d000%d.png", unitDir, i);
+			auto *filename = __String::createWithFormat("TrollWalk%d000%d.png", unitDir, i);
 			auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
 			walkFrames.pushBack(wframe);
 		}
@@ -526,7 +526,7 @@ void BasicUnit::update(float dt) {
 		//auto rotateTo = RotateTo::create(1.5, 90);
 		//this->runAction(rotateTo);
 		this->animationDie();
-		CCLOG("check if dead: dead:%d health:%d removeFromPf:%d %p", dead, this->getHealth(), removeFromPf, this);
+		//CCLOG("check if dead: dead:%d health:%d removeFromPf:%d %p", dead, this->getHealth(), removeFromPf, this);
 	}
 
 	//if dead, die
@@ -545,13 +545,13 @@ void BasicUnit::update(float dt) {
 				pf->setUnitZero(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
 				this->getParent()->removeChild(this);
 			});
-			auto seq = Sequence::create(DelayTime::create(3), callback, nullptr);
+			auto seq = Sequence::create(DelayTime::create(4), callback, nullptr);
 			this->runAction(seq);
 			removeFromPf = false;
-			CCLOG("DEAD DEAD DEAD dead:%d health:%d removeFromPf:%d %p", dead, this->getHealth(), removeFromPf, this);
+			//CCLOG("DEAD DEAD DEAD dead:%d health:%d removeFromPf:%d %p", dead, this->getHealth(), removeFromPf, this);
 		}
 		//this->getParent()->removeChild(this);
-		CCLOG("number of running actions: %d", this->numberOfRunningActions());
+		//CCLOG("number of running actions: %d", this->numberOfRunningActions());
 	}
 
 	//if attacking, nothing should be done
@@ -569,18 +569,18 @@ void BasicUnit::update(float dt) {
 				//	currentEnemy->attack(this, 40, 'a');
 				//}
 				attacking = false;
-				CCLOG("ATTACKKKKK FALSE dead:%d health:%d removeFromPf:%d %p", dead, this->getHealth(), removeFromPf, this);
+				//CCLOG("ATTACKKKKK FALSE dead:%d health:%d removeFromPf:%d %p", dead, this->getHealth(), removeFromPf, this);
 			});
 			lStack->reset();
-			CCLOG("attack number of running actions: %d", this->numberOfRunningActions());
-			CCLOG("ATTACKKKKK dead:%d health:%d removeFromPf:%d %p", dead, this->getHealth(), removeFromPf, this);
+			//CCLOG("attack number of running actions: %d", this->numberOfRunningActions());
+			//CCLOG("ATTACKKKKK dead:%d health:%d removeFromPf:%d %p", dead, this->getHealth(), removeFromPf, this);
 			//auto rotateTo = RotateTo::create(0.1, 0, 20.0f);
 			//auto rotateBack = RotateTo::create(0.1, 0, 0);
-			auto seq = Sequence::create(DelayTime::create(2), callback, nullptr);
+			auto seq = Sequence::create(DelayTime::create(attackSpeed), callback, nullptr);
 					//rotateTo, rotateBack, nullptr);
 			this->runAction(seq);
 
-			this->makeAttack();
+			this->animationAttack();
 		}
 
 		/*
@@ -656,6 +656,9 @@ void BasicUnit::update(float dt) {
 	}
 }
 
+/*
+ * Set dying animation
+ */
 void BasicUnit::animationDie(){
 	if(unitDir <=8){
 		Vector<SpriteFrame *> dieFrames;
@@ -665,9 +668,9 @@ void BasicUnit::animationDie(){
 		int start = 20;
 
 		for (int i = start; i <= animationLength; i++){
-			auto *filename = __String::createWithFormat("die%d00%d.png", unitDir, i);
+			auto *filename = __String::createWithFormat("TrollDie%d00%d.png", unitDir, i);
 			auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
-			CCLOG("%s", filename->getCString());
+			//CCLOG("%s", filename->getCString());
 			dieFrames.pushBack(wframe);
 		}
 		auto dieAnim = Animation::createWithSpriteFrames(dieFrames, dieDuration);
@@ -707,22 +710,22 @@ bool BasicUnit::enemyIsAttackable(){
 void BasicUnit::attack(BasicUnit * attacker, int damage, char attackType){
 	//if(health > 0) CCLOG("%p's health: %d", this, health);
 	health = health - damage;
-	CCLOG("%p WAS ATTACKEDDDD for %d damage", this, damage);
+	//CCLOG("%p WAS ATTACKEDDDD for %d damage", this, damage);
 	//if(health >= 0) CCLOG("%p's health after attack: %d", this, health);
 }
 
-void BasicUnit::makeAttack(){
+void BasicUnit::animationAttack(){
 	AttackObject* atk = AttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
 	atk->initAttack();
 
 	Vector<SpriteFrame *> trollFrames;
 	for (int i = 0; i <= 8; i++){
-		auto *filename = __String::createWithFormat("attack%d001%d.png", unitDir, i);
+		auto *filename = __String::createWithFormat("TrollAttack%d001%d.png", unitDir, i);
 		//CCLOG("%s", filename->getCString());
 		auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
 		trollFrames.pushBack(wframe);
 	}
-	auto wrunAnim = Animation::createWithSpriteFrames(trollFrames, 0.08);
+	auto wrunAnim = Animation::createWithSpriteFrames(trollFrames, attackDuration);
 	auto animate = Animate::create(wrunAnim);
 
 	this->runAction(animate);
