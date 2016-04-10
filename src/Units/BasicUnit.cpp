@@ -192,9 +192,9 @@ void BasicUnit::delayedMove() {
 			touchLocation = lStack->get(1)->data;
 		}
 		lStack->removeFront();
-		//auto drawNode = DrawNode::create();
-		//drawNode->drawDot(touchLocation, 16, Color4F::BLUE);
-		//this->getParent()->addChild(drawNode, 1000);
+		auto drawNode = DrawNode::create();
+		drawNode->drawDot(touchLocation, 16, Color4F::BLUE);
+		this->getParent()->addChild(drawNode, 1000);
 
 		auto playerPos = this->getPosition();
 		auto diff = touchLocation - playerPos;
