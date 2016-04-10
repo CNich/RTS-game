@@ -20,9 +20,10 @@ RangedBasicUnit* RangedBasicUnit::create() {
 	pSprite->initWithFile("030.png");
 	srand((unsigned) time(NULL));
 	pSprite->autorelease();
-	pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
+	/*pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
 	pSprite->tpf->setTileX(32);
 	pSprite->tpf->setTileY(32);
+	*/
 	pSprite->setScale(0.5);
 
 	pSprite->scheduleUpdate();
@@ -41,9 +42,10 @@ RangedBasicUnit* RangedBasicUnit::create(cocos2d::Point tmp){
 	pSprite->initWithFile("030.png");
 	srand((unsigned) time(NULL));
 	pSprite->autorelease();
-	pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
+	/*pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
 	pSprite->tpf->setTileX(32);
 	pSprite->tpf->setTileY(32);
+	*/
 	pSprite->setScale(0.5);
 
 	pSprite->scheduleUpdate();

@@ -21,7 +21,7 @@ public:
 
 protected:
 	bool enemyIsAttackable();
-	//virtual void update(float dt);
+	virtual void update(float dt);
 	bool removeThisUnit = false;
 	bool removeFromPf = true;
 	int initHealth = 200;

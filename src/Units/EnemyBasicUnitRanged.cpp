@@ -20,9 +20,10 @@ EnemyBasicUnitRanged* EnemyBasicUnitRanged::create() {
 	pSprite->initWithFile("030.png");
 	srand((unsigned) time(NULL));
 	pSprite->autorelease();
-	pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
+	/*pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
 	pSprite->tpf->setTileX(32);
 	pSprite->tpf->setTileY(32);
+	*/
 	pSprite->setScale(0.5);
 
 	pSprite->scheduleUpdate();
@@ -36,9 +37,10 @@ EnemyBasicUnitRanged* EnemyBasicUnitRanged::create(cocos2d::Point tmp){
 	pSprite->initWithFile("030.png");
 	srand((unsigned) time(NULL));
 	pSprite->autorelease();
-	pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
+	/*pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
 	pSprite->tpf->setTileX(32);
 	pSprite->tpf->setTileY(32);
+	*/
 	pSprite->setScale(0.5);
 
 	pSprite->scheduleUpdate();
@@ -89,8 +91,9 @@ void EnemyBasicUnitRanged::update(float dt) {
 	//check if dead
 	else if(!dead && health <= 0){
 		dead = true;
-		auto rotateTo = RotateTo::create(1.5, 90);
-		this->runAction(rotateTo);
+		//auto rotateTo = RotateTo::create(1.5, 90);
+		//this->runAction(rotateTo);
+		this->animationDie();
 	}
 
 	//if attacking, nothing should be done

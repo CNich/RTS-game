@@ -20,9 +20,10 @@ Ninja* Ninja::create() {
 	pSprite->initWithFile("Units/Wizard/WizardWalk00000.png");
 	srand((unsigned) time(NULL));
 	pSprite->autorelease();
-	pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
+	/*pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
 	pSprite->tpf->setTileX(32);
 	pSprite->tpf->setTileY(32);
+	*/
 	pSprite->bfsMap = new BFS(50, 50);
 
 	pSprite->health = pSprite->initHealth;
@@ -39,9 +40,10 @@ Ninja* Ninja::create(cocos2d::Point tmp){
 	pSprite->initWithFile("Units/Wizard/WizardWalk00000.png");
 	srand((unsigned) time(NULL));
 	pSprite->autorelease();
-	pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
+	/*pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
 	pSprite->tpf->setTileX(32);
 	pSprite->tpf->setTileY(32);
+	*/
 	pSprite->bfsMap = new BFS(50, 50);
 
 	pSprite->health = pSprite->initHealth;
@@ -59,9 +61,12 @@ Ninja* Ninja::create(cocos2d::Point tmp){
 }
 
 void Ninja::setBFSmap(){
+	CCLOG("setBFSmap pf:%p tpf:%p", pf, tpf);
 	bfsMap->setPathFinder(pf);
-	auto L = 50;//pf->getRows();
-	auto W = 50;//pf->getCols();
+	CCLOG("set Path Finder");
+	auto L = pf->getRows();
+	auto W = pf->getCols();
+	CCLOG("got rows and cols");
 	for(int i = 0; i < L; i++){
 		for(int j = 0; j < W; j++){
 			if(pf->checkPermaBlock(i, j)){
@@ -71,7 +76,7 @@ void Ninja::setBFSmap(){
 	}
 }
 
-/*
+
 void Ninja::update(float dt) {
 	cocos2d::Point currentEL;
 	if(currentEnemy != 0){
@@ -109,8 +114,9 @@ void Ninja::update(float dt) {
 	//check if dead
 	else if(!dead && health <= 0){
 		dead = true;
-		auto rotateTo = RotateTo::create(1.5, 90);
-		this->runAction(rotateTo);
+		//auto rotateTo = RotateTo::create(1.5, 90);
+		//this->runAction(rotateTo);
+		this->animationDie();
 	}
 
 	//if attacking, nothing should be done
@@ -145,7 +151,7 @@ void Ninja::update(float dt) {
 			currentEnemyIsCloseEnough = false;
 			currentEnemyMoved = false;
 			CCLOG("drp");
-		}* /
+		}*/
 
 		//else if(currentEnemyIsCloseEnough && !currentEnemyMoved && unitToUnitDistance(this, currentEnemy) < attackRange){
 		else if(currentEnemy != 0 && currentEnemyMoved && unitToUnitDistance(this, currentEnemy) < attackRange){
@@ -160,7 +166,7 @@ void Ninja::update(float dt) {
 		else if (!lStack->empty() && !moving) {
 			delayedMove();
 			auto p = this->convertToPf(this->getPosition());
-			CCLOG("!lStack->empty() && !moving: %f %f", p.x, p.y);
+			//CCLOG("!lStack->empty() && !moving: %f %f", p.x, p.y);
 			bfsMap->setStart((int)p.x, (int)p.y);
 			bfsMap->solve();
 			tempMoving = true;
@@ -183,7 +189,7 @@ void Ninja::update(float dt) {
 		//it's pathfinder has been called
 
 		//gets unit to find path to it's goal position
-		/* A * /
+		/* A */
 		else if(lStack->empty() && idle == true && idleTrack == true){
 			idle = false;
 			badMove = 0;
@@ -192,10 +198,10 @@ void Ninja::update(float dt) {
 		}
 
 		//causes unit to wait for 1 second until trying *A* again
-		/* B * /
+		/* B */
 		else if(lStack->empty() && movedYet == true && idle == false && idleTrack == true){
 			badMove++;
-			/* makes sure *A* is not going while* /
+			/* makes sure *A* is not going while*/
 			idleTrack = false;
 			auto callback = CallFunc::create([this]() {
 				idle = true;
@@ -216,7 +222,7 @@ void Ninja::update(float dt) {
 		}
 	}
 }
-*/
+
 
 
 /*

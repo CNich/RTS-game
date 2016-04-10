@@ -29,9 +29,6 @@ BasicUnit* BasicUnit::create() {
 	pSprite->initWithFile("029.png");
 	srand((unsigned) time(NULL));
 	pSprite->autorelease();
-	pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
-	pSprite->tpf->setTileX(32);
-	pSprite->tpf->setTileY(32);
 	pSprite->setScale(0.5);
 
 	pSprite->scheduleUpdate();
@@ -47,11 +44,21 @@ BasicUnit* BasicUnit::create(cocos2d::Point tmp){
 }
 
 void BasicUnit::setPf(PathFinder<BasicUnit> *tempPf){
+	tpf = new PathFinder<BasicUnit>(tempPf->getRows(), tempPf->getCols());
+	tpf->setTileX(tempPf->getTileX());
+	tpf->setTileY(tempPf->getTileY());
+
 	pf = tempPf;
+	CCLOG("get position:");
 	auto tmp = this->getPosition();
+
+	CCLOG("block...:");
 	pf->block(convertToPf(tmp).x, convertToPf(tmp).y);
+	CCLOG("taken");
 	pf->taken(convertToPf(tmp).x, convertToPf(tmp).y);
+	CCLOG("set unit");
 	pf->setUnit(convertToPf(tmp).x, convertToPf(tmp).y, this);
+	CCLOG("set?");
 };
 
 /*BasicUnit* BasicUnit::create(cocos2d::Point tmp) {
@@ -104,12 +111,14 @@ void BasicUnit::ASolve(int x, int y) {
 	//goalPosition.x = x;
 	//goalPosition.y = y;
 
-	auto ppos = this->getPosition();
+	//auto ppos = this->getPosition();
 
-	ppos.x = (ppos.x - 16) / 32;
-	ppos.y = (ppos.y - 16) / 32;
+	auto ppos = this->convertToPf(this->getPosition());
 
-	if (x >= 0 && x < 50 && y >= 0 && y < 50) {
+	//ppos.x = (ppos.x - 32) / 64;
+	//ppos.y = (ppos.y - 16) / 32;
+
+	if (x >= 0 && x < pf->getRows() && y >= 0 && y < pf->getCols()) {
 
 		/*
 		 * IS MAKING A NEW PATH FINDER EACH TIME BETTER
@@ -121,10 +130,10 @@ void BasicUnit::ASolve(int x, int y) {
 		tpf->setStart(ppos.x, ppos.y);
 		tpf->setEnd(x, y);
 		this->getMap();
-		tpf->setTileX(32);
-		tpf->setTileY(32);
-		tpf->setOffX(16);
-		tpf->setOffY(16);
+		tpf->setTileX(pf->getTileX());
+		tpf->setTileY(pf->getTileY());
+		tpf->setOffX(pf->getOffX());
+		tpf->setOffY(pf->getOffY());
 
 		lStack = tpf->solve();
 
@@ -202,17 +211,17 @@ void BasicUnit::delayedMove() {
 		if(abs(abs(diff.x) - abs(diff.y)) > 15){
 			if (abs(diff.x) > abs(diff.y)) {
 				if (diff.x > 0) {
-					playerPos.x += 32;
+					playerPos.x += pf->getTileX();
 					//this->runAction(actionTo2);
 				} else {
-					playerPos.x -= 32;
+					playerPos.x -= pf->getTileX();
 					//this->runAction(actionTo1);
 				}
 			} else {
 				if (diff.y > 0) {
-					playerPos.y += 32;
+					playerPos.y += pf->getTileY();
 				} else {
-					playerPos.y -= 32;
+					playerPos.y -= pf->getTileY();
 				}
 			}
 			/*if(diff.x > 17 && diff.y < 17 && diff.y > -17){
@@ -235,23 +244,23 @@ void BasicUnit::delayedMove() {
 		else{
 			//move right down
 			if(diff.x > 17 && diff.y > 17){
-				playerPos.x += 32;
-				playerPos.y += 32;
+				playerPos.x += pf->getTileX();
+				playerPos.y += pf->getTileY();
 			}
 			//move left down
 			else if(diff.x < -17 && diff.y > 17){
-				playerPos.x -= 32;
-				playerPos.y += 32;
+				playerPos.x -= pf->getTileX();
+				playerPos.y += pf->getTileY();
 			}
 			//move right up
 			if(diff.x > 17 && diff.y < -17){
-				playerPos.x += 32;
-				playerPos.y -= 32;
+				playerPos.x += pf->getTileX();
+				playerPos.y -= pf->getTileY();
 			}
 			//move left up
 			else if(diff.x < -17 && diff.y < -17){
-				playerPos.x -= 32;
-				playerPos.y -= 32;
+				playerPos.x -= pf->getTileX();
+				playerPos.y -= pf->getTileY();
 			}
 		}
 
@@ -274,11 +283,12 @@ void BasicUnit::delayedMove() {
 
 
 
-		if (playerPos.x < (50 * 32) && playerPos.y < (50 * 32)
+		if (playerPos.x < (pf->getRows() * pf->getTileX())
+				&& playerPos.y < (pf->getCols() * pf->getTileY())
 				&& playerPos.y >= 0 && playerPos.x >= 0) {
 			//CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("step.mp3");
 
-			if(abs(diff.x) >= 32 || abs(diff.y) >= 32){
+			if(abs(diff.x) >= pf->getTileX() || abs(diff.y) >= pf->getTileY()){
 				setUnitDir(getAngle(this->getPosition(), playerPos));
 				this->setPlayerPosition(playerPos, abs(diff.x) > 0 && abs(diff.y) > 0);
 			} else{
@@ -471,22 +481,22 @@ void BasicUnit::setPlayerPosition(Point position, bool diag) {
 
 void BasicUnit::setBasicUnitPF(){
 	lStack->reset();
-	auto ppos = this->getPosition();
-	auto tpos = lStack->getTail()->data;
+	auto ppos = this->convertToPf(this->getPosition());
+	auto tpos = this->convertToPf(lStack->getTail()->data);
 
-	ppos.x = (ppos.x - 16) / 32;
+	/*ppos.x = (ppos.x - 16) / 32;
 	ppos.y = (ppos.y - 16) / 32;
 	tpos.x = (tpos.x - 16) / 32;
 	tpos.y = (tpos.y - 16) / 32;
-
-	if (tpos.x >= 0 && tpos.x < 50 && tpos.y >= 0 && tpos.y < 50) {
+	*/
+	if (tpos.x >= 0 && tpos.x < pf->getRows() && tpos.y >= 0 && tpos.y < pf->getCols()) {
 		tpf->setStart(ppos.x, ppos.y);
 		tpf->setEnd(tpos.x, tpos.y);
 		this->getMap();
-		tpf->setTileX(32);
-		tpf->setTileY(32);
-		tpf->setOffX(16);
-		tpf->setOffY(16);
+		tpf->setTileX(pf->getTileX());
+		tpf->setTileY(pf->getTileY());
+		tpf->setOffX(pf->getOffX());
+		tpf->setOffY(pf->getOffY());
 
 		lStack = tpf->solve();
 	}
@@ -498,8 +508,8 @@ void BasicUnit::setMoving() {
 
 cocos2d::Point BasicUnit::convertToPf(cocos2d::Point tmp) {
 	cocos2d::Point ppos;
-	ppos.x = (tmp.x - 16) / 32;
-	ppos.y = (tmp.y - 16) / 32;
+	ppos.x = (tmp.x - this->pf->getOffX()) / this->pf->getRows();
+	ppos.y = (tmp.y - this->pf->getOffY()) / this->pf->getCols();
 	return ppos;
 }
 

@@ -107,6 +107,8 @@ public:
 
     cocos2d::TMXLayer *_foreground;
 
+    cocos2d::Sprite* bgImg;
+
     void projectileMoveFinished(cocos2d::Object *pSender);
 
     cocos2d::Vector<cocos2d::Sprite *> _enemies;

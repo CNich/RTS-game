@@ -41,25 +41,39 @@ bool HelloWorld::init() {
 
 	/**********************************************************************/
 	//load tilemap
-	std::string file = "TileMap.tmx";
+	CCLOG("Start tilemap");
+	std::string file = "Level.tmx";
 	auto str =
 			String::createWithContentsOfFile(
 					FileUtils::getInstance()->fullPathForFilename(file.c_str()).c_str());
 	_tileMap = TMXTiledMap::createWithXML(str->getCString(), "");
 
+	CCLOG("made _tileMap");
 	//load background layer
 	_background = _tileMap->layerNamed("Background");
+	//_background = _tileMap->layerNamed("Image Layer 1");
 	addChild(_tileMap, -1);
+
+
+	bgImg = cocos2d::Sprite::create("t4.png");
+	addChild(bgImg, -1);
+	//bgImg->setPosition(7 * 64, 7 * 32);
+
+	CCLOG("added _background");
 
 	//load blocked layer and set it to invisible
 	_blockage = _tileMap->layerNamed("Meta");
-	_blockage->setVisible(false);
+	//_blockage->setVisible(false);
+
+	CCLOG("added _blockage");
 
 	//get tilemap objects
 	TMXObjectGroup *objects = _tileMap->getObjectGroup("Objects");
 	CCASSERT(NULL != objects, "'Object-Player' object group not found");
 	auto playerShowUpPoint = objects->getObject("PlayerShowUpPoint");
 	CCASSERT(!playerShowUpPoint.empty(), "PlayerShowUpPoint object not found");
+
+	CCLOG("added objects");
 
 	/**********************************************************************/
 
@@ -69,18 +83,26 @@ bool HelloWorld::init() {
 
 	pf = new PathFinder<BasicUnit>(_tileMap->getMapSize().height,
 			_tileMap->getMapSize().width);
-	pf->setTileX(_tileMap->getTileSize().height);
-	pf->setTileY(_tileMap->getTileSize().width);
+	/*
+	 * WATCH OUT FOR THIS
+	 */
+	pf->setTileX(_tileMap->getTileSize().width);
+	pf->setTileY(_tileMap->getTileSize().height);
+
 	pf->setOffX(pf->getTileX()/2);
 	pf->setOffY(pf->getTileY()/2);
 
 	this->setMap();
+
+	CCLOG("SET MAP");
 
 	int x = playerShowUpPoint["x"].asInt();
 	int y = playerShowUpPoint["y"].asInt();
 
 	_plpos.x = x + _tileMap->getTileSize().width / 2;
 	_plpos.y = y + _tileMap->getTileSize().height / 2;
+
+	CCLOG("GET PLAYER SHOW UP POINT: %3.3f %3.3f", _plpos.x, _plpos.y);
 
 	//set touch events for pan/zoom
 	auto listener = EventListenerTouchOneByOne::create();
@@ -218,8 +240,8 @@ bool HelloWorld::init() {
 	SimpleAudioEngine::getInstance()->preloadEffect("item.mp3");
 	SimpleAudioEngine::getInstance()->preloadEffect("step.mp3");
 	SimpleAudioEngine::getInstance()->preloadEffect("wade.mp3");
-	SimpleAudioEngine::getInstance()->playBackgroundMusic("background.mp3");
-	SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(0.1);
+	//SimpleAudioEngine::getInstance()->playBackgroundMusic("background.mp3");
+	//SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(0.1);
 
 	this->scheduleUpdate();
 
@@ -244,8 +266,8 @@ bool HelloWorld::init() {
 	//this->addChild(tileAtrs, 10000);
 
 	auto ninjaPos = _plpos;
-	ninjaPos.x = _plpos.x + 320;
-	ninjaPos.y = _plpos.y  - 32;
+	//ninjaPos.x = _plpos.x + pf->getTileX() * 10;
+	//ninjaPos.y = _plpos.y  - pf->getTileY();
 	ninja = Ninja::create(ninjaPos);
 	initUnit(ninja, 0);
 
@@ -254,9 +276,57 @@ bool HelloWorld::init() {
 	ninja->setBFSmap();
 	ninja->BFSInit(bfsp.x, bfsp.y);
 
-	int t1 = 5;
-	int t2 = 10;
 
+	int t1 = 1;
+	int t2 = 1;
+
+	CCLOG("Make units");
+
+	for(int i=0; i < t1; i++){
+		auto p = _plpos;
+		p.x = _plpos.x + pf->getTileX() * i;
+		p.y = _plpos.y  - pf->getTileY();
+		BasicUnit * r = BasicUnit::create(p);
+		bvec.pushBack(r);
+		CCLOG("init BasicUnit");
+		initUnit(r, 0);
+	}
+
+	for(int i=0; i < t1; i++){
+		auto p = _plpos;
+		p.x = _plpos.x + pf->getTileX() * i;
+		p.y = _plpos.y  - pf->getTileY() * 2;
+		RangedBasicUnit * r = RangedBasicUnit::create(p);
+		rangedBasicUnitVec.pushBack(r);
+		CCLOG("init RangedBasicUnit");
+		initUnit(r, 0);
+	}
+
+	/*
+	for(int i=0; i < t2; i+=2){
+		auto p = _plpos;
+		p.x = _plpos.x + pf->getTileX() * (i - 10);
+		p.y = _plpos.y  - pf->getTileY() * 15;
+		EnemyBasicUnit * r = EnemyBasicUnit::create(p);
+		r->setColor(Color3B::BLUE);
+		bvec2.pushBack(r);
+		CCLOG("init EnemyBasicUnit");
+		initUnit(r, 1);
+	}
+
+
+	for(int i=0; i < t2; i+=2){
+		auto p = _plpos;
+		p.x = _plpos.x + pf->getTileX() * (i - 10);
+		p.y = _plpos.y  - pf->getTileY() * 17;
+		EnemyBasicUnitRanged * r = EnemyBasicUnitRanged::create(p);
+		rangedBasicUnitVec2.pushBack(r);
+		r->setColor(Color3B::BLUE);
+		CCLOG("init EnemyBasicUnitRanged");
+		initUnit(r, 1);
+	}
+	*/
+/*
 	for(int i=0; i < t1/4; i++){
 		auto p = _plpos;
 		p.x = _plpos.x + pf->getTileX() * i;
@@ -283,15 +353,6 @@ bool HelloWorld::init() {
 		bvec.pushBack(r);
 		initUnit(r, 0);
 	}
-/*
-	for(int i=0; i < t1; i++){
-		auto p = _plpos;
-		p.x = _plpos.x + pf->getTileX() * i;
-		p.y = _plpos.y  - pf->getTileY() * 10;
-		BasicUnit * r = BasicUnit::create(p);
-		bvec.pushBack(r);
-		initUnit(r, 0);
-	}*/
 
 	for(int i=0; i < t1; i++){
 		auto p = _plpos;
@@ -351,7 +412,9 @@ bool HelloWorld::init() {
 		r->setColor(Color3B::BLUE);
 		initUnit(r, 1);
 	}
+	*/
 
+	/*
 	auto p = _plpos;
 	p.x = pf->getTileX();
 	p.y = _plpos.y  - pf->getTileY() * 18;
@@ -361,6 +424,7 @@ bool HelloWorld::init() {
 	initUnit(r, 1);
 	//r->tracked = true;
 
+	 */
 	//this->drawBFSMap();
 
 	return true;
@@ -382,13 +446,16 @@ void HelloWorld::goToMovementSprite(BasicUnit *i, cocos2d::Point tpos){
 }
 
 void HelloWorld::initUnit(BasicUnit *r, char team){
+	CCLOG("Init Unit");
 	this->addChild(r, 2);
+	CCLOG("Set pf...");
+	r->setPf(pf);
+	CCLOG("pf set!");
 	//this->setPosition(p);
 	r->setBlockageMap(_blockage);
 	r->setForegroundMap(_foreground);
 	r->setTileMap(_tileMap);
 	r->setTeam(team);
-	r->setPf(pf);
 }
 
 void HelloWorld::setViewPointCenter(Point position) {
@@ -415,8 +482,11 @@ void HelloWorld::onTouchEnded(Touch *touch, Event *unused_event) {
 	if (!firstTouch) {
 		//this->setMap();
 		CCLOG("first touch of the game................");
+		CCLOG("getTileX: %d, getTileY: %d",pf->getTileX(), pf->getTileY());
+		CCLOG("getRows: %d, getCols: %d, getOffX: %d, getOffY: %d",
+				pf->getRows(), pf->getCols(), pf->getOffX(), pf->getOffY());
 		this->firstTouch = true;
-		//checkMap();
+		checkMap();
 	}
 
 	auto ttouch = touch->getLocation();
@@ -688,7 +758,8 @@ void HelloWorld::checkMap() {
 			for (int j = 0; j < pf->getCols(); j++) {
 				if (pf->checkBlock(i, j)) {
 					auto drawNode = DrawNode::create();
-					drawNode->drawDot(Vec2(16 + i * 32, 16 + j * 32), 16, Color4F::GREEN);
+					drawNode->drawDot(Vec2(pf->getOffX() + i * pf->getTileX(),
+							pf->getOffY() + j * pf->getTileY()), 16, Color4F::GREEN);
 					this->addChild(drawNode, 1000);
 				}
 			}

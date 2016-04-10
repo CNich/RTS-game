@@ -28,7 +28,7 @@ void BFS::setStart(int x, int y){
 }
 
 void BFS::solve(){
-	CCLOG("BFS SOLVING");
+	//CCLOG("BFS SOLVING");
 	for (int i = 0; i < L; i++){
 		for (int j = 0; j < W; j++){
 			map[i][j].parent.x = i;
@@ -39,7 +39,7 @@ void BFS::solve(){
 	}
 	queueBFS->addBack(start);
 	setChecked(start.x, start.y);
-	CCLOG("solve start: %d, %d", start.x, start.y);
+	//CCLOG("solve start: %d, %d", start.x, start.y);
 	while (!queueBFS->empty()){
 		mpair n;
 
