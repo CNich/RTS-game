@@ -192,9 +192,19 @@ void BasicUnit::delayedMove() {
 			touchLocation = lStack->get(1)->data;
 		}
 		lStack->removeFront();
+
+		/*
+		 * Very useful when debugging paths!
+		 */
+
+		//auto removeDrawNode = CallFunc::create([this](DrawNode* drawNode) {
+		//	this-getParent()->removeChild(drawNode);
+		//});
 		auto drawNode = DrawNode::create();
 		drawNode->drawDot(touchLocation, 16, Color4F::BLUE);
 		this->getParent()->addChild(drawNode, 1000);
+		//auto seq = Sequence::create(DelayTime::create(1.5), removeDrawNode(drawNode), nullptr);
+
 
 		auto playerPos = this->getPosition();
 		auto diff = touchLocation - playerPos;
@@ -508,8 +518,8 @@ void BasicUnit::setMoving() {
 
 cocos2d::Point BasicUnit::convertToPf(cocos2d::Point tmp) {
 	cocos2d::Point ppos;
-	ppos.x = (tmp.x - this->pf->getOffX()) / this->pf->getRows();
-	ppos.y = (tmp.y - this->pf->getOffY()) / this->pf->getCols();
+	ppos.x = (tmp.x - this->pf->getOffX()) / this->pf->getTileX();
+	ppos.y = (tmp.y - this->pf->getOffY()) / this->pf->getTileY();
 	return ppos;
 }
 

@@ -183,10 +183,13 @@ bool HelloWorld::init() {
 			auto tpos = touch->getLocation();
 			tpos = convertToNodeSpace(tpos);
 
-			ppos.x = (ppos.x - pf->getOffY()) / pf->getTileX();
-			ppos.y = (ppos.y - pf->getOffY()) / pf->getTileY();
-			tpos.x = (tpos.x - pf->getOffY()) / pf->getTileX();
-			tpos.y = (tpos.y - pf->getOffY()) / pf->getTileY();
+			//ppos.x = (ppos.x - pf->getOffX()) / pf->getTileX();
+			//ppos.y = (ppos.y - pf->getOffY()) / pf->getTileY();
+			//tpos.x = (tpos.x - pf->getOffX()) / pf->getTileX();
+			//tpos.y = (tpos.y - pf->getOffY()) / pf->getTileY();
+
+			ppos = ninja->convertToPf(ppos);
+			tpos = ninja->convertToPf(tpos);
 
 			if (tpos.x >= 0 && tpos.x < pf->getRows() && tpos.y >= 0 && tpos.y < pf->getCols()) {
 
@@ -277,7 +280,7 @@ bool HelloWorld::init() {
 	ninja->BFSInit(bfsp.x, bfsp.y);
 
 
-	int t1 = 1;
+	int t1 = 4;
 	int t2 = 1;
 
 	CCLOG("Make units");
@@ -449,9 +452,9 @@ void HelloWorld::goToMovementSprite(BasicUnit *i, cocos2d::Point tpos){
 
 	CCLOG("touch position: %3.3f %3.3f", tpos.x, tpos.y);
 	CCLOG("touch position: %3.3f %3.3f", tt.x, tt.y);
-	auto drawNode = DrawNode::create();
-	drawNode->drawDot(tt, 16, Color4F::GREEN);
-	this->addChild(drawNode, 1000);
+	//auto drawNode = DrawNode::create();
+	//drawNode->drawDot(tt, 16, Color4F::GREEN);
+	//this->addChild(drawNode, 1000);
 	i->setAsovle();
 }
 
@@ -496,7 +499,7 @@ void HelloWorld::onTouchEnded(Touch *touch, Event *unused_event) {
 		CCLOG("getRows: %d, getCols: %d, getOffX: %d, getOffY: %d",
 				pf->getRows(), pf->getCols(), pf->getOffX(), pf->getOffY());
 		this->firstTouch = true;
-		checkMap();
+		//checkMap();
 	}
 
 	auto ttouch = touch->getLocation();
@@ -731,8 +734,8 @@ void HelloWorld::testCollisions(float dt) {
 void HelloWorld::setMap() {
 	int tw = _tileMap->getTileSize().width;
 	int th = _tileMap->getTileSize().height;
-	for (int i = th / 2; i < _tileMap->getMapSize().height * th; i += th) {
-		for (int j = tw / 2; j < _tileMap->getMapSize().width * th; j += tw) {
+	for (int i = tw / 2; i < _tileMap->getMapSize().width * tw; i += tw) {
+		for (int j = th / 2; j < _tileMap->getMapSize().height * th; j += th) {
 			Point temp;
 			temp.x = i;
 			temp.y = j;

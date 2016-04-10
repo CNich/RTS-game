@@ -437,6 +437,7 @@ LinkedList<cocos2d::Point> * PathFinder<T>::solve(){
 	//break if current node is already a success (should never happen)
 	//break if parent = -1 (should only happen if the end node was never reached)
 	//Results are recorded as pathNodes in the queue (queueP)
+	CCLOG("tileX: %d, tileY: %d", tileX, tileY);
 	while (!map[curr.x][curr.y].success && map[curr.x][curr.y].parent.x != -1
 			&& (curr.x != start.x || curr.y != start.y)){
 		cocos2d::Point temp;
