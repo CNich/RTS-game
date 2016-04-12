@@ -31,7 +31,7 @@ protected:
 	/*Animation section*/
 	/********************************************/
 	virtual cocos2d::Animate* animationWalk();
-	float initWalkingSpeed = 0.25;
+	float initWalkingSpeed = 0.35;
 	bool walkingAnimationFlag = false;
 
 	virtual void animationDie();

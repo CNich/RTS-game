@@ -200,9 +200,14 @@ void BasicUnit::delayedMove() {
 		//auto removeDrawNode = CallFunc::create([this](DrawNode* drawNode) {
 		//	this-getParent()->removeChild(drawNode);
 		//});
+		/*
 		auto drawNode = DrawNode::create();
 		drawNode->drawDot(touchLocation, 16, Color4F::BLUE);
-		this->getParent()->addChild(drawNode, 1000);
+		this->getParent()->addChild(drawNode, 500);
+		auto drawNode2 = DrawNode::create();
+		drawNode2->drawDot(this->getPosition(), 16, Color4F::RED);
+		this->getParent()->addChild(drawNode2, 500);
+		*/
 		//auto seq = Sequence::create(DelayTime::create(1.5), removeDrawNode(drawNode), nullptr);
 
 
@@ -215,7 +220,7 @@ void BasicUnit::delayedMove() {
 		} else {
 			this->runAction(actionTo1);
 		}
-		*/
+		* /
 
 		//move right
 		if(abs(abs(diff.x) - abs(diff.y)) > 15){
@@ -248,9 +253,9 @@ void BasicUnit::delayedMove() {
 			//move up
 			else if(diff.x < 17 && diff.x > -17 && diff.y < - 17){
 				playerPos.y -= 32;
-			}*/
+			}* /
 		}
-		/***************************************/
+		/ *************************************** /
 		else{
 			//move right down
 			if(diff.x > 17 && diff.y > 17){
@@ -274,7 +279,7 @@ void BasicUnit::delayedMove() {
 			}
 		}
 
-		/*
+		/ *--------
 		if (abs(diff.x) > abs(diff.y)) {
 			if (diff.x > 0) {
 				playerPos.x += 32;
@@ -291,6 +296,31 @@ void BasicUnit::delayedMove() {
 			}
 		}*/
 
+		setUnitDir(getAngle(this->getPosition(), touchLocation));
+		if(unitDir == 0){
+			playerPos.y -= pf->getTileY();
+		} else if(unitDir == 1){
+			playerPos.x += pf->getTileX();
+			playerPos.y -= pf->getTileY();
+		} else if(unitDir == 2){
+			playerPos.x += pf->getTileX();
+		} else if(unitDir == 3){
+			playerPos.x += pf->getTileX();
+			playerPos.y += pf->getTileY();
+		} else if(unitDir == 4){
+			playerPos.y += pf->getTileY();
+		} else if(unitDir == 5){
+			playerPos.x -= pf->getTileX();
+			playerPos.y += pf->getTileY();
+		} else if(unitDir == 6){
+			playerPos.x -= pf->getTileX();
+		} else if(unitDir == 7){
+			playerPos.x -= pf->getTileX();
+			playerPos.y -= pf->getTileY();
+		}
+		CCLOG("unitDir: %d", unitDir);
+		CCLOG("diff.x = %3.3f, diff.y = %3.3f", diff.x, diff.y);
+
 
 
 		if (playerPos.x < (pf->getRows() * pf->getTileX())
@@ -298,7 +328,10 @@ void BasicUnit::delayedMove() {
 				&& playerPos.y >= 0 && playerPos.x >= 0) {
 			//CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("step.mp3");
 
-			if(abs(diff.x) >= pf->getTileX() || abs(diff.y) >= pf->getTileY()){
+			/*
+			 * FIX THIS TOMORROW IE NOW
+			 */
+			if(abs(diff.x) >= 1*pf->getTileX() || abs(diff.y) >= 1*pf->getTileY()){
 				setUnitDir(getAngle(this->getPosition(), playerPos));
 				this->setPlayerPosition(playerPos, abs(diff.x) > 0 && abs(diff.y) > 0);
 			} else{

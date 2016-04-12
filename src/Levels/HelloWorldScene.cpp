@@ -54,9 +54,6 @@ bool HelloWorld::init() {
 	//_background = _tileMap->layerNamed("Image Layer 1");
 	addChild(_tileMap, -1);
 
-
-	bgImg = cocos2d::Sprite::create("t4.png");
-	addChild(bgImg, -1);
 	//bgImg->setPosition(7 * 64, 7 * 32);
 
 	CCLOG("added _background");
@@ -71,9 +68,18 @@ bool HelloWorld::init() {
 	TMXObjectGroup *objects = _tileMap->getObjectGroup("Objects");
 	CCASSERT(NULL != objects, "'Object-Player' object group not found");
 	auto playerShowUpPoint = objects->getObject("PlayerShowUpPoint");
+	auto enemySpawnPoint = objects->getObject("EnemySpawnPoint");
+	auto imagePoint = objects->getObject("ImagePoint");
 	CCASSERT(!playerShowUpPoint.empty(), "PlayerShowUpPoint object not found");
 
 	CCLOG("added objects");
+
+	int imageX = imagePoint["x"].asInt();
+	int imageY = imagePoint["y"].asInt();
+	CCLOG("imgx: %d, imgy: %d", imageX, imageY);
+	bgImg = cocos2d::Sprite::create("t4.png");
+	addChild(bgImg, -1);
+	bgImg->setPosition(1330, 448);
 
 	/**********************************************************************/
 
@@ -98,6 +104,9 @@ bool HelloWorld::init() {
 
 	int x = playerShowUpPoint["x"].asInt();
 	int y = playerShowUpPoint["y"].asInt();
+
+	int enemyX = enemySpawnPoint["x"].asInt();
+	int enemyY = enemySpawnPoint["y"].asInt();
 
 	_plpos.x = x + _tileMap->getTileSize().width / 2;
 	_plpos.y = y + _tileMap->getTileSize().height / 2;
@@ -281,7 +290,7 @@ bool HelloWorld::init() {
 
 
 	int t1 = 4;
-	int t2 = 1;
+	int t2 = 10;
 
 	CCLOG("Make units");
 
@@ -305,30 +314,30 @@ bool HelloWorld::init() {
 		initUnit(r, 0);
 	}
 
-	/*
-	for(int i=0; i < t2; i+=2){
-		auto p = _plpos;
-		p.x = _plpos.x + pf->getTileX() * (i - 10);
-		p.y = _plpos.y  - pf->getTileY() * 15;
+
+	for(int i=0; i < t2; i+=1){
+		cocos2d::Point p;
+		p.x = enemyX + pf->getTileX() * i;
+		p.y = enemyY;
 		EnemyBasicUnit * r = EnemyBasicUnit::create(p);
-		r->setColor(Color3B::BLUE);
+		r->setColor(Color3B::RED);
 		bvec2.pushBack(r);
 		CCLOG("init EnemyBasicUnit");
 		initUnit(r, 1);
 	}
 
 
-	for(int i=0; i < t2; i+=2){
-		auto p = _plpos;
-		p.x = _plpos.x + pf->getTileX() * (i - 10);
-		p.y = _plpos.y  - pf->getTileY() * 17;
+	for(int i=0; i < t2; i+=1){
+		cocos2d::Point p;
+		p.x = enemyX + pf->getTileX() * i;
+		p.y = enemyY - pf->getTileY();
 		EnemyBasicUnitRanged * r = EnemyBasicUnitRanged::create(p);
 		rangedBasicUnitVec2.pushBack(r);
-		r->setColor(Color3B::BLUE);
+		r->setColor(Color3B::RED);
 		CCLOG("init EnemyBasicUnitRanged");
 		initUnit(r, 1);
 	}
-	*/
+
 /*
 	for(int i=0; i < t1/4; i++){
 		auto p = _plpos;
