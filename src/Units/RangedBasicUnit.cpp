@@ -24,7 +24,7 @@ RangedBasicUnit* RangedBasicUnit::create() {
 	pSprite->tpf->setTileX(32);
 	pSprite->tpf->setTileY(32);
 	*/
-	pSprite->setScale(0.5);
+	//pSprite->setScale(0.5);
 
 	pSprite->scheduleUpdate();
 
@@ -46,7 +46,7 @@ RangedBasicUnit* RangedBasicUnit::create(cocos2d::Point tmp){
 	pSprite->tpf->setTileX(32);
 	pSprite->tpf->setTileY(32);
 	*/
-	pSprite->setScale(0.5);
+	//pSprite->setScale(0.5);
 
 	pSprite->scheduleUpdate();
 	pSprite->setPosition(tmp);

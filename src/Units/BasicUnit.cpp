@@ -29,7 +29,7 @@ BasicUnit* BasicUnit::create() {
 	pSprite->initWithFile("029.png");
 	srand((unsigned) time(NULL));
 	pSprite->autorelease();
-	pSprite->setScale(0.5);
+	//pSprite->setScale(0.5);
 
 	pSprite->scheduleUpdate();
 
@@ -49,16 +49,11 @@ void BasicUnit::setPf(PathFinder<BasicUnit> *tempPf){
 	tpf->setTileY(tempPf->getTileY());
 
 	pf = tempPf;
-	CCLOG("get position:");
 	auto tmp = this->getPosition();
 
-	CCLOG("block...:");
 	pf->block(convertToPf(tmp).x, convertToPf(tmp).y);
-	CCLOG("taken");
 	pf->taken(convertToPf(tmp).x, convertToPf(tmp).y);
-	CCLOG("set unit");
 	pf->setUnit(convertToPf(tmp).x, convertToPf(tmp).y, this);
-	CCLOG("set?");
 };
 
 /*BasicUnit* BasicUnit::create(cocos2d::Point tmp) {
@@ -318,8 +313,8 @@ void BasicUnit::delayedMove() {
 			playerPos.x -= pf->getTileX();
 			playerPos.y -= pf->getTileY();
 		}
-		CCLOG("unitDir: %d", unitDir);
-		CCLOG("diff.x = %3.3f, diff.y = %3.3f", diff.x, diff.y);
+		//CCLOG("unitDir: %d", unitDir);
+		//CCLOG("diff.x = %3.3f, diff.y = %3.3f", diff.x, diff.y);
 
 
 
@@ -432,7 +427,7 @@ void BasicUnit::setPlayerPosition(Point position, bool diag) {
 	int y = convertToPf(position).y;
 
 	if (!pf->checkBlock(x, y)) {
-
+		this->setZOrder(pf->getRows() - y);
 		blockedCount = 0;
 		giveup = false;
 		pf->block(convertToPf(position).x, convertToPf(position).y);

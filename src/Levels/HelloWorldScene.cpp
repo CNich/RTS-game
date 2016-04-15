@@ -60,7 +60,7 @@ bool HelloWorld::init() {
 
 	//load blocked layer and set it to invisible
 	_blockage = _tileMap->layerNamed("Meta");
-	//_blockage->setVisible(false);
+	_blockage->setVisible(false);
 
 	CCLOG("added _blockage");
 
@@ -69,6 +69,7 @@ bool HelloWorld::init() {
 	CCASSERT(NULL != objects, "'Object-Player' object group not found");
 	auto playerShowUpPoint = objects->getObject("PlayerShowUpPoint");
 	auto enemySpawnPoint = objects->getObject("EnemySpawnPoint");
+	auto enemySpawnPoint2 = objects->getObject("EnemySpawnPoint2");
 	auto imagePoint = objects->getObject("ImagePoint");
 	CCASSERT(!playerShowUpPoint.empty(), "PlayerShowUpPoint object not found");
 
@@ -78,11 +79,18 @@ bool HelloWorld::init() {
 	int imageY = imagePoint["y"].asInt();
 	CCLOG("imgx: %d, imgy: %d", imageX, imageY);
 	bgImg = cocos2d::Sprite::create("t4.png");
-	addChild(bgImg, -1);
-	bgImg->setPosition(1330, 448);
+	bgImg->setAnchorPoint(Vec2(0,0));
+	this->addChild(bgImg);
+	bgImg->setPosition(this->convertToNodeSpace(cocos2d::Point(imageX, imageY)));
 
+	auto drawNode = DrawNode::create();
+	drawNode->drawDot(cocos2d::Point(0,0), 16, Color4F::GREEN);
+	bgImg->addChild(drawNode, 1000);
 	/**********************************************************************/
 
+	auto tilemapCenter = DrawNode::create();
+	tilemapCenter->drawDot(cocos2d::Point(0,0), 16, Color4F::GREEN);
+	this->addChild(tilemapCenter, 10);
 	__String *ts2 = __String::createWithFormat("%2.0f %2.0f, %2.0f %2.0f",
 			_tileMap->getMapSize().height, _tileMap->getMapSize().width,
 			_tileMap->getTileSize().height, _tileMap->getTileSize().width);
@@ -107,6 +115,8 @@ bool HelloWorld::init() {
 
 	int enemyX = enemySpawnPoint["x"].asInt();
 	int enemyY = enemySpawnPoint["y"].asInt();
+	int enemyX2 = enemySpawnPoint2["x"].asInt();
+	int enemyY2 = enemySpawnPoint2["y"].asInt();
 
 	_plpos.x = x + _tileMap->getTileSize().width / 2;
 	_plpos.y = y + _tileMap->getTileSize().height / 2;
@@ -135,6 +145,7 @@ bool HelloWorld::init() {
 			this);
 
 	setViewPointCenter(_plpos);
+	this->setScale(0.75);
 
 	//create and set up sprites for controlling unit movement
 	auto sprite1 = setMovementSprites("Cyansquare.png", Point(x + 16, y + 16));
@@ -292,15 +303,12 @@ bool HelloWorld::init() {
 	int t1 = 4;
 	int t2 = 10;
 
-	CCLOG("Make units");
-
 	for(int i=0; i < t1; i++){
 		auto p = _plpos;
 		p.x = _plpos.x + pf->getTileX() * i;
 		p.y = _plpos.y  - pf->getTileY();
 		BasicUnit * r = BasicUnit::create(p);
 		bvec.pushBack(r);
-		CCLOG("init BasicUnit");
 		initUnit(r, 0);
 	}
 
@@ -310,7 +318,6 @@ bool HelloWorld::init() {
 		p.y = _plpos.y  - pf->getTileY() * 2;
 		RangedBasicUnit * r = RangedBasicUnit::create(p);
 		rangedBasicUnitVec.pushBack(r);
-		CCLOG("init RangedBasicUnit");
 		initUnit(r, 0);
 	}
 
@@ -322,7 +329,6 @@ bool HelloWorld::init() {
 		EnemyBasicUnit * r = EnemyBasicUnit::create(p);
 		r->setColor(Color3B::RED);
 		bvec2.pushBack(r);
-		CCLOG("init EnemyBasicUnit");
 		initUnit(r, 1);
 	}
 
@@ -334,7 +340,27 @@ bool HelloWorld::init() {
 		EnemyBasicUnitRanged * r = EnemyBasicUnitRanged::create(p);
 		rangedBasicUnitVec2.pushBack(r);
 		r->setColor(Color3B::RED);
-		CCLOG("init EnemyBasicUnitRanged");
+		initUnit(r, 1);
+	}
+
+	for(int i=0; i < t2 - 6; i+=1){
+		cocos2d::Point p;
+		p.x = enemyX2 + pf->getTileX() * i;
+		p.y = enemyY2;
+		EnemyBasicUnit * r = EnemyBasicUnit::create(p);
+		r->setColor(Color3B::GREEN);
+		bvec2.pushBack(r);
+		initUnit(r, 1);
+	}
+
+
+	for(int i=0; i < t2 - 6; i+=1){
+		cocos2d::Point p;
+		p.x = enemyX2 + pf->getTileX() * i;
+		p.y = enemyY2 - pf->getTileY();
+		EnemyBasicUnitRanged * r = EnemyBasicUnitRanged::create(p);
+		rangedBasicUnitVec2.pushBack(r);
+		r->setColor(Color3B::GREEN);
 		initUnit(r, 1);
 	}
 
@@ -446,7 +472,7 @@ bool HelloWorld::init() {
 cocos2d::Sprite * HelloWorld::setMovementSprites(char *str, cocos2d::Point pt){
 	auto spr = cocos2d::Sprite::create(str);
 	spr->setPosition(pt);
-	spr->setScale(0.5);
+	//spr->setScale(0.5);
 	this->addChild(spr, 1);
 	return spr;
 }
@@ -468,11 +494,8 @@ void HelloWorld::goToMovementSprite(BasicUnit *i, cocos2d::Point tpos){
 }
 
 void HelloWorld::initUnit(BasicUnit *r, char team){
-	CCLOG("Init Unit");
 	this->addChild(r, 2);
-	CCLOG("Set pf...");
 	r->setPf(pf);
-	CCLOG("pf set!");
 	//this->setPosition(p);
 	r->setBlockageMap(_blockage);
 	r->setForegroundMap(_foreground);

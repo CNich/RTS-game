@@ -24,7 +24,7 @@ EnemyBasicUnit* EnemyBasicUnit::create() {
 	pSprite->tpf->setTileX(32);
 	pSprite->tpf->setTileY(32);
 	*/
-	pSprite->setScale(0.5);
+	//pSprite->setScale(0.5);
 
 	pSprite->scheduleUpdate();
 
@@ -41,7 +41,7 @@ EnemyBasicUnit* EnemyBasicUnit::create(cocos2d::Point tmp){
 	pSprite->tpf->setTileX(32);
 	pSprite->tpf->setTileY(32);
 	*/
-	pSprite->setScale(0.5);
+	//pSprite->setScale(0.5);
 
 	pSprite->scheduleUpdate();
 	pSprite->setPosition(tmp);
@@ -114,7 +114,7 @@ void EnemyBasicUnit::update(float dt) {
 			});
 			auto rotateTo = RotateTo::create(0.1, 0, 20.0f);
 			auto rotateBack = RotateTo::create(0.1, 0, 0);
-			auto seq = Sequence::create(DelayTime::create(2), callback,
+			auto seq = Sequence::create(DelayTime::create(4), callback,
 					rotateTo, rotateBack, nullptr);
 			this->runAction(seq);
 			//RangedAttackObject* atk = RangedAttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
