@@ -60,6 +60,7 @@ protected:
 	void getMap();
 	void getMap(PathFinder<BasicUnit> *tpf2);
 	void delayedMove();
+	virtual void updateDelayedMove();
 	void setMoving();
 
 

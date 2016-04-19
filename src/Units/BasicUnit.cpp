@@ -26,7 +26,10 @@ void BasicUnit::removeUnit() {
 
 BasicUnit* BasicUnit::create() {
 	BasicUnit* pSprite = new BasicUnit();
-	pSprite->initWithFile("029.png");
+	//pSprite->initWithFile("029.png");
+	auto *filename = __String::createWithFormat("TrollWalk00000.png");
+	auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
+	pSprite->initWithSpriteFrame(wframe);
 	srand((unsigned) time(NULL));
 	pSprite->autorelease();
 	//pSprite->setScale(0.5);
@@ -649,10 +652,7 @@ void BasicUnit::update(float dt) {
 		//if the movement stack isn't empty and the unit isn't moving
 		//i.e. in between moves, move to next location in stack
 		else if (!lStack->empty() && !moving) {
-			delayedMove();
-			tempMoving = true;
-			movedYet = true;
-			badMove = 0;
+			updateDelayedMove();
 		}
 
 		else if(goalPositionAsolve){
@@ -739,6 +739,13 @@ int BasicUnit::unitToUnitDistance(BasicUnit *p1, BasicUnit *p2){
 	} else{
 		return 100;
 	}
+}
+
+void BasicUnit::updateDelayedMove(){
+	delayedMove();
+	tempMoving = true;
+	movedYet = true;
+	badMove = 0;
 }
 
 

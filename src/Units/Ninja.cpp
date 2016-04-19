@@ -76,7 +76,7 @@ void Ninja::setBFSmap(){
 	}
 }
 
-
+/*
 void Ninja::update(float dt) {
 	cocos2d::Point currentEL;
 	if(currentEnemy != 0){
@@ -151,7 +151,7 @@ void Ninja::update(float dt) {
 			currentEnemyIsCloseEnough = false;
 			currentEnemyMoved = false;
 			CCLOG("drp");
-		}*/
+		}* /
 
 		//else if(currentEnemyIsCloseEnough && !currentEnemyMoved && unitToUnitDistance(this, currentEnemy) < attackRange){
 		else if(currentEnemy != 0 && currentEnemyMoved && unitToUnitDistance(this, currentEnemy) < attackRange){
@@ -169,6 +169,7 @@ void Ninja::update(float dt) {
 			//CCLOG("!lStack->empty() && !moving: %f %f", p.x, p.y);
 			bfsMap->setStart((int)p.x, (int)p.y);
 			bfsMap->solve();
+			CCLOG("BFS MAP");
 			tempMoving = true;
 			movedYet = true;
 			badMove = 0;
@@ -181,7 +182,7 @@ void Ninja::update(float dt) {
 
 		/* if idleTrack is false then the unit should not be moving
 		 * it should be waiting until the timer is up before trying
-		 * to make it's next move*/
+		 * to make it's next move* /
 
 		//if the unit thinks it has nowhere to go but isn't at it's proper location
 		//ie the movement stack is empty but it's not at its goal position
@@ -189,7 +190,7 @@ void Ninja::update(float dt) {
 		//it's pathfinder has been called
 
 		//gets unit to find path to it's goal position
-		/* A */
+		/* A * /
 		else if(lStack->empty() && idle == true && idleTrack == true){
 			idle = false;
 			badMove = 0;
@@ -198,10 +199,10 @@ void Ninja::update(float dt) {
 		}
 
 		//causes unit to wait for 1 second until trying *A* again
-		/* B */
+		/* B * /
 		else if(lStack->empty() && movedYet == true && idle == false && idleTrack == true){
 			badMove++;
-			/* makes sure *A* is not going while*/
+			/* makes sure *A* is not going while* /
 			idleTrack = false;
 			auto callback = CallFunc::create([this]() {
 				idle = true;
@@ -222,6 +223,7 @@ void Ninja::update(float dt) {
 		}
 	}
 }
+*/
 
 
 
@@ -302,6 +304,18 @@ void Ninja::animationDie(){
 		//auto waction = RepeatForever::create(animate);
 		this->runAction(animate);
 	}
+}
+
+void Ninja::updateDelayedMove(){
+	delayedMove();
+	auto p = this->convertToPf(this->getPosition());
+	//CCLOG("!lStack->empty() && !moving: %f %f", p.x, p.y);
+	bfsMap->setStart((int)p.x, (int)p.y);
+	bfsMap->solve();
+	CCLOG("BFS MAP");
+	tempMoving = true;
+	movedYet = true;
+	badMove = 0;
 }
 
 /*void Ninja::attack(BasicUnit * attacker, int damage, char attackType){

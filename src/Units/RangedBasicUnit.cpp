@@ -17,7 +17,10 @@ RangedBasicUnit::~RangedBasicUnit() {
 
 RangedBasicUnit* RangedBasicUnit::create() {
 	RangedBasicUnit* pSprite = new RangedBasicUnit();
-	pSprite->initWithFile("030.png");
+	//pSprite->initWithFile("030.png");
+	auto *filename = __String::createWithFormat("ElfWalk00016.png");
+	auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
+	pSprite->initWithSpriteFrame(wframe);
 	srand((unsigned) time(NULL));
 	pSprite->autorelease();
 	/*pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
@@ -39,7 +42,9 @@ RangedBasicUnit* RangedBasicUnit::create() {
 
 RangedBasicUnit* RangedBasicUnit::create(cocos2d::Point tmp){
 	RangedBasicUnit* pSprite = new RangedBasicUnit();
-	pSprite->initWithFile("030.png");
+	auto *filename = __String::createWithFormat("ElfWalk00016.png");
+	auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
+	pSprite->initWithSpriteFrame(wframe);
 	srand((unsigned) time(NULL));
 	pSprite->autorelease();
 	/*pSprite->tpf = new PathFinder<BasicUnit>(50, 50);

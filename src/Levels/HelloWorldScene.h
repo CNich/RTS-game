@@ -32,6 +32,10 @@ class HelloWorld : public cocos2d::Layer
 private:
 	cocos2d::TMXTiledMap *_tileMap;
 	cocos2d::TMXLayer *_background;
+	cocos2d::TMXLayer *_background2;
+	cocos2d::TMXLayer *_background3;
+	cocos2d::TMXLayer *_background4;
+	cocos2d::TMXLayer *_background5;
 	cocos2d::Sprite *_player;
 	int _numCollected;
 	static HelloWorldHud *_hud;

@@ -18,10 +18,11 @@ public:
 	//void attack(BasicUnit *attacker, int damage, char attackType);
 	int attackRange = 6;
 	//virtual void attack(BasicUnit *attacker, int damage, char attackType);
+	virtual void updateDelayedMove();
 
 protected:
 	bool enemyIsAttackable();
-	virtual void update(float dt);
+	//virtual void update(float dt);
 	bool removeThisUnit = false;
 	bool removeFromPf = true;
 	int initHealth = 200;

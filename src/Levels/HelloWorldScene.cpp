@@ -42,7 +42,8 @@ bool HelloWorld::init() {
 	/**********************************************************************/
 	//load tilemap
 	CCLOG("Start tilemap");
-	std::string file = "Level.tmx";
+	std::string file = "grassland/Level1FinalV2.tmx";
+	CCLOG("%s",file.c_str());
 	auto str =
 			String::createWithContentsOfFile(
 					FileUtils::getInstance()->fullPathForFilename(file.c_str()).c_str());
@@ -50,9 +51,14 @@ bool HelloWorld::init() {
 
 	CCLOG("made _tileMap");
 	//load background layer
-	_background = _tileMap->layerNamed("Background");
+	//_background = _tileMap->layerNamed("Background");
+	_background = _tileMap->layerNamed("bg");
+	_background2 = _tileMap->layerNamed("bg2");
+	_background3 = _tileMap->layerNamed("bg3");
+	_background4 = _tileMap->layerNamed("bg4");
+	_background4 = _tileMap->layerNamed("bg5");
 	//_background = _tileMap->layerNamed("Image Layer 1");
-	addChild(_tileMap, -1);
+	this->addChild(_tileMap, -1);
 
 	//bgImg->setPosition(7 * 64, 7 * 32);
 
@@ -70,22 +76,24 @@ bool HelloWorld::init() {
 	auto playerShowUpPoint = objects->getObject("PlayerShowUpPoint");
 	auto enemySpawnPoint = objects->getObject("EnemySpawnPoint");
 	auto enemySpawnPoint2 = objects->getObject("EnemySpawnPoint2");
+	auto enemySpawnPoint3 = objects->getObject("EnemySpawnPoint3");
 	auto imagePoint = objects->getObject("ImagePoint");
 	CCASSERT(!playerShowUpPoint.empty(), "PlayerShowUpPoint object not found");
 
 	CCLOG("added objects");
 
-	int imageX = imagePoint["x"].asInt();
-	int imageY = imagePoint["y"].asInt();
-	CCLOG("imgx: %d, imgy: %d", imageX, imageY);
-	bgImg = cocos2d::Sprite::create("t4.png");
-	bgImg->setAnchorPoint(Vec2(0,0));
-	this->addChild(bgImg);
-	bgImg->setPosition(this->convertToNodeSpace(cocos2d::Point(imageX, imageY)));
+	//int imageX = imagePoint["x"].asInt();
+	//int imageY = imagePoint["y"].asInt();
+	//CCLOG("imgx: %d, imgy: %d", imageX, imageY);
 
-	auto drawNode = DrawNode::create();
-	drawNode->drawDot(cocos2d::Point(0,0), 16, Color4F::GREEN);
-	bgImg->addChild(drawNode, 1000);
+	bgImg = cocos2d::Sprite::create("grassland/background cropped.png");
+	bgImg->setAnchorPoint(Vec2(0,0));
+	this->addChild(bgImg,-2);
+	bgImg->setPosition(this->convertToNodeSpace(cocos2d::Point(3.0, -6.0)));
+
+	//auto drawNode = DrawNode::create();
+	//drawNode->drawDot(cocos2d::Point(0,0), 16, Color4F::GREEN);
+	//bgImg->addChild(drawNode, 1000);
 	/**********************************************************************/
 
 	auto tilemapCenter = DrawNode::create();
@@ -117,6 +125,8 @@ bool HelloWorld::init() {
 	int enemyY = enemySpawnPoint["y"].asInt();
 	int enemyX2 = enemySpawnPoint2["x"].asInt();
 	int enemyY2 = enemySpawnPoint2["y"].asInt();
+	int enemyX3 = enemySpawnPoint3["x"].asInt();
+	int enemyY3 = enemySpawnPoint3["y"].asInt();
 
 	_plpos.x = x + _tileMap->getTileSize().width / 2;
 	_plpos.y = y + _tileMap->getTileSize().height / 2;
@@ -300,22 +310,22 @@ bool HelloWorld::init() {
 	ninja->BFSInit(bfsp.x, bfsp.y);
 
 
-	int t1 = 4;
-	int t2 = 10;
+	int t1 = 12;
+	int t2 = 9;
 
-	for(int i=0; i < t1; i++){
+	for(int i=0; i < t1; i+=2){
 		auto p = _plpos;
-		p.x = _plpos.x + pf->getTileX() * i;
-		p.y = _plpos.y  - pf->getTileY();
+		p.x = _plpos.x + pf->getTileX() * 3;
+		p.y = _plpos.y  + pf->getTileY() * (i - 13);
 		BasicUnit * r = BasicUnit::create(p);
 		bvec.pushBack(r);
 		initUnit(r, 0);
 	}
 
-	for(int i=0; i < t1; i++){
+	for(int i=0; i < t1; i+=2){
 		auto p = _plpos;
-		p.x = _plpos.x + pf->getTileX() * i;
-		p.y = _plpos.y  - pf->getTileY() * 2;
+		p.x = _plpos.x + pf->getTileX();
+		p.y = _plpos.y  + pf->getTileY() * (i - 13);
 		RangedBasicUnit * r = RangedBasicUnit::create(p);
 		rangedBasicUnitVec.pushBack(r);
 		initUnit(r, 0);
@@ -333,7 +343,7 @@ bool HelloWorld::init() {
 	}
 
 
-	for(int i=0; i < t2; i+=1){
+	for(int i=0; i < t2; i+=2){
 		cocos2d::Point p;
 		p.x = enemyX + pf->getTileX() * i;
 		p.y = enemyY - pf->getTileY();
@@ -343,10 +353,10 @@ bool HelloWorld::init() {
 		initUnit(r, 1);
 	}
 
-	for(int i=0; i < t2 - 6; i+=1){
+	for(int i=0; i < t2; i+=2){
 		cocos2d::Point p;
-		p.x = enemyX2 + pf->getTileX() * i;
-		p.y = enemyY2;
+		p.x = enemyX2;
+		p.y = enemyY2 + pf->getTileY() * i;
 		EnemyBasicUnit * r = EnemyBasicUnit::create(p);
 		r->setColor(Color3B::GREEN);
 		bvec2.pushBack(r);
@@ -354,10 +364,31 @@ bool HelloWorld::init() {
 	}
 
 
-	for(int i=0; i < t2 - 6; i+=1){
+	for(int i=0; i < t2; i+=2){
 		cocos2d::Point p;
-		p.x = enemyX2 + pf->getTileX() * i;
-		p.y = enemyY2 - pf->getTileY();
+		p.x = enemyX2 + pf->getTileX();
+		p.y = enemyY2 + pf->getTileY() * i;
+		EnemyBasicUnitRanged * r = EnemyBasicUnitRanged::create(p);
+		rangedBasicUnitVec2.pushBack(r);
+		r->setColor(Color3B::GREEN);
+		initUnit(r, 1);
+	}
+
+	for(int i=0; i < t2; i+=2){
+		cocos2d::Point p;
+		p.x = enemyX3;
+		p.y = enemyY3 + pf->getTileY() * i;
+		EnemyBasicUnit * r = EnemyBasicUnit::create(p);
+		r->setColor(Color3B::GREEN);
+		bvec2.pushBack(r);
+		initUnit(r, 1);
+	}
+
+
+	for(int i=0; i < t2; i+=2){
+		cocos2d::Point p;
+		p.x = enemyX3 + pf->getTileX();
+		p.y = enemyY3 + pf->getTileY() * i;
 		EnemyBasicUnitRanged * r = EnemyBasicUnitRanged::create(p);
 		rangedBasicUnitVec2.pushBack(r);
 		r->setColor(Color3B::GREEN);
@@ -501,6 +532,11 @@ void HelloWorld::initUnit(BasicUnit *r, char team){
 	r->setForegroundMap(_foreground);
 	r->setTileMap(_tileMap);
 	r->setTeam(team);
+	if(team == 0){
+		auto pos = r->convertToPf(r->getPosition());
+		r->goalPosition.x = pos.x;
+		r->goalPosition.y = pos.y;
+	}
 }
 
 void HelloWorld::setViewPointCenter(Point position) {

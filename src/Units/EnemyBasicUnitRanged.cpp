@@ -17,7 +17,9 @@ EnemyBasicUnitRanged::~EnemyBasicUnitRanged() {
 
 EnemyBasicUnitRanged* EnemyBasicUnitRanged::create() {
 	EnemyBasicUnitRanged* pSprite = new EnemyBasicUnitRanged();
-	pSprite->initWithFile("030.png");
+	auto *filename = __String::createWithFormat("TrollWalk00000.png");
+	auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
+	pSprite->initWithSpriteFrame(wframe);
 	srand((unsigned) time(NULL));
 	pSprite->autorelease();
 	/*pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
@@ -33,25 +35,9 @@ EnemyBasicUnitRanged* EnemyBasicUnitRanged::create() {
 }
 
 EnemyBasicUnitRanged* EnemyBasicUnitRanged::create(cocos2d::Point tmp){
-	EnemyBasicUnitRanged* pSprite = new EnemyBasicUnitRanged();
-	pSprite->initWithFile("030.png");
-	srand((unsigned) time(NULL));
-	pSprite->autorelease();
-	/*pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
-	pSprite->tpf->setTileX(32);
-	pSprite->tpf->setTileY(32);
-	*/
-	//pSprite->setScale(0.5);
-
-	pSprite->scheduleUpdate();
+	EnemyBasicUnitRanged* pSprite = EnemyBasicUnitRanged::create();
 	pSprite->setPosition(tmp);
-
-	//pf->block(pSprite->convertToPf(tmp).x, pSprite->convertToPf(tmp).y);
-	//pf->taken(pSprite->convertToPf(tmp).x, pSprite->convertToPf(tmp).y);
-	//pf->setUnit(pSprite->convertToPf(tmp).x, pSprite->convertToPf(tmp).y, pSprite);
-
 	return pSprite;
-
 }
 
 void EnemyBasicUnitRanged::update(float dt) {
@@ -454,44 +440,7 @@ void EnemyBasicUnitRanged::update(float dt) {
 				}
 			}
 			*/
-		}
 
-		else if(goalPositionAsolve){
-			goalPositionAsolve = false;
-			this->ASolve(goalPosition.x, goalPosition.y);
-		}
-
-		/* if idleTrack is false then the unit should not be moving
-		 * it should be waiting until the timer is up before trying
-		 * to make it's next move*/
-
-		//if the unit thinks it has nowhere to go but isn't at it's proper location
-		//ie the movement stack is empty but it's not at its goal position
-		//this may happen if there is no path to it's goal location at the time
-		//it's pathfinder has been called
-
-		//gets unit to find path to it's goal position
-		/* A */
-		else if(lStack->empty() && idle == true && idleTrack == true){
-			idle = false;
-			badMove = 0;
-			this->ASolve(goalPosition.x, goalPosition.y);
-			//CCLOG("lStack->empty(): %d   %7.7f", lStack->empty(), dt);
-		}
-
-		//causes unit to wait for 1 second until trying *A* again
-		/* B */
-		else if(lStack->empty() && movedYet == true && idle == false && idleTrack == true){
-			badMove++;
-			/* makes sure *A* is not going while*/
-			idleTrack = false;
-			auto callback = CallFunc::create([this]() {
-				idle = true;
-				idleTrack = true;
-			});
-			auto seq = Sequence::create(DelayTime::create(1), callback, nullptr);
-			this->runAction(seq);
-			//CCLOG("%d", badMove);
 		}
 	}
 

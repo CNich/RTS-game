@@ -35,8 +35,8 @@ protected:
 	virtual void animationAttack();
 	/********************************************/
 
-	int initAttackRange = 3;
-	int initMovementRange = 20;
+	int initAttackRange = 5;
+	int initMovementRange = 7;
 
 };
 
