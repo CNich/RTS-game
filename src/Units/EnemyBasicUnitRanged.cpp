@@ -103,9 +103,11 @@ void EnemyBasicUnitRanged::update(float dt) {
 			auto seq = Sequence::create(DelayTime::create(4), callback,
 					rotateTo, rotateBack, nullptr);
 			this->runAction(seq);
-			RangedAttackObject* atk = RangedAttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
+
+			//RangedAttackObject* atk = RangedAttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
 			//AttackObject* atk = AttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
-			atk->initAttack();
+			//atk->initAttack();
+			animationAttack();
 			lStack->reset();
 		}
 

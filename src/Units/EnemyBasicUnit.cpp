@@ -105,8 +105,10 @@ void EnemyBasicUnit::update(float dt) {
 					rotateTo, rotateBack, nullptr);
 			this->runAction(seq);
 			//RangedAttackObject* atk = RangedAttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
-			AttackObject* atk = AttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
-			atk->initAttack();
+
+			//AttackObject* atk = AttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
+			//atk->initAttack();
+			animationAttack();
 			lStack->reset();
 		}
 
