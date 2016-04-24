@@ -13,7 +13,7 @@ public:
 	
 
 	//void attack(BasicUnit *attacker, int damage, char attackType);
-	int attackRange = 20;
+	int attackRange = 6;
 	virtual void attack(BasicUnit *attacker, int damage, char attackType);
 
 protected:
@@ -23,6 +23,7 @@ protected:
 	bool removeFromPf = true;
 	int health = 40;
 	bool movingAlongBFSMap = false;
+	virtual void removeFromLevel();
 };
 
 #endif // __ENEMY_BASIC_UNIT__

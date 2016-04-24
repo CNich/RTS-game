@@ -35,6 +35,8 @@ protected:
 	virtual void animationAttack();
 	/********************************************/
 
+	virtual void removeFromLevel();
+
 	int initAttackRange = 5;
 	int initMovementRange = 7;
 

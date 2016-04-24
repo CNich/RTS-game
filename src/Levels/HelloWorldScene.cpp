@@ -631,32 +631,55 @@ void HelloWorld::enemyDistances(float dt){
 		team1.pushBack(ninja);
 	}
 
+	cocos2d::Vector<BasicUnit *> bvecTemp;
 	for(BasicUnit * p : bvec){
 		if(p != 0 && !p->isDead()){
 			team1.pushBack(p);
+		} else{
+			bvecTemp.pushBack(p);
 		}
 	}
+	for(BasicUnit * p : bvecTemp){
+		//bvec.erase(bvec.find(p));
+	}
 
+
+	cocos2d::Vector<RangedBasicUnit *> rangedBasicUnitVecTemp;
 	for(RangedBasicUnit * p : rangedBasicUnitVec){
 		if(p != 0 && !p->isDead()){
 			team1.pushBack(p);
+		} else{
+			rangedBasicUnitVecTemp.pushBack(p);
 		}
 	}
+	for(RangedBasicUnit * p : rangedBasicUnitVecTemp){
+		//rangedBasicUnitVec.erase(rangedBasicUnitVec.find(p));
+	}
 
+	cocos2d::Vector<EnemyBasicUnit *> bvecTemp2;
 	for(EnemyBasicUnit * p : bvec2){
 		if(p != 0 && !p->isDead()){
 			team2.pushBack(p);
+		} else{
+			bvecTemp2.pushBack(p);
 		}
 	}
+	for(EnemyBasicUnit * p : bvecTemp2){
+		//bvec2.erase(bvec2.find(p));
+	}
 
-	cocos2d::Vector<EnemyBasicUnitRanged *> rangedBasicUnitVec2Delete;
+	cocos2d::Vector<EnemyBasicUnitRanged *> rangedBasicUnitVec2Temp;
 	for(EnemyBasicUnitRanged * p : rangedBasicUnitVec2){
 		if(p != 0 && !p->isDead()){
 			team2.pushBack(p);
 		} else{
-			rangedBasicUnitVec2Delete.pushBack(p);
+			rangedBasicUnitVec2Temp.pushBack(p);
 		}
 	}
+	for(EnemyBasicUnitRanged * p : rangedBasicUnitVec2Temp){
+		//rangedBasicUnitVec2.erase(rangedBasicUnitVec2.find(p));
+	}
+
 
 	//reset newClosestEnemy
 	if(team1.size() > 0 && team2.size() > 0){
@@ -697,9 +720,6 @@ void HelloWorld::enemyDistances(float dt){
 				}
 			}
 		}
-	}
-	for(EnemyBasicUnitRanged * p : rangedBasicUnitVec2Delete){
-		//rangedBasicUnitVec2.eraseObject(p);
 	}
 }
 

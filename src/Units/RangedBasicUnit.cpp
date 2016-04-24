@@ -64,6 +64,11 @@ RangedBasicUnit* RangedBasicUnit::create(cocos2d::Point tmp){
 
 }
 
+void RangedBasicUnit::removeFromLevel(){
+	CCLOG("RangedBasicUnit remove from level");
+	this->getParent()->removeChild(this);
+}
+
 /*
  * Set attack animation
  */

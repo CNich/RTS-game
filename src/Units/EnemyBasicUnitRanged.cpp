@@ -9,7 +9,7 @@ EnemyBasicUnitRanged::EnemyBasicUnitRanged() {
 }
 
 EnemyBasicUnitRanged::~EnemyBasicUnitRanged() {
-	CCLOG("THIS GUY WAS DELETED!!!!!!!!!!!");
+	CCLOG("EnemyBasicUnitRanged GUY WAS DELETED!!!!!!!!!!!");
 	//delete tpf;
 	//delete lStack;
 	//this->getParent()->removeChild(this);
@@ -17,7 +17,7 @@ EnemyBasicUnitRanged::~EnemyBasicUnitRanged() {
 
 EnemyBasicUnitRanged* EnemyBasicUnitRanged::create() {
 	EnemyBasicUnitRanged* pSprite = new EnemyBasicUnitRanged();
-	auto *filename = __String::createWithFormat("TrollWalk00000.png");
+	auto *filename = __String::createWithFormat("ElfWalk00016.png");
 	auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
 	pSprite->initWithSpriteFrame(wframe);
 	srand((unsigned) time(NULL));
@@ -40,426 +40,89 @@ EnemyBasicUnitRanged* EnemyBasicUnitRanged::create(cocos2d::Point tmp){
 	return pSprite;
 }
 
-void EnemyBasicUnitRanged::update(float dt) {
-	cocos2d::Point currentEL;
-	if(currentEnemy != 0){
-		currentEL = convertToPf(currentEnemy->getPosition());
-		if(currentEnemyLocation.x != currentEL.x || currentEnemyLocation.y != currentEL.y){
-			currentEnemyLocation = currentEL;
-			currentEnemyMoved = true;
-		}
-	}
-
-	//if dead, die
-	if(dead){
-		//figure out how to delete
-		//delete this;
-
-		//delete tpf;
-		//delete lStack;
-		if(removeFromPf){
-			auto callback = CallFunc::create([this]() {
-				delete tpf;
-				delete lStack;
-				pf->unblock(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
-				pf->untaken(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
-				pf->setUnitZero(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
-				this->getParent()->removeChild(this);
-			});
-
-			auto seq = Sequence::create(DelayTime::create(3), callback, nullptr);
-			this->runAction(seq);
-			removeFromPf = false;
-		}
-		//this->getParent()->removeChild(this);
-	}
-
-	//check if dead
-	else if(!dead && health <= 0){
-		dead = true;
-		//auto rotateTo = RotateTo::create(1.5, 90);
-		//this->runAction(rotateTo);
-		this->animationDie();
-	}
-
-	//if attacking, nothing should be done
-	else if (!attacking){
-
-		//if an enemy is within striking distance and the attack cooldown has expired,
-		//attack the closest enemy (loaded from the parent scene)
-		if(!attacking && currentEnemy != 0 && !currentEnemy->isDead() &&
-				this->enemyIsAttackable()){
-			attacking = true;
-			//currentEnemyMoved = false;
-
-			auto callback = CallFunc::create([this]() {
-				//if(currentEnemy != 0 && !currentEnemy->isDead()){
-				//	currentEnemy->attack(this, 40, 'a');
-				//}
-				attacking = false;
-			});
-			auto rotateTo = RotateTo::create(0.1, 0, 20.0f);
-			auto rotateBack = RotateTo::create(0.1, 0, 0);
-			auto seq = Sequence::create(DelayTime::create(4), callback,
-					rotateTo, rotateBack, nullptr);
-			this->runAction(seq);
-
-			//RangedAttackObject* atk = RangedAttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
-			//AttackObject* atk = AttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
-			//atk->initAttack();
-			animationAttack();
-			lStack->reset();
-		}
-
-		/*
-		else if(currentEnemy != 0 && unitToUnitDistance(this, currentEnemy) >= attackRange){
-			currentEnemyIsCloseEnough = false;
-			currentEnemyMoved = false;
-			CCLOG("drp");
-		}*/
-
-		//else if(currentEnemyIsCloseEnough && !currentEnemyMoved && unitToUnitDistance(this, currentEnemy) < attackRange){
-		else if(currentEnemy != 0 && currentEnemyMoved && unitToUnitDistance(this, currentEnemy) < attackRange){
-			auto t = convertToPf(currentEnemy->getPosition());
-			this->ASolve(t.x, t.y);
-			currentEnemyMoved = false;
-		}
-
-		//the unit is in between movements and is not attacking
-		//if the movement stack isn't empty and the unit isn't moving
-		//i.e. in between moves, move to next location in stack
-		else if (!lStack->empty() && !moving) {
-			delayedMove();
-			tempMoving = true;
-			movedYet = true;
-			badMove = 0;
-		}
-
-		else if(lStack->empty() && !moving){
-			auto pos = this->convertToPf(this->getPosition());
-			std::string dir = pf->getBFSDir(pos.x, pos.y);
-			auto bfsp = pf->getBFSParent(pos.x, pos.y);
-
-			auto BFSParentBlock = this->convertToPf(bfsp);
-
-			if(dir == "u"){
-				if(tracked) CCLOG("u");
-				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
-					lStack->addFront(bfsp);
-				} else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y + 1)){
-					bfsp.y += 32;
-					lStack->addFront(bfsp);
-					if(tracked) CCLOG("u to ur");
-				}else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y - 1)){
-					bfsp.y -= 32;
-					lStack->addFront(bfsp);
-					if(tracked) CCLOG("u to ul");
-				}else{
-					auto t = this->getPosition();
-					auto thisPos = this->convertToPf(this->getPosition());
-					if(thisPos.y < pf->getBFSStart().y){
-						t.y += 32;
-					} else{
-						t.y -= 32;
-					}
-					lStack->addFront(t);
-					if(tracked) CCLOG("u to ?");
-				}
-			}
-
-			else if(dir == "d"){
-				if(tracked) CCLOG("d");
-				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
-					lStack->addFront(bfsp);
-				} else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y + 1)){
-					bfsp.y += 32;
-					lStack->addFront(bfsp);
-					if(tracked) CCLOG("d to dr");
-				}else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y - 1)){
-					bfsp.y -= 32;
-					lStack->addFront(bfsp);
-					if(tracked) CCLOG("d to dl");
-				}else{
-					auto t = this->getPosition();
-					auto thisPos = this->convertToPf(this->getPosition());
-					if(thisPos.y < pf->getBFSStart().y){
-						t.y += 32;
-					} else{
-						t.y -= 32;
-					}
-					lStack->addFront(t);
-					if(tracked) CCLOG("d to ?");
-				}
-			}
-
-			else if(dir == "r"){
-				if(tracked) CCLOG("r");
-				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
-					lStack->addFront(bfsp);
-				} else if(!pf->checkBlock(BFSParentBlock.x + 1, BFSParentBlock.y)){
-					bfsp.x += 32;
-					lStack->addFront(bfsp);
-					if(tracked) CCLOG("r to dr");
-				}else if(!pf->checkBlock(BFSParentBlock.x - 1, BFSParentBlock.y)){
-					bfsp.x -= 32;
-					lStack->addFront(bfsp);
-					if(tracked) CCLOG("r to ur");
-				}else{
-					auto t = this->getPosition();
-					auto thisPos = this->convertToPf(this->getPosition());
-					if(thisPos.x < pf->getBFSStart().x){
-						t.x += 32;
-					} else{
-						t.x -= 32;
-					}
-					lStack->addFront(t);
-					if(tracked) CCLOG("r to ?");
-				}
-			}
-
-			else if(dir == "l"){
-				if(tracked) CCLOG("l");
-				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
-					lStack->addFront(bfsp);
-				} else if(!pf->checkBlock(BFSParentBlock.x + 1, BFSParentBlock.y)){
-					bfsp.x += 32;
-					lStack->addFront(bfsp);
-					if(tracked) CCLOG("l to dl");
-				}else if(!pf->checkBlock(BFSParentBlock.x - 1, BFSParentBlock.y)){
-					bfsp.x -= 32;
-					lStack->addFront(bfsp);
-					if(tracked) CCLOG("l to ul");
-				}else{
-					auto t = this->getPosition();
-					auto thisPos = this->convertToPf(this->getPosition());
-					if(thisPos.x < pf->getBFSStart().x){
-						t.x += 32;
-					} else{
-						t.x -= 32;
-					}
-					lStack->addFront(t);
-					if(tracked) CCLOG("l to ?");
-				}
-			}
-
-			else if(dir == "ul"){
-				if(tracked) CCLOG("ul");
-				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
-					lStack->addFront(bfsp);
-				} else if(!pf->checkBlock(BFSParentBlock.x - 1, BFSParentBlock.y)){
-					bfsp.x -= 32;
-					lStack->addFront(bfsp);
-					if(tracked) CCLOG("ul to l");
-				}else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y - 1)){
-					bfsp.y -= 32;
-					lStack->addFront(bfsp);
-					if(tracked) CCLOG("ul to u");
-				}
-			}
-
-			else if(dir == "ur"){
-				if(tracked) CCLOG("ur");
-				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
-					lStack->addFront(bfsp);
-				} else if(!pf->checkBlock(BFSParentBlock.x - 1, BFSParentBlock.y)){
-					bfsp.x -= 32;
-					lStack->addFront(bfsp);
-					if(tracked) CCLOG("ur to r");
-				}else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y + 1)){
-					bfsp.y += 32;
-					lStack->addFront(bfsp);
-					if(tracked) CCLOG("ur to u");
-				}
-			}
-
-			else if(dir == "dl"){
-				if(tracked) CCLOG("dl");
-				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
-					lStack->addFront(bfsp);
-				} else if(!pf->checkBlock(BFSParentBlock.x + 1, BFSParentBlock.y)){
-					bfsp.x += 32;
-					lStack->addFront(bfsp);
-					if(tracked) CCLOG("dl to l");
-				}else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y - 1)){
-					bfsp.y -= 32;
-					lStack->addFront(bfsp);
-					if(tracked) CCLOG("dl to d");
-				}
-			}
-
-			else if(dir == "dr"){
-				if(tracked) CCLOG("dr");
-				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
-					lStack->addFront(bfsp);
-				} else if(!pf->checkBlock(BFSParentBlock.x + 1, BFSParentBlock.y)){
-					bfsp.x += 32;
-					lStack->addFront(bfsp);
-					if(tracked) CCLOG("dr to r");
-				}else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y + 1)){
-					bfsp.y += 32;
-					lStack->addFront(bfsp);
-					if(tracked) CCLOG("dr to d");
-				}
-			}
-
-			auto diff = bfsp - this->getPosition();
-			if(tracked) CCLOG("%4.4f %4.4f", diff.x, diff.y);
-
-/*
-			if(dir == "u"){
-				if(tracked) CCLOG("u");
-				if(!pf->checkBlock(pos.x - 1, pos.y)){
-					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
-				} else if(!pf->checkBlock(pos.x - 1, pos.y + 1)){
-					pos.x -= 32;
-					pos.y += 32;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("u to ur");
-				} else{
-					pos.x -= 32;
-					pos.y -= 32;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("u to ul");
-				}
-			}
-
-			else if(dir == "d"){
-				if(tracked) CCLOG("d");
-				if(!pf->checkBlock(pos.x + 1, pos.y)){
-					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
-				} else if(!pf->checkBlock(pos.x + 1, pos.y + 1)){
-					pos.x += 32;
-					pos.y += 32;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("d to dr");
-				} else{
-					pos.x += 32;
-					pos.y -= 32;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("d to dl");
-				}
-			}
-
-			else if(dir == "r"){
-				if(tracked) CCLOG("r");
-				if(!pf->checkBlock(pos.x, pos.y + 1)){
-					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
-				} else if(!pf->checkBlock(pos.x + 1, pos.y + 1)){
-					pos.x += 32;
-					pos.y += 32;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("r to dr");
-				} else{
-					pos.x -= 32;
-					pos.y += 32;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("r to ur");
-				}
-			}
-
-			else if(dir == "l"){
-				if(tracked) CCLOG("l");
-				if(!pf->checkBlock(pos.x, pos.y - 1)){
-					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
-				} else if(!pf->checkBlock(pos.x + 1, pos.y - 1)){
-					pos.x += 32;
-					pos.y -= 32;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("l to dl");
-				} else{
-					pos.x -= 32;
-					pos.y -= 32;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("l to ul");
-				}
-			}
-
-			else if(dir == "ul"){
-				if(tracked) CCLOG("ul");
-				if(!pf->checkBlock(pos.x - 1, pos.y - 1)){
-					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
-				} else if(!pf->checkBlock(pos.x - 1, pos.y)){
-					pos.x -= 32;
-					pos.y -= 0;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("ul to u");
-				} else{
-					pos.x -= 0;
-					pos.y -= 32;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("ul to l");
-				}
-			}
-
-			else if(dir == "ur"){
-				if(tracked) CCLOG("ur");
-				if(!pf->checkBlock(pos.x - 1, pos.y + 1)){
-					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
-				} else if(!pf->checkBlock(pos.x, pos.y + 1)){
-					pos.x += 0;
-					pos.y += 32;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("ur to r");
-				} else{
-					pos.x -= 32;
-					pos.y -= 0;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("ur to u");
-				}
-			}
-
-			else if(dir == "dl"){
-				if(tracked) CCLOG("dl");
-				if(!pf->checkBlock(pos.x + 1, pos.y - 1)){
-					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
-				} else if(!pf->checkBlock(pos.x + 1, pos.y)){
-					pos.x += 32;
-					pos.y += 0;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("dl to d");
-				} else{
-					pos.x -= 0;
-					pos.y -= 32;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("dl to l");
-				}
-			}
-
-			else if(dir == "dr"){
-				if(tracked) CCLOG("dr");
-				if(!pf->checkBlock(pos.x + 1, pos.y + 1)){
-					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
-				} else if(!pf->checkBlock(pos.x + 1, pos.y)){
-					pos.x += 32;
-					pos.y += 0;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("dr to d");
-				} else{
-					pos.x -= 0;
-					pos.y += 32;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("dr to r");
-				}
-			}
-			*/
-
-		}
-	}
-
-	//basically nothing is going on
-	else if(lStack->empty() && !moving && tempMoving){
-		badMove = 0;
-		if(tempMoving){
-			pf->block(convertToPf(this->getPosition()).x, convertToPf(this->getPosition()).y);
-			tempMoving = false;
-		}
-	}
+void EnemyBasicUnitRanged::removeFromLevel(){
+	CCLOG("EnemyBasicUnitRanged remove from level");
+	this->getParent()->removeChild(this);
 }
 
+/*
 void EnemyBasicUnitRanged::attack(BasicUnit * attacker, int damage, char attackType){
 	health -= damage;
 	//CCLOG("%p EnemyBasicUnitRanged WAS ATTACKEDDDD for %d damage", this, damage);
 	//CCLOG("%p's (EnemyBasicUnitRanged) health: %d", this, health);
+}
+*/
+
+/*
+ * Set attack animation
+ */
+void EnemyBasicUnitRanged::animationAttack(){
+	RangedAttackObject* atk = RangedAttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
+	atk->initAttack();
+
+	Vector<SpriteFrame *> attackFrames;
+	for (int i = 13; i <= 25; i++){
+		auto *filename = __String::createWithFormat("ElfAttack%d00%d.png", unitDir, i);
+		//CCLOG("%s", filename->getCString());
+		auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
+		attackFrames.pushBack(wframe);
+		//CCLOG("Made troll %d", i);
+	}
+	auto wrunAnim = Animation::createWithSpriteFrames(attackFrames, attackDuration);
+	auto animate = Animate::create(wrunAnim);
+	this->runAction(animate);
+}
+
+/*
+ * Set the walking animation
+ */
+cocos2d::Animate* EnemyBasicUnitRanged::animationWalk(){
+	if(unitDir <=8){
+		Vector<SpriteFrame *> walkFrames;
+
+		//length of animation sequence
+		int animationLength = 22;
+		int startFrame = 16;
+
+		for (int i = startFrame; i <= animationLength; i++){
+			auto *filename = __String::createWithFormat("ElfWalk%d00%d.png", unitDir, i);
+			auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
+			walkFrames.pushBack(wframe);
+		}
+		float duration =  walkingSpeed / (animationLength - startFrame);
+		if(unitDir % 2 == 1) duration *= 1.4;
+		auto walkAnim = Animation::createWithSpriteFrames(walkFrames, duration);
+		auto animate = Animate::create(walkAnim);
+		//auto waction = RepeatForever::create(animate);
+		//this->runAction(animate);
+		return animate;
+	} else{
+		return nullptr;
+	}
+}
+
+/*
+ * Set dying animation
+ */
+void EnemyBasicUnitRanged::animationDie(){
+	if(unitDir <=8){
+		Vector<SpriteFrame *> dieFrames;
+
+		//length of animation sequence
+		int animationLength = 24;
+		int startFrame = 13;
+
+		for (int i = startFrame; i <= animationLength; i++){
+			auto *filename = __String::createWithFormat("ElfDie%d00%d.png", unitDir, i);
+			auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
+			//CCLOG("%s", filename->getCString());
+			dieFrames.pushBack(wframe);
+		}
+		auto dieAnim = Animation::createWithSpriteFrames(dieFrames, dieDuration);
+		auto animate = Animate::create(dieAnim);
+		//auto waction = RepeatForever::create(animate);
+		this->runAction(animate);
+	}
 }
 
 //Melee

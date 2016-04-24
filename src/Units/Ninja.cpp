@@ -225,6 +225,10 @@ void Ninja::update(float dt) {
 }
 */
 
+void Ninja::removeFromLevel(){
+	CCLOG("Ninja remove from level");
+	this->getParent()->removeChild(this);
+}
 
 
 /*

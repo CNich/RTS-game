@@ -40,6 +40,8 @@ protected:
 	virtual void animationAttack();
 	/********************************************/
 
+	virtual void removeFromLevel();
+
 private:
 	BFS *bfsMap;
 

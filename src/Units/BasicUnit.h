@@ -91,6 +91,7 @@ protected:
 
 	bool attacking = false;
 	bool dead = false;
+	virtual void removeFromLevel();
 
 	bool goalPositionAsolve = false;
 

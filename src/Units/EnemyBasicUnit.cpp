@@ -1,7 +1,7 @@
 #include "src/Units/EnemyBasicUnit.h"
 #include "SimpleAudioEngine.h"
 #include "stdlib.h"
-#include "src/AttackObjects/RangedAttackObject.h"
+#include "src/AttackObjects/AttackObject.h"
 
 USING_NS_CC;
 
@@ -9,7 +9,7 @@ EnemyBasicUnit::EnemyBasicUnit() {
 }
 
 EnemyBasicUnit::~EnemyBasicUnit() {
-	CCLOG("THIS GUY WAS DELETED!!!!!!!!!!!");
+	CCLOG("EnemyBasicUnit WAS DELETED!!!!!!!!!!!");
 	//delete tpf;
 	//delete lStack;
 	//this->getParent()->removeChild(this);
@@ -17,7 +17,7 @@ EnemyBasicUnit::~EnemyBasicUnit() {
 
 EnemyBasicUnit* EnemyBasicUnit::create() {
 	EnemyBasicUnit* pSprite = new EnemyBasicUnit();
-	auto *filename = __String::createWithFormat("ElfWalk00016.png");
+	auto *filename = __String::createWithFormat("TrollWalk00000.png");
 	auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
 	pSprite->initWithSpriteFrame(wframe);
 	srand((unsigned) time(NULL));
@@ -455,6 +455,11 @@ void EnemyBasicUnit::update(float dt) {
 			tempMoving = false;
 		}
 	}
+}
+
+void EnemyBasicUnit::removeFromLevel(){
+	CCLOG("EnemyBasicUnit remove from level");
+	this->getParent()->removeChild(this);
 }
 
 void EnemyBasicUnit::attack(BasicUnit * attacker, int damage, char attackType){

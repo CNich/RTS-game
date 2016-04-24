@@ -17,6 +17,7 @@ BasicUnit::BasicUnit() {
 }
 
 BasicUnit::~BasicUnit() {
+	CCLOG("BasicUnit WAS DELETED!!!!!!!!!!");
 }
 
 void BasicUnit::removeUnit() {
@@ -525,11 +526,6 @@ void BasicUnit::setBasicUnitPF(){
 	auto ppos = this->convertToPf(this->getPosition());
 	auto tpos = this->convertToPf(lStack->getTail()->data);
 
-	/*ppos.x = (ppos.x - 16) / 32;
-	ppos.y = (ppos.y - 16) / 32;
-	tpos.x = (tpos.x - 16) / 32;
-	tpos.y = (tpos.y - 16) / 32;
-	*/
 	if (tpos.x >= 0 && tpos.x < pf->getRows() && tpos.y >= 0 && tpos.y < pf->getCols()) {
 		tpf->setStart(ppos.x, ppos.y);
 		tpf->setEnd(tpos.x, tpos.y);
@@ -574,10 +570,7 @@ void BasicUnit::update(float dt) {
 	//check if dead
 	if(!dead && this->getHealth() <= 0){
 		dead = true;
-		//auto rotateTo = RotateTo::create(1.5, 90);
-		//this->runAction(rotateTo);
 		this->animationDie();
-		//CCLOG("check if dead: dead:%d health:%d removeFromPf:%d %p", dead, this->getHealth(), removeFromPf, this);
 	}
 
 	//if dead, die
@@ -594,15 +587,13 @@ void BasicUnit::update(float dt) {
 				pf->unblock(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
 				pf->untaken(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
 				pf->setUnitZero(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
-				this->getParent()->removeChild(this);
+				//this->getParent()->removeChild(this);
+				this->removeFromLevel();
 			});
 			auto seq = Sequence::create(DelayTime::create(4), callback, nullptr);
 			this->runAction(seq);
 			removeFromPf = false;
-			//CCLOG("DEAD DEAD DEAD dead:%d health:%d removeFromPf:%d %p", dead, this->getHealth(), removeFromPf, this);
 		}
-		//this->getParent()->removeChild(this);
-		//CCLOG("number of running actions: %d", this->numberOfRunningActions());
 	}
 
 	//if attacking, nothing should be done
@@ -704,6 +695,11 @@ void BasicUnit::update(float dt) {
 	}
 }
 
+void BasicUnit::removeFromLevel(){
+	CCLOG("BasicUnit remove from level");
+	this->getParent()->removeChild(this);
+}
+
 /*
  * Set dying animation
  */
@@ -730,11 +726,14 @@ void BasicUnit::animationDie(){
 
 int BasicUnit::unitToUnitDistance(BasicUnit *p1, BasicUnit *p2){
 	if(p1 != 0 && p2 != 0){
+		//CCLOG("will this crash? %p %p", p1, p2);
 		auto loc1 = p1->convertToPf(p1->getPosition());
 		auto loc2 = p2->convertToPf(p2->getPosition());
 		cocos2d::Point dist;
 		dist.x = abs(loc1.x - loc2.x);
 		dist.y = abs(loc1.y - loc2.y);
+		//CCLOG("loc1: (%3.3f,%3.3f) loc2: (%3.3f,%3.3f)", loc1.x, loc1.y, loc2.x, loc2.y);
+		//CCLOG("not this time    %p %p", p1, p2);
 		return dist.x + dist.y;
 	} else{
 		return 100;
