@@ -516,8 +516,9 @@ void HelloWorld::goToMovementSprite(BasicUnit *i, cocos2d::Point tpos){
 	tt.x = tt.x * pf->getTileX() + pf->getOffX();
 	tt.y = tt.y * pf->getTileY() + pf->getOffY();
 
-	CCLOG("touch position: %3.3f %3.3f", tpos.x, tpos.y);
-	CCLOG("touch position: %3.3f %3.3f", tt.x, tt.y);
+	//For debugging purposes
+	//CCLOG("touch position: %3.3f %3.3f", tpos.x, tpos.y);
+	//CCLOG("touch position: %3.3f %3.3f", tt.x, tt.y);
 	//auto drawNode = DrawNode::create();
 	//drawNode->drawDot(tt, 16, Color4F::GREEN);
 	//this->addChild(drawNode, 1000);

@@ -103,28 +103,12 @@ void BasicUnit::setStartingPosCustom(cocos2d::Point tmp) {
 }
 
 void BasicUnit::ASolve(int x, int y) {
-	//if(!lStack->empty()){
-		lStack->reset();
-	//}
 
-	//goalPosition.x = x;
-	//goalPosition.y = y;
-
-	//auto ppos = this->getPosition();
+	lStack->reset();
 
 	auto ppos = this->convertToPf(this->getPosition());
 
-	//ppos.x = (ppos.x - 32) / 64;
-	//ppos.y = (ppos.y - 16) / 32;
-
 	if (x >= 0 && x < pf->getRows() && y >= 0 && y < pf->getCols()) {
-
-		/*
-		 * IS MAKING A NEW PATH FINDER EACH TIME BETTER
-		 * OR HAVING A SET ONE AND KEEPING IT ALIVE?
-		 *
-		 * */
-
 
 		tpf->setStart(ppos.x, ppos.y);
 		tpf->setEnd(x, y);
@@ -212,88 +196,6 @@ void BasicUnit::delayedMove() {
 
 		auto playerPos = this->getPosition();
 		auto diff = touchLocation - playerPos;
-
-		//depoending on x movement, change the way the unit faces
-		/*if (diff.x > 0) {
-			this->runAction(actionTo2);
-		} else {
-			this->runAction(actionTo1);
-		}
-		* /
-
-		//move right
-		if(abs(abs(diff.x) - abs(diff.y)) > 15){
-			if (abs(diff.x) > abs(diff.y)) {
-				if (diff.x > 0) {
-					playerPos.x += pf->getTileX();
-					//this->runAction(actionTo2);
-				} else {
-					playerPos.x -= pf->getTileX();
-					//this->runAction(actionTo1);
-				}
-			} else {
-				if (diff.y > 0) {
-					playerPos.y += pf->getTileY();
-				} else {
-					playerPos.y -= pf->getTileY();
-				}
-			}
-			/*if(diff.x > 17 && diff.y < 17 && diff.y > -17){
-				playerPos.x += 32;
-			}
-			//move left
-			else if(diff.x < -17 && diff.y < 17 && diff.y > -17){
-				playerPos.x -= 32;
-			}
-			//move down
-			else if(diff.x < 17 && diff.x > -17 && diff.y > 17){
-				playerPos.y += 32;
-			}
-			//move up
-			else if(diff.x < 17 && diff.x > -17 && diff.y < - 17){
-				playerPos.y -= 32;
-			}* /
-		}
-		/ *************************************** /
-		else{
-			//move right down
-			if(diff.x > 17 && diff.y > 17){
-				playerPos.x += pf->getTileX();
-				playerPos.y += pf->getTileY();
-			}
-			//move left down
-			else if(diff.x < -17 && diff.y > 17){
-				playerPos.x -= pf->getTileX();
-				playerPos.y += pf->getTileY();
-			}
-			//move right up
-			if(diff.x > 17 && diff.y < -17){
-				playerPos.x += pf->getTileX();
-				playerPos.y -= pf->getTileY();
-			}
-			//move left up
-			else if(diff.x < -17 && diff.y < -17){
-				playerPos.x -= pf->getTileX();
-				playerPos.y -= pf->getTileY();
-			}
-		}
-
-		/ *--------
-		if (abs(diff.x) > abs(diff.y)) {
-			if (diff.x > 0) {
-				playerPos.x += 32;
-				this->runAction(actionTo2);
-			} else {
-				playerPos.x -= 32;
-				this->runAction(actionTo1);
-			}
-		} else {
-			if (diff.y > 0) {
-				playerPos.y += 32;
-			} else {
-				playerPos.y -= 32;
-			}
-		}*/
 
 		setUnitDir(getAngle(this->getPosition(), touchLocation));
 		if(unitDir == 0){
@@ -559,6 +461,8 @@ Point BasicUnit::tileCoordForPosition(Point position) {
 
 void BasicUnit::update(float dt) {
 	cocos2d::Point currentEL;
+
+	//check if closest enemy either moved or has changed
 	if(currentEnemy != 0){
 		currentEL = convertToPf(currentEnemy->getPosition());
 		if(currentEnemyLocation.x != currentEL.x || currentEnemyLocation.y != currentEL.y){
@@ -607,21 +511,11 @@ void BasicUnit::update(float dt) {
 			//currentEnemyMoved = false;
 
 			auto callback = CallFunc::create([this]() {
-				//if(currentEnemy != 0 && !currentEnemy->isDead()){
-				//	currentEnemy->attack(this, 40, 'a');
-				//}
 				attacking = false;
-				//CCLOG("ATTACKKKKK FALSE dead:%d health:%d removeFromPf:%d %p", dead, this->getHealth(), removeFromPf, this);
 			});
 			lStack->reset();
-			//CCLOG("attack number of running actions: %d", this->numberOfRunningActions());
-			//CCLOG("ATTACKKKKK dead:%d health:%d removeFromPf:%d %p", dead, this->getHealth(), removeFromPf, this);
-			//auto rotateTo = RotateTo::create(0.1, 0, 20.0f);
-			//auto rotateBack = RotateTo::create(0.1, 0, 0);
 			auto seq = Sequence::create(DelayTime::create(attackSpeed), callback, nullptr);
-					//rotateTo, rotateBack, nullptr);
 			this->runAction(seq);
-
 			this->animationAttack();
 		}
 
@@ -639,16 +533,17 @@ void BasicUnit::update(float dt) {
 			currentEnemyMoved = false;
 		}
 
+		//unit's goal position has been updated
+		else if(goalPositionAsolve){
+			goalPositionAsolve = false;
+			this->ASolve(goalPosition.x, goalPosition.y);
+		}
+
 		//the unit is in between movements and is not attacking
 		//if the movement stack isn't empty and the unit isn't moving
 		//i.e. in between moves, move to next location in stack
 		else if (!lStack->empty() && !moving) {
 			updateDelayedMove();
-		}
-
-		else if(goalPositionAsolve){
-			goalPositionAsolve = false;
-			this->ASolve(goalPosition.x, goalPosition.y);
 		}
 
 		/* if idleTrack is false then the unit should not be moving
