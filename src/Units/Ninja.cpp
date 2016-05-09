@@ -330,7 +330,8 @@ void Ninja::updateDelayedMove(){
 
 //Ranged
 bool Ninja::enemyIsAttackable(){
-	if(this->getCurrentEnemy() != 0 && unitToUnitDistance(this, getCurrentEnemy()) <= 6){
+	if(this->getCurrentEnemy() != 0 && unitToUnitDistance(this, getCurrentEnemy()) <= attackRange &&
+			attackTravelRange >= pointToPointDistance(this->convertToPf(this->getPosition()), goalPosition)){
 		return true;
 	}
 	return false;

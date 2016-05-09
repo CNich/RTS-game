@@ -21,7 +21,7 @@ public:
 	void setForegroundMap(cocos2d::TMXLayer *mp);
 	void setTileMap(cocos2d::TMXTiledMap *mp);
 
-	cocos2d::Point goalPosition;
+	void setGoalPosition(cocos2d::Point tpos){ goalPosition = tpos; };
 	void setAsovle(){ goalPositionAsolve = true; }
 
 	cocos2d::Point convertToPf(cocos2d::Point tmp);
@@ -43,6 +43,11 @@ public:
 	virtual void attack(BasicUnit *attacker, int damage, char attackType);
 	int attackRange = 7;
 	int movementRange = 7;
+	int attackTravelRange = 7;
+	int pointToPointDistance(cocos2d::Point a, cocos2d::Point b);
+
+	bool consoleTrack = false;
+	int consoleCount = 0;
 
 	PathFinder<BasicUnit> *pf;
 	void setPf(PathFinder<BasicUnit> *tempPf);
@@ -62,7 +67,6 @@ protected:
 	void delayedMove();
 	virtual void updateDelayedMove();
 	void setMoving();
-
 
 	bool movedYet = false;
 	bool idle = true;
@@ -94,6 +98,7 @@ protected:
 	virtual void removeFromLevel();
 
 	bool goalPositionAsolve = false;
+	cocos2d::Point goalPosition;
 
 	bool currentEnemyIsCloseEnough = false;
 	bool currentEnemyMoved = false;

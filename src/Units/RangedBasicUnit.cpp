@@ -144,7 +144,8 @@ void RangedBasicUnit::animationDie(){
 
 //Ranged
 bool RangedBasicUnit::enemyIsAttackable(){
-	if(this->getCurrentEnemy() != 0 && unitToUnitDistance(this, getCurrentEnemy()) <= attackRange){
+	if(this->getCurrentEnemy() != 0 && unitToUnitDistance(this, getCurrentEnemy()) <= attackRange &&
+			attackTravelRange >= pointToPointDistance(this->convertToPf(this->getPosition()), goalPosition)){
 		return true;
 	}
 	return false;

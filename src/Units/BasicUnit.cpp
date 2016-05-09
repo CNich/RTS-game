@@ -108,7 +108,7 @@ void BasicUnit::ASolve(int x, int y) {
 
 	auto ppos = this->convertToPf(this->getPosition());
 
-	if (x >= 0 && x < pf->getRows() && y >= 0 && y < pf->getCols()) {
+	if (x >= 0 && x < pf->getRows() && y >= 0 && y < pf->getCols()){// && !pf->checkBlock(x, y)) {
 
 		tpf->setStart(ppos.x, ppos.y);
 		tpf->setEnd(x, y);
@@ -119,6 +119,10 @@ void BasicUnit::ASolve(int x, int y) {
 		tpf->setOffY(pf->getOffY());
 
 		lStack = tpf->solve();
+
+		//if(consoleTrack) CCLOG("ASolve: xy: %d, %d, goalPosition: %3.3f, %3.3f", x, y, goalPosition.x, goalPosition.y);
+		if(consoleTrack) CCLOG("ASolve: xy: %d, %d", x, y);
+		if(consoleTrack) CCLOG("ASolve: %2d lStack->getLength()", lStack->getLength());
 
 		/*
 		PathFinder<BasicUnit> tpf2 = PathFinder<BasicUnit>(50, 50);
@@ -426,7 +430,14 @@ void BasicUnit::setPlayerPosition(Point position, bool diag) {
 void BasicUnit::setBasicUnitPF(){
 	lStack->reset();
 	auto ppos = this->convertToPf(this->getPosition());
-	auto tpos = this->convertToPf(lStack->getTail()->data);
+
+	cocos2d::Point tpos;
+	//tpos = team = 0 ? this->convertToPf(goalPosition) : this->convertToPf(lStack->getTail()->data);
+	if(team == 0){
+		tpos = this->convertToPf(goalPosition);
+	} else{
+		auto tpos = this->convertToPf(lStack->getTail()->data);
+	}
 
 	if (tpos.x >= 0 && tpos.x < pf->getRows() && tpos.y >= 0 && tpos.y < pf->getCols()) {
 		tpf->setStart(ppos.x, ppos.y);
@@ -438,6 +449,7 @@ void BasicUnit::setBasicUnitPF(){
 		tpf->setOffY(pf->getOffY());
 
 		lStack = tpf->solve();
+		if(consoleTrack) CCLOG("setBasicUnitPf!!!");
 	}
 }
 
@@ -474,6 +486,7 @@ void BasicUnit::update(float dt) {
 	//check if dead
 	if(!dead && this->getHealth() <= 0){
 		dead = true;
+		this->stopAllActions();
 		this->animationDie();
 	}
 
@@ -534,8 +547,12 @@ void BasicUnit::update(float dt) {
 		}
 
 		//unit's goal position has been updated
-		else if(goalPositionAsolve){
+		else if(goalPositionAsolve && !moving){
 			goalPositionAsolve = false;
+			if(consoleTrack) {
+				consoleCount++;
+				CCLOG("%2d %2d goalPositionAsolve SET!", consoleCount, lStack->getLength());
+			}
 			this->ASolve(goalPosition.x, goalPosition.y);
 		}
 
@@ -557,16 +574,21 @@ void BasicUnit::update(float dt) {
 
 		//gets unit to find path to it's goal position
 		/* A */
-		else if(lStack->empty() && idle == true && idleTrack == true){
+		else if(lStack->empty() && idle == true && idleTrack == true && !moving){
 			idle = false;
 			badMove = 0;
+			if(consoleTrack) {
+				CCLOG("%2d %2d idle", consoleCount, lStack->getLength());
+				//consoleCount++;
+			}//CCLOG("lStack->empty(): %d   %7.7f", lStack->empty(), dt);
 			this->ASolve(goalPosition.x, goalPosition.y);
-			//CCLOG("lStack->empty(): %d   %7.7f", lStack->empty(), dt);
 		}
+
+		//movedYet, tempMoving
 
 		//causes unit to wait for 1 second until trying *A* again
 		/* B */
-		else if(lStack->empty() && movedYet == true && idle == false && idleTrack == true){
+		else if(lStack->empty() && movedYet == true && idle == false && idleTrack == true && badMove < 3){
 			badMove++;
 			/* makes sure *A* is not going while*/
 			idleTrack = false;
@@ -577,6 +599,8 @@ void BasicUnit::update(float dt) {
 			auto seq = Sequence::create(DelayTime::create(1), callback, nullptr);
 			this->runAction(seq);
 			//CCLOG("%d", badMove);
+			//DelayTime * action = new (std::nothrow) DelayTime();
+			//action->initWithDuration(2);
 		}
 	}
 
@@ -642,10 +666,13 @@ void BasicUnit::updateDelayedMove(){
 	badMove = 0;
 }
 
+int BasicUnit::pointToPointDistance(cocos2d::Point a, cocos2d::Point b){
+	return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2));
+}
 
 //Melee
 bool BasicUnit::enemyIsAttackable(){
-	if(this->getCurrentEnemy() != 0){
+	if(this->getCurrentEnemy() != 0 && attackTravelRange >= pointToPointDistance(this->convertToPf(this->getPosition()), goalPosition)){
 		auto enemyLoc = convertToPf(currentEnemy->getPosition());
 		auto thisLoc = convertToPf(this->getPosition());
 		if(abs(enemyLoc.x - thisLoc.x) <= 1 && abs(enemyLoc.y - thisLoc.y) <= 1){

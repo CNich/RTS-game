@@ -185,7 +185,7 @@ bool HelloWorld::init() {
 		//Check the click area
 		if (rect.containsPoint(locationInNode))
 		{
-			CCLOG("sprite began... x = %f, y = %f", locationInNode.x, locationInNode.y);
+			//CCLOG("sprite began... x = %f, y = %f", locationInNode.x, locationInNode.y);
 			target->setOpacity(180);
 			return true;
 		}
@@ -205,7 +205,7 @@ bool HelloWorld::init() {
 	//Process the touch end event
 	listener1->onTouchEnded = [=](Touch* touch, Event* event) {
 		auto target = static_cast<Sprite*>(event->getCurrentTarget());
-		CCLOG("sprite onTouchesEnded.. ");
+		//CCLOG("sprite onTouchesEnded.. ");
 		target->setOpacity(255);
 
 			lStack->reset();
@@ -310,8 +310,8 @@ bool HelloWorld::init() {
 	ninja->BFSInit(bfsp.x, bfsp.y);
 
 
-	int t1 = 12;
-	int t2 = 9;
+	int t1 = 10;
+	int t2 = 10;
 
 	for(int i=0; i < t1; i+=2){
 		auto p = _plpos;
@@ -329,6 +329,10 @@ bool HelloWorld::init() {
 		RangedBasicUnit * r = RangedBasicUnit::create(p);
 		rangedBasicUnitVec.pushBack(r);
 		initUnit(r, 0);
+		if(i == 2) {
+			r->consoleTrack = true;
+			r->setColor(Color3B::RED);
+		}
 	}
 
 
@@ -509,19 +513,21 @@ cocos2d::Sprite * HelloWorld::setMovementSprites(char *str, cocos2d::Point pt){
 }
 
 void HelloWorld::goToMovementSprite(BasicUnit *i, cocos2d::Point tpos){
-	i->goalPosition.x = tpos.x;
-	i->goalPosition.y = tpos.y;
+	i->setGoalPosition(tpos);
+	//i->goalPosition.x = tpos.x;
+	//i->goalPosition.y = tpos.y;
 
-	auto tt = tpos;
-	tt.x = tt.x * pf->getTileX() + pf->getOffX();
-	tt.y = tt.y * pf->getTileY() + pf->getOffY();
 
 	//For debugging purposes
+	//auto tt = tpos;
+	//tt.x = tt.x * pf->getTileX() + pf->getOffX();
+	//tt.y = tt.y * pf->getTileY() + pf->getOffY();
 	//CCLOG("touch position: %3.3f %3.3f", tpos.x, tpos.y);
 	//CCLOG("touch position: %3.3f %3.3f", tt.x, tt.y);
 	//auto drawNode = DrawNode::create();
 	//drawNode->drawDot(tt, 16, Color4F::GREEN);
 	//this->addChild(drawNode, 1000);
+
 	i->setAsovle();
 }
 
@@ -535,8 +541,9 @@ void HelloWorld::initUnit(BasicUnit *r, char team){
 	r->setTeam(team);
 	if(team == 0){
 		auto pos = r->convertToPf(r->getPosition());
-		r->goalPosition.x = pos.x;
-		r->goalPosition.y = pos.y;
+		//r->goalPosition.x = pos.x;
+		//r->goalPosition.y = pos.y;
+		r->setGoalPosition(pos);
 	}
 }
 

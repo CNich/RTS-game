@@ -36,6 +36,7 @@ public:
 	bool empty();
 	bool Tempty();
 	bool Hempty();
+	int getLength();
 
 private:
 	node<T> *head;
@@ -202,6 +203,31 @@ void LinkedList<T>::reset(){
 	if(tail->empty){
 		removeBack();
 	}
+
+	if(head->empty){
+		removeFront();
+	}
+	if(tail->empty){
+		removeBack();
+	}
+}
+
+template<class T>
+int LinkedList<T>::getLength(){
+	int i = 0;
+	node<T>* tmp = head;
+	if(head->empty){
+		if(tail->empty){
+			return 0;
+		} else{
+			return 1;
+		}
+	}
+	while(tmp != tail){
+		tmp = tmp->prev;
+		i++;
+	}
+	return i;
 }
 
 template<class T>
