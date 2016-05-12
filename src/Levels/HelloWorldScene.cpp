@@ -308,6 +308,7 @@ bool HelloWorld::init() {
 	auto bfsp = ninja->convertToPf(ninja->getPosition());
 	ninja->setBFSmap();
 	ninja->BFSInit(bfsp.x, bfsp.y);
+	//ninja->consoleTrack = true;
 
 
 	int t1 = 10;
@@ -329,10 +330,10 @@ bool HelloWorld::init() {
 		RangedBasicUnit * r = RangedBasicUnit::create(p);
 		rangedBasicUnitVec.pushBack(r);
 		initUnit(r, 0);
-		if(i == 2) {
-			r->consoleTrack = true;
-			r->setColor(Color3B::RED);
-		}
+		//if(i == 2) {
+		//	r->consoleTrack = true;
+		//	r->setColor(Color3B::RED);
+		//}
 	}
 
 
@@ -344,6 +345,10 @@ bool HelloWorld::init() {
 		r->setColor(Color3B::RED);
 		bvec2.pushBack(r);
 		initUnit(r, 1);
+		if(i == 3){
+			r->setColor(Color3B::BLUE);
+			r->tracked = true;
+		}
 	}
 
 

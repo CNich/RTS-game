@@ -44,10 +44,12 @@ public:
 	int attackRange = 7;
 	int movementRange = 7;
 	int attackTravelRange = 7;
+	float blockDelay = 0.25;
 	int pointToPointDistance(cocos2d::Point a, cocos2d::Point b);
 
 	bool consoleTrack = false;
 	int consoleCount = 0;
+	void consoleDebugStatement(cocos2d::__String * str);
 
 	PathFinder<BasicUnit> *pf;
 	void setPf(PathFinder<BasicUnit> *tempPf);

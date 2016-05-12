@@ -9,7 +9,7 @@ Ninja::Ninja() {
 }
 
 Ninja::~Ninja() {
-	CCLOG("THIS GUY WAS DELETED!!!!!!!!!!!");
+	CCLOG("NINJA GUY WAS DELETED!!!!!!!!!!!");
 	//delete tpf;
 	//delete lStack;
 	//this->getParent()->removeChild(this);
@@ -316,7 +316,7 @@ void Ninja::updateDelayedMove(){
 	//CCLOG("!lStack->empty() && !moving: %f %f", p.x, p.y);
 	bfsMap->setStart((int)p.x, (int)p.y);
 	bfsMap->solve();
-	CCLOG("BFS MAP");
+	//CCLOG("BFS MAP");
 	tempMoving = true;
 	movedYet = true;
 	badMove = 0;

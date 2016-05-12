@@ -11,6 +11,7 @@ public:
 	static EnemyBasicUnit* create();
 	static EnemyBasicUnit* create(cocos2d::Point tmp);
 	
+	bool tracked = false;
 
 	//void attack(BasicUnit *attacker, int damage, char attackType);
 	int attackRange = 6;

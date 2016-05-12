@@ -80,6 +80,7 @@ void EnemyBasicUnit::update(float dt) {
 		dead = true;
 		//auto rotateTo = RotateTo::create(1.5, 90);
 		//this->runAction(rotateTo);
+		this->stopAllActions();
 		this->animationDie();
 	}
 
@@ -99,15 +100,7 @@ void EnemyBasicUnit::update(float dt) {
 				//}
 				attacking = false;
 			});
-			auto rotateTo = RotateTo::create(0.1, 0, 20.0f);
-			auto rotateBack = RotateTo::create(0.1, 0, 0);
-			auto seq = Sequence::create(DelayTime::create(4), callback,
-					rotateTo, rotateBack, nullptr);
-			this->runAction(seq);
-			//RangedAttackObject* atk = RangedAttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
 
-			//AttackObject* atk = AttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
-			//atk->initAttack();
 			animationAttack();
 			lStack->reset();
 		}
@@ -142,7 +135,7 @@ void EnemyBasicUnit::update(float dt) {
 			auto bfsp = pf->getBFSParent(pos.x, pos.y);
 
 			auto BFSParentBlock = this->convertToPf(bfsp);
-			bool tracked = false;
+			//bool tracked = false;
 			if(dir == "u"){
 				if(tracked) CCLOG("u");
 				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){

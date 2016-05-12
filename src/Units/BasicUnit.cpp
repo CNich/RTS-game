@@ -121,8 +121,9 @@ void BasicUnit::ASolve(int x, int y) {
 		lStack = tpf->solve();
 
 		//if(consoleTrack) CCLOG("ASolve: xy: %d, %d, goalPosition: %3.3f, %3.3f", x, y, goalPosition.x, goalPosition.y);
-		if(consoleTrack) CCLOG("ASolve: xy: %d, %d", x, y);
-		if(consoleTrack) CCLOG("ASolve: %2d lStack->getLength()", lStack->getLength());
+		consoleDebugStatement(cocos2d::__String::createWithFormat(
+				"ASolve: %3d xy: %d, %d", lStack->getLength(), x, y));
+		//if(consoleTrack) CCLOG("ASolve: %2d lStack->getLength()", lStack->getLength());
 
 		/*
 		PathFinder<BasicUnit> tpf2 = PathFinder<BasicUnit>(50, 50);
@@ -419,7 +420,8 @@ void BasicUnit::setPlayerPosition(Point position, bool diag) {
 			this->runAction(seq);
 			lStack->addFront(position);
 		} else if(giveup == false){
-			//CCLOG("HERE HERE HERE");
+			//if(team == 0) CCLOG("giveup: 0, %d %d", moving, lStack->empty());
+			//if(team == 1) CCLOG("giveup: 1, %d %d", moving, lStack->empty());
 			giveup = true;
 			blockedCount = 0;
 			setBasicUnitPF();
@@ -436,10 +438,11 @@ void BasicUnit::setBasicUnitPF(){
 	if(team == 0){
 		tpos = this->convertToPf(goalPosition);
 	} else{
-		auto tpos = this->convertToPf(lStack->getTail()->data);
+		//auto tpos = this->convertToPf(lStack->getTail()->data);
+		CCLOG("giveup: %d %d %d", lStack->empty(), moving, attacking);
 	}
 
-	if (tpos.x >= 0 && tpos.x < pf->getRows() && tpos.y >= 0 && tpos.y < pf->getCols()) {
+	if (tpos.x >= 0 && tpos.x < pf->getRows() && tpos.y >= 0 && tpos.y < pf->getCols() && team == 0) {
 		tpf->setStart(ppos.x, ppos.y);
 		tpf->setEnd(tpos.x, tpos.y);
 		this->getMap();
@@ -540,10 +543,13 @@ void BasicUnit::update(float dt) {
 		}*/
 
 		//else if(currentEnemyIsCloseEnough && !currentEnemyMoved && unitToUnitDistance(this, currentEnemy) < attackRange){
-		else if(currentEnemy != 0 && currentEnemyMoved && unitToUnitDistance(this, currentEnemy) < movementRange){
+		else if(currentEnemy != 0 && currentEnemyMoved && unitToUnitDistance(this, currentEnemy) < movementRange &&
+				attackTravelRange >= pointToPointDistance(this->convertToPf(this->getPosition()), goalPosition)){
 			auto t = convertToPf(currentEnemy->getPosition());
 			this->ASolve(t.x, t.y);
 			currentEnemyMoved = false;
+			consoleDebugStatement(cocos2d::__String::createWithFormat(
+					"move to enemy: %d", this->enemyIsAttackable()));
 		}
 
 		//unit's goal position has been updated
@@ -577,16 +583,16 @@ void BasicUnit::update(float dt) {
 		else if(lStack->empty() && idle == true && idleTrack == true && !moving){
 			idle = false;
 			badMove = 0;
-			if(consoleTrack) {
-				CCLOG("%2d %2d idle", consoleCount, lStack->getLength());
+			consoleDebugStatement(__String::createWithFormat(
+					"%2d %2d idle", consoleCount, lStack->getLength()));
 				//consoleCount++;
-			}//CCLOG("lStack->empty(): %d   %7.7f", lStack->empty(), dt);
+			//CCLOG("lStack->empty(): %d   %7.7f", lStack->empty(), dt);
 			this->ASolve(goalPosition.x, goalPosition.y);
 		}
 
 		//movedYet, tempMoving
 
-		//causes unit to wait for 1 second until trying *A* again
+		//causes unit to wait for x second until trying *A* again
 		/* B */
 		else if(lStack->empty() && movedYet == true && idle == false && idleTrack == true && badMove < 3){
 			badMove++;
@@ -596,8 +602,10 @@ void BasicUnit::update(float dt) {
 				idle = true;
 				idleTrack = true;
 			});
-			auto seq = Sequence::create(DelayTime::create(1), callback, nullptr);
+			auto seq = Sequence::create(DelayTime::create(blockDelay), callback, nullptr);
 			this->runAction(seq);
+			consoleDebugStatement(__String::createWithFormat(
+					"blocked"));
 			//CCLOG("%d", badMove);
 			//DelayTime * action = new (std::nothrow) DelayTime();
 			//action->initWithDuration(2);
@@ -713,4 +721,11 @@ void BasicUnit::returnHealth(int healthTaken, char attackType){
 
 int BasicUnit::getHealth(){
 	return this->health;
+}
+
+
+void BasicUnit::consoleDebugStatement(cocos2d::__String * str){
+	if(consoleTrack){
+		CCLOG("%s",str->getCString());
+	}
 }
