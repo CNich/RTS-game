@@ -170,6 +170,8 @@ void BasicUnit::getMap(PathFinder<BasicUnit> *tpf2) {
 
 void BasicUnit::delayedMove() {
 	if (!lStack->empty() && !moving) {
+		consoleDebugStatement(cocos2d::__String::createWithFormat(
+				"delayedMove working %d %d", lStack->empty(), moving));
 		auto actionTo1 = RotateTo::create(0, 0, 180);
 		auto actionTo2 = RotateTo::create(0, 0, 0);
 
@@ -247,6 +249,9 @@ void BasicUnit::delayedMove() {
 
 			//this->setPlayerPosition(touchLocation, abs(diff.x) > 0 && abs(diff.y) > 0);
 		}
+	} else{
+		consoleDebugStatement(cocos2d::__String::createWithFormat(
+						"delayedMove not working %d %d", lStack->empty(), moving));
 	}
 }
 
@@ -439,7 +444,8 @@ void BasicUnit::setBasicUnitPF(){
 		tpos = this->convertToPf(goalPosition);
 	} else{
 		//auto tpos = this->convertToPf(lStack->getTail()->data);
-		CCLOG("giveup: %d %d %d", lStack->empty(), moving, attacking);
+		consoleDebugStatement(cocos2d::__String::createWithFormat(
+				"giveup: %d %d %d", lStack->empty(), moving, attacking));
 	}
 
 	if (tpos.x >= 0 && tpos.x < pf->getRows() && tpos.y >= 0 && tpos.y < pf->getCols() && team == 0) {

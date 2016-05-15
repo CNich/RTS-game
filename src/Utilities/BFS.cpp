@@ -73,8 +73,9 @@ void BFS::solve(){
 			//check right
 			checkNeighbour(0, 1, n, "r");
 
-			//check up left
+			//check diagonals
 			if (n.x > 1 && n.x < W - 1 && n.y > 0 && n.y < L - 1){
+				//check up left
 				if (n == start ||
 					(map[n.x][n.y].dir != map[n.x - 1][n.y].dir && map[n.x][n.y].dir != map[n.x][n.y - 1].dir) ||
 					(map[n.x - 1][n.y].dir == 0 || map[n.x][n.y - 1].dir == 0) ){

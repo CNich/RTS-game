@@ -48,6 +48,7 @@ public:
 	int pointToPointDistance(cocos2d::Point a, cocos2d::Point b);
 
 	bool consoleTrack = false;
+	int consoleTrackNum = 0;
 	int consoleCount = 0;
 	void consoleDebugStatement(cocos2d::__String * str);
 

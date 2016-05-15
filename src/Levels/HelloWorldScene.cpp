@@ -348,6 +348,8 @@ bool HelloWorld::init() {
 		if(i == 3){
 			r->setColor(Color3B::BLUE);
 			r->tracked = true;
+			r->consoleTrack = true;
+			r->consoleTrackNum = 0;
 		}
 	}
 
@@ -370,6 +372,12 @@ bool HelloWorld::init() {
 		r->setColor(Color3B::GREEN);
 		bvec2.pushBack(r);
 		initUnit(r, 1);
+		if(i == 4){
+			r->setColor(Color3B::BLUE);
+			r->tracked = true;
+			r->consoleTrack = true;
+			r->consoleTrackNum = 2;
+		}
 	}
 
 
@@ -391,6 +399,12 @@ bool HelloWorld::init() {
 		r->setColor(Color3B::GREEN);
 		bvec2.pushBack(r);
 		initUnit(r, 1);
+		if(i == 4){
+			r->setColor(Color3B::BLUE);
+			r->tracked = true;
+			r->consoleTrack = true;
+			r->consoleTrackNum = 3;
+		}
 	}
 
 

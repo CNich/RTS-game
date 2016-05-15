@@ -51,6 +51,9 @@ void EnemyBasicUnit::update(float dt) {
 		}
 	}
 
+	//consoleDebugStatement(cocos2d::__String::createWithFormat(
+	//		"%d %d %d %d", attacking, moving, lStack->empty(), tempMoving));
+
 	//if dead, die
 	if(dead){
 		//figure out how to delete
@@ -95,14 +98,12 @@ void EnemyBasicUnit::update(float dt) {
 			//currentEnemyMoved = false;
 
 			auto callback = CallFunc::create([this]() {
-				//if(currentEnemy != 0 && !currentEnemy->isDead()){
-				//	currentEnemy->attack(this, 40, 'a');
-				//}
 				attacking = false;
 			});
-
-			animationAttack();
 			lStack->reset();
+			auto seq = Sequence::create(DelayTime::create(attackSpeed), callback, nullptr);
+			this->runAction(seq);
+			this->animationAttack();
 		}
 
 		/*
@@ -123,6 +124,7 @@ void EnemyBasicUnit::update(float dt) {
 		//if the movement stack isn't empty and the unit isn't moving
 		//i.e. in between moves, move to next location in stack
 		else if (!lStack->empty() && !moving) {
+			if(tracked) CCLOG("between movements");
 			delayedMove();
 			tempMoving = true;
 			movedYet = true;
@@ -133,6 +135,8 @@ void EnemyBasicUnit::update(float dt) {
 			auto pos = this->convertToPf(this->getPosition());
 			std::string dir = pf->getBFSDir(pos.x, pos.y);
 			auto bfsp = pf->getBFSParent(pos.x, pos.y);
+
+			if(tracked) CCLOG("%d %s bfsMoving", consoleTrackNum, dir.c_str());
 
 			auto BFSParentBlock = this->convertToPf(bfsp);
 			//bool tracked = false;
@@ -190,6 +194,7 @@ void EnemyBasicUnit::update(float dt) {
 				if(tracked) CCLOG("r");
 				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
 					lStack->addFront(bfsp);
+					if(tracked) CCLOG("r not changed");
 				} else if(!pf->checkBlock(BFSParentBlock.x + 1, BFSParentBlock.y)){
 					bfsp.x += 32;
 					lStack->addFront(bfsp);
@@ -442,6 +447,7 @@ void EnemyBasicUnit::update(float dt) {
 
 	//basically nothing is going on
 	else if(lStack->empty() && !moving && tempMoving){
+		if(tracked) CCLOG("nothing going on");
 		badMove = 0;
 		if(tempMoving){
 			pf->block(convertToPf(this->getPosition()).x, convertToPf(this->getPosition()).y);
