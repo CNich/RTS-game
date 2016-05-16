@@ -78,6 +78,8 @@ private:
 
 	void initUnit(BasicUnit *r, char team);
 
+	int fixPositions(char dim, int val);
+
 public:
 	PathFinder<BasicUnit> * pf;
 	Ninja *ninja;

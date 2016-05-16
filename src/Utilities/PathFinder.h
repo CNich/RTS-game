@@ -443,8 +443,8 @@ LinkedList<cocos2d::Point> * PathFinder<T>::solve(){
 		cocos2d::Point temp;
 
 		//need to convert from the map coordinates (0, 1, 2...tileX) to the game coordinates (tilemap)
-		temp.x = curr.x * tileX + 32;
-		temp.y = curr.y * tileY + 16;
+		temp.x = curr.x * tileX + offX;
+		temp.y = curr.y * tileY + offY;
 
 		queueP->addFront(temp);
 

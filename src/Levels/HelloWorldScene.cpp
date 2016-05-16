@@ -121,15 +121,23 @@ bool HelloWorld::init() {
 	int x = playerShowUpPoint["x"].asInt();
 	int y = playerShowUpPoint["y"].asInt();
 
-	int enemyX = enemySpawnPoint["x"].asInt();
-	int enemyY = enemySpawnPoint["y"].asInt();
-	int enemyX2 = enemySpawnPoint2["x"].asInt();
-	int enemyY2 = enemySpawnPoint2["y"].asInt();
-	int enemyX3 = enemySpawnPoint3["x"].asInt();
-	int enemyY3 = enemySpawnPoint3["y"].asInt();
+	int enemyX =  fixPositions('x', enemySpawnPoint["x"].asInt());
+	int enemyY =  fixPositions('y', enemySpawnPoint["y"].asInt());
+	int enemyX2 = fixPositions('x', enemySpawnPoint2["x"].asInt());
+	int enemyY2 = fixPositions('y', enemySpawnPoint2["y"].asInt());
+	int enemyX3 = fixPositions('x', enemySpawnPoint3["x"].asInt());
+	int enemyY3 = fixPositions('y', enemySpawnPoint3["y"].asInt());
 
-	_plpos.x = x + _tileMap->getTileSize().width / 2;
-	_plpos.y = y + _tileMap->getTileSize().height / 2;
+	//_plpos.x = x + _tileMap->getTileSize().width / 2;
+	//_plpos.y = y + _tileMap->getTileSize().height / 2;
+
+	_plpos.x = fixPositions('x', x);
+	_plpos.y = fixPositions('y', y);
+
+
+
+	//_plpos.x = pf->getTileX() * ((int) (x / pf->getTileX()));
+	//_plpos.y = pf->getTileY() * ((int) (y / pf->getTileY()));
 
 	CCLOG("GET PLAYER SHOW UP POINT: %3.3f %3.3f", _plpos.x, _plpos.y);
 
@@ -417,106 +425,6 @@ bool HelloWorld::init() {
 		r->setColor(Color3B::GREEN);
 		initUnit(r, 1);
 	}
-
-/*
-	for(int i=0; i < t1/4; i++){
-		auto p = _plpos;
-		p.x = _plpos.x + pf->getTileX() * i;
-		p.y = _plpos.y  - pf->getTileY();
-		BasicUnit * r = BasicUnit::create(p);
-		bvec.pushBack(r);
-		initUnit(r, 0);
-	}
-	for(int i=0; i < t1/4; i++){
-		auto p = _plpos;
-		p.x = _plpos.x + pf->getTileX() * i;
-		p.y = _plpos.y  - pf->getTileY() * 2;
-		RangedBasicUnit * r = RangedBasicUnit::create(p);
-		rangedBasicUnitVec.pushBack(r);
-		initUnit(r, 0);
-	}
-
-
-	for(int i=0; i < t1; i++){
-		auto p = _plpos;
-		p.x = _plpos.x + pf->getTileX() * i;
-		p.y = _plpos.y  - pf->getTileY() * 11;
-		BasicUnit * r = BasicUnit::create(p);
-		bvec.pushBack(r);
-		initUnit(r, 0);
-	}
-
-	for(int i=0; i < t1; i++){
-		auto p = _plpos;
-		p.x = _plpos.x + pf->getTileX() * i;
-		p.y = _plpos.y  - pf->getTileY() * 9;
-		RangedBasicUnit * r = RangedBasicUnit::create(p);
-		rangedBasicUnitVec.pushBack(r);
-		initUnit(r, 0);
-	}
-
-	for(int i=0; i < t1; i++){
-		auto p = _plpos;
-		p.x = _plpos.x + pf->getTileX() * i;
-		p.y = _plpos.y  - pf->getTileY() * 8;
-		RangedBasicUnit * r = RangedBasicUnit::create(p);
-		rangedBasicUnitVec.pushBack(r);
-		initUnit(r, 0);
-	}
-
-	for(int i=0; i < t2; i+=2){
-		auto p = _plpos;
-		p.x = _plpos.x + pf->getTileX() * (i - 10);
-		p.y = _plpos.y  - pf->getTileY() * 13;
-		EnemyBasicUnit * r = EnemyBasicUnit::create(p);
-		r->setColor(Color3B::BLUE);
-		bvec2.pushBack(r);
-		initUnit(r, 1);
-	}
-
-	for(int i=0; i < t2; i+=2){
-		auto p = _plpos;
-		p.x = _plpos.x + pf->getTileX() * (i - 10);
-		p.y = _plpos.y  - pf->getTileY() * 15;
-		EnemyBasicUnit * r = EnemyBasicUnit::create(p);
-		r->setColor(Color3B::BLUE);
-		bvec2.pushBack(r);
-		initUnit(r, 1);
-	}
-
-
-	for(int i=0; i < t2; i+=2){
-		auto p = _plpos;
-		p.x = _plpos.x + pf->getTileX() * (i - 10);
-		p.y = _plpos.y  - pf->getTileY() * 17;
-		EnemyBasicUnitRanged * r = EnemyBasicUnitRanged::create(p);
-		rangedBasicUnitVec2.pushBack(r);
-		r->setColor(Color3B::BLUE);
-		initUnit(r, 1);
-	}
-
-	for(int i=0; i < t2; i+=2){
-		auto p = _plpos;
-		p.x = _plpos.x + pf->getTileX() * (i - 10);
-		p.y = _plpos.y  - pf->getTileY() * 19;
-		EnemyBasicUnitRanged * r = EnemyBasicUnitRanged::create(p);
-		rangedBasicUnitVec2.pushBack(r);
-		r->setColor(Color3B::BLUE);
-		initUnit(r, 1);
-	}
-	*/
-
-	/*
-	auto p = _plpos;
-	p.x = pf->getTileX();
-	p.y = _plpos.y  - pf->getTileY() * 18;
-	EnemyBasicUnitRanged * r = EnemyBasicUnitRanged::create(p);
-	rangedBasicUnitVec2.pushBack(r);
-	r->setColor(Color3B::GREEN);
-	initUnit(r, 1);
-	//r->tracked = true;
-
-	 */
 	//this->drawBFSMap();
 
 	return true;
@@ -936,6 +844,14 @@ void HelloWorld::drawBFSMap() {
 		}
 	}
 
+}
+
+int HelloWorld::fixPositions(char dim, int val){
+	if(dim == 'x'){
+		return (pf->getTileX() * ((int) (val / pf->getTileX())) + pf->getOffX());
+	} else{
+		return (pf->getTileY() * ((int) (val / pf->getTileY())) + pf->getOffY());
+	}
 }
 
 void HelloWorld::menuCloseCallback(Ref* pSender) {

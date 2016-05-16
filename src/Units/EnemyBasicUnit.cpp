@@ -145,20 +145,20 @@ void EnemyBasicUnit::update(float dt) {
 				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
 					lStack->addFront(bfsp);
 				} else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y + 1)){
-					bfsp.y += 32;
+					bfsp.y += pf->getTileY();
 					lStack->addFront(bfsp);
 					if(tracked) CCLOG("u to ur");
 				}else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y - 1)){
-					bfsp.y -= 32;
+					bfsp.y -= pf->getTileY();
 					lStack->addFront(bfsp);
 					if(tracked) CCLOG("u to ul");
 				}else{
 					auto t = this->getPosition();
 					auto thisPos = this->convertToPf(this->getPosition());
 					if(thisPos.y < pf->getBFSStart().y){
-						t.y += 32;
+						t.y += pf->getTileY();
 					} else{
-						t.y -= 32;
+						t.y -= pf->getTileY();
 					}
 					lStack->addFront(t);
 					if(tracked) CCLOG("u to ?");
@@ -170,20 +170,20 @@ void EnemyBasicUnit::update(float dt) {
 				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
 					lStack->addFront(bfsp);
 				} else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y + 1)){
-					bfsp.y += 32;
+					bfsp.y += pf->getTileY();
 					lStack->addFront(bfsp);
 					if(tracked) CCLOG("d to dr");
 				}else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y - 1)){
-					bfsp.y -= 32;
+					bfsp.y -= pf->getTileY();
 					lStack->addFront(bfsp);
 					if(tracked) CCLOG("d to dl");
 				}else{
 					auto t = this->getPosition();
 					auto thisPos = this->convertToPf(this->getPosition());
 					if(thisPos.y < pf->getBFSStart().y){
-						t.y += 32;
+						t.y += pf->getTileY();
 					} else{
-						t.y -= 32;
+						t.y -= pf->getTileY();
 					}
 					lStack->addFront(t);
 					if(tracked) CCLOG("d to ?");
@@ -194,22 +194,25 @@ void EnemyBasicUnit::update(float dt) {
 				if(tracked) CCLOG("r");
 				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
 					lStack->addFront(bfsp);
+					//auto t = this->getPosition();
+					//t.y -= pf->getTileY();
+					//lStack->addFront(t);
 					if(tracked) CCLOG("r not changed");
 				} else if(!pf->checkBlock(BFSParentBlock.x + 1, BFSParentBlock.y)){
-					bfsp.x += 32;
+					bfsp.x += pf->getTileX();
 					lStack->addFront(bfsp);
 					if(tracked) CCLOG("r to dr");
 				}else if(!pf->checkBlock(BFSParentBlock.x - 1, BFSParentBlock.y)){
-					bfsp.x -= 32;
+					bfsp.x -= pf->getTileX();
 					lStack->addFront(bfsp);
 					if(tracked) CCLOG("r to ur");
 				}else{
 					auto t = this->getPosition();
 					auto thisPos = this->convertToPf(this->getPosition());
 					if(thisPos.x < pf->getBFSStart().x){
-						t.x += 32;
+						t.x += pf->getTileX();
 					} else{
-						t.x -= 32;
+						t.x -= pf->getTileX();
 					}
 					lStack->addFront(t);
 					if(tracked) CCLOG("r to ?");
@@ -221,20 +224,20 @@ void EnemyBasicUnit::update(float dt) {
 				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
 					lStack->addFront(bfsp);
 				} else if(!pf->checkBlock(BFSParentBlock.x + 1, BFSParentBlock.y)){
-					bfsp.x += 32;
+					bfsp.x += pf->getTileX();
 					lStack->addFront(bfsp);
 					if(tracked) CCLOG("l to dl");
 				}else if(!pf->checkBlock(BFSParentBlock.x - 1, BFSParentBlock.y)){
-					bfsp.x -= 32;
+					bfsp.x -= pf->getTileX();
 					lStack->addFront(bfsp);
 					if(tracked) CCLOG("l to ul");
 				}else{
 					auto t = this->getPosition();
 					auto thisPos = this->convertToPf(this->getPosition());
 					if(thisPos.x < pf->getBFSStart().x){
-						t.x += 32;
+						t.x += pf->getTileX();
 					} else{
-						t.x -= 32;
+						t.x -= pf->getTileX();
 					}
 					lStack->addFront(t);
 					if(tracked) CCLOG("l to ?");
@@ -246,11 +249,11 @@ void EnemyBasicUnit::update(float dt) {
 				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
 					lStack->addFront(bfsp);
 				} else if(!pf->checkBlock(BFSParentBlock.x - 1, BFSParentBlock.y)){
-					bfsp.x -= 32;
+					bfsp.x -= pf->getTileX();
 					lStack->addFront(bfsp);
 					if(tracked) CCLOG("ul to l");
 				}else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y - 1)){
-					bfsp.y -= 32;
+					bfsp.y -= pf->getTileY();
 					lStack->addFront(bfsp);
 					if(tracked) CCLOG("ul to u");
 				}
@@ -261,11 +264,11 @@ void EnemyBasicUnit::update(float dt) {
 				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
 					lStack->addFront(bfsp);
 				} else if(!pf->checkBlock(BFSParentBlock.x - 1, BFSParentBlock.y)){
-					bfsp.x -= 32;
+					bfsp.x -= pf->getTileX();
 					lStack->addFront(bfsp);
 					if(tracked) CCLOG("ur to r");
 				}else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y + 1)){
-					bfsp.y += 32;
+					bfsp.y += pf->getTileY();
 					lStack->addFront(bfsp);
 					if(tracked) CCLOG("ur to u");
 				}
@@ -276,11 +279,11 @@ void EnemyBasicUnit::update(float dt) {
 				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
 					lStack->addFront(bfsp);
 				} else if(!pf->checkBlock(BFSParentBlock.x + 1, BFSParentBlock.y)){
-					bfsp.x += 32;
+					bfsp.x += pf->getTileX();
 					lStack->addFront(bfsp);
 					if(tracked) CCLOG("dl to l");
 				}else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y - 1)){
-					bfsp.y -= 32;
+					bfsp.y -= pf->getTileY();
 					lStack->addFront(bfsp);
 					if(tracked) CCLOG("dl to d");
 				}
@@ -291,11 +294,11 @@ void EnemyBasicUnit::update(float dt) {
 				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
 					lStack->addFront(bfsp);
 				} else if(!pf->checkBlock(BFSParentBlock.x + 1, BFSParentBlock.y)){
-					bfsp.x += 32;
+					bfsp.x += pf->getTileX();
 					lStack->addFront(bfsp);
 					if(tracked) CCLOG("dr to r");
 				}else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y + 1)){
-					bfsp.y += 32;
+					bfsp.y += pf->getTileY();
 					lStack->addFront(bfsp);
 					if(tracked) CCLOG("dr to d");
 				}
