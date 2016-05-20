@@ -20,6 +20,8 @@ public:
 	//virtual void attack(BasicUnit *attacker, int damage, char attackType);
 	virtual void updateDelayedMove();
 
+	void shootFireBall(cocos2d::Point pos);
+
 protected:
 	bool enemyIsAttackable();
 	//virtual void update(float dt);

@@ -266,7 +266,7 @@ float BasicUnit::getAngle(cocos2d::Point a, cocos2d::Point b){
 	//rotate -90 degrees
 
 	if(a.x == b.x && a.y == b.y){
-		return 361;
+		return 0;
 	} else{
 		//get point b wrt point a and rotate by 90 degrees
 		centered.x = -(b.y - a.y);
@@ -307,7 +307,8 @@ void BasicUnit::setUnitDir(float ang){
 	}
 	//CCLOG("angle: %3.0f, unitDir: %d", ang, unitDir);
 	if(ang > 360){
-		unitDir = 9;
+		unitDir = 0;
+		CCLOG("How is the angle > 360?");
 	}
 }
 
@@ -686,7 +687,8 @@ int BasicUnit::pointToPointDistance(cocos2d::Point a, cocos2d::Point b){
 
 //Melee
 bool BasicUnit::enemyIsAttackable(){
-	if(this->getCurrentEnemy() != 0 && attackTravelRange >= pointToPointDistance(this->convertToPf(this->getPosition()), goalPosition)){
+	//if(this->getCurrentEnemy() != 0 && attackTravelRange >= pointToPointDistance(this->convertToPf(this->getPosition()), goalPosition)){
+	if(this->getCurrentEnemy() != 0){
 		auto enemyLoc = convertToPf(currentEnemy->getPosition());
 		auto thisLoc = convertToPf(this->getPosition());
 		if(abs(enemyLoc.x - thisLoc.x) <= 1 && abs(enemyLoc.y - thisLoc.y) <= 1){

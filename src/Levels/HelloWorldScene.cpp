@@ -169,6 +169,7 @@ bool HelloWorld::init() {
 	auto sprite1 = setMovementSprites("Cyansquare.png", Point(x + 16, y + 16));
 	auto sprite2 = setMovementSprites("Redsquare.png", Point(x + 16, y + 48));
 	auto sprite3 = setMovementSprites("Yellowsquare.png", Point(x + 48, y + 48));
+	auto sprite4 = setMovementSprites("Orangesquare.png", Point(x, y));
 
 	/*********************************************************************************************/
 	//Event Listener: http://www.cocos2d-x.org/wiki/EventDispatcher_Mechanism
@@ -221,11 +222,6 @@ bool HelloWorld::init() {
 			auto tpos = touch->getLocation();
 			tpos = convertToNodeSpace(tpos);
 
-			//ppos.x = (ppos.x - pf->getOffX()) / pf->getTileX();
-			//ppos.y = (ppos.y - pf->getOffY()) / pf->getTileY();
-			//tpos.x = (tpos.x - pf->getOffX()) / pf->getTileX();
-			//tpos.y = (tpos.y - pf->getOffY()) / pf->getTileY();
-
 			ppos = ninja->convertToPf(ppos);
 			tpos = ninja->convertToPf(tpos);
 
@@ -240,8 +236,11 @@ bool HelloWorld::init() {
 						goToMovementSprite(i, tpos);
 					}
 				}
-				else{
+				else if(target == sprite3){
 					goToMovementSprite(ninja, tpos);
+				}
+				else if(target == sprite4){
+
 				}
 			}
 		};
