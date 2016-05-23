@@ -8,16 +8,24 @@
 
 class AttackObjectNinjaFireball : public AttackObject {
 
+protected:
+	cocos2d::Point intMove(float angle, cocos2d::Point curPos);
+	virtual void update(float dt);
+	bool init = false;
+	bool moving = false;
+	void setMoving(bool tf){moving = tf;};
+
 public:
 	AttackObjectNinjaFireball();
 	~AttackObjectNinjaFireball();
-	static AttackObjectNinjaFireball* create(BasicUnit * attacker, cocos2d::Point location, int damage, char attackType, PathFinder<BasicUnit> *tpf, cocos2d::Point tpos);
+	static AttackObjectNinjaFireball* create(BasicUnit * attacker, cocos2d::Point location, int damage, char attackType, PathFinder<BasicUnit> *tpf);
 	void attack();
 	void initAttack();
 	cocos2d::Point targetPos;
 	float attackInterval = 0.2;
 	int rotationIntervalAngle = 360;
-	int fbDistanceNum = 3;
+	int fbDistanceNum = 5;
+	float movementAngle;
 };
 
 #endif //__NINJA_FIREBALL_ATTACK_OBJECT__

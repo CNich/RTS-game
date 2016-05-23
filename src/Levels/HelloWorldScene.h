@@ -14,6 +14,9 @@
 #include "src/Units/Ninja.h"
 #include <vector>
 
+
+#include "ui/CocosGUI.h"
+
 #define SCORE_FONT_SIZE 0.1
 //PathFinder<int> * pf;
 

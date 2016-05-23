@@ -2,6 +2,7 @@
 #include "SimpleAudioEngine.h"
 #include "stdlib.h"
 #include "src/AttackObjects/AttackObjectNinjaStar.h"
+#include "src/AttackObjects/AttackObjectNinjaFireball.h"
 
 USING_NS_CC;
 
@@ -164,28 +165,9 @@ void Ninja::animationDie(){
 /*
  * Set fireball attack
  */
-void Ninja::shootFireBall(cocos2d::Point pos){
-
-	AttackObjectNinjaStar *atk = AttackObjectNinjaStar::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
+void Ninja::shootFireBall(){
+	AttackObjectNinjaFireball *atk = AttackObjectNinjaFireball::create(this, fireBallLocation, 400, 'm', pf);
 	atk->initAttack();
-
-	Vector<SpriteFrame *> attackFrames;
-	for (int i = 0; i < 10; i++){
-		auto *filename = __String::createWithFormat("WizardAttack%d000%d.png", unitDir, i);
-		//CCLOG("%s", filename->getCString());
-		auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
-		attackFrames.pushBack(wframe);
-		//CCLOG("Made troll %d", i);
-	}
-
-	auto *filename = __String::createWithFormat("WizardAttack%d0010.png", unitDir);
-	//CCLOG("%s", filename->getCString());
-	auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
-	attackFrames.pushBack(wframe);
-
-	auto wrunAnim = Animation::createWithSpriteFrames(attackFrames, attackDuration);
-	auto animate = Animate::create(wrunAnim);
-	this->runAction(animate);
 }
 
 

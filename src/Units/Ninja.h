@@ -20,7 +20,9 @@ public:
 	//virtual void attack(BasicUnit *attacker, int damage, char attackType);
 	virtual void updateDelayedMove();
 
-	void shootFireBall(cocos2d::Point pos);
+	void setFireBallLocation(cocos2d::Point tmp) { fireBallLocation = tmp; };
+
+	void shootFireBall();
 
 protected:
 	bool enemyIsAttackable();
@@ -41,6 +43,8 @@ protected:
 
 	virtual void animationAttack();
 	/********************************************/
+
+	cocos2d::Point fireBallLocation;
 
 	virtual void removeFromLevel();
 

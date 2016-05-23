@@ -257,13 +257,19 @@ void BasicUnit::delayedMove() {
 
 /*
  * Get the counter clockwise angle between two points, with 0 degrees being down
+ * remember the coordinate system
+ * 	 ------> x
+ * 	|
+ * 	|
+ * 	v
+ * 	 y
  */
 float BasicUnit::getAngle(cocos2d::Point a, cocos2d::Point b){
 	cocos2d::Point centered;
 
 	//centered.x = b.x - a.x;
 	//centered.y = b.y - a.y;
-	//rotate -90 degrees
+	//rotate 90 degrees clockwise
 
 	if(a.x == b.x && a.y == b.y){
 		return 0;
@@ -291,6 +297,7 @@ float BasicUnit::getAngle(cocos2d::Point a, cocos2d::Point b){
  * Set the unit's direction for it's sprite based on the angle it is traveling
  */
 void BasicUnit::setUnitDir(float ang){
+	consoleDebugStatement(cocos2d::__String::createWithFormat("angle: %3.3f", ang));
 	float diff = 360;
 	int tmp = 0;
 	for(int i = 0; i < 8; i++){

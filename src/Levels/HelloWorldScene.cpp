@@ -240,7 +240,7 @@ bool HelloWorld::init() {
 					goToMovementSprite(ninja, tpos);
 				}
 				else if(target == sprite4){
-
+					ninja->setFireBallLocation(tpos);
 				}
 			}
 		};
@@ -249,6 +249,7 @@ bool HelloWorld::init() {
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1,	sprite1);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1->clone(), sprite2);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1->clone(), sprite3);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1->clone(), sprite4);
 
 	auto tL = objects->getObject("topLeft");
 	_topLeft.x = tL["x"].asInt();
@@ -354,9 +355,9 @@ bool HelloWorld::init() {
 		initUnit(r, 1);
 		if(i == 3){
 			r->setColor(Color3B::BLUE);
-			r->tracked = true;
-			r->consoleTrack = true;
-			r->consoleTrackNum = 0;
+			//r->tracked = true;
+			//r->consoleTrack = true;
+			//r->consoleTrackNum = 0;
 		}
 	}
 
@@ -381,9 +382,9 @@ bool HelloWorld::init() {
 		initUnit(r, 1);
 		if(i == 4){
 			r->setColor(Color3B::BLUE);
-			r->tracked = true;
-			r->consoleTrack = true;
-			r->consoleTrackNum = 2;
+			//r->tracked = true;
+			//r->consoleTrack = true;
+			//r->consoleTrackNum = 2;
 		}
 	}
 
@@ -408,9 +409,9 @@ bool HelloWorld::init() {
 		initUnit(r, 1);
 		if(i == 4){
 			r->setColor(Color3B::BLUE);
-			r->tracked = true;
-			r->consoleTrack = true;
-			r->consoleTrackNum = 3;
+			//r->tracked = true;
+			//r->consoleTrack = true;
+			//r->consoleTrackNum = 3;
 		}
 	}
 
@@ -425,6 +426,31 @@ bool HelloWorld::init() {
 		initUnit(r, 1);
 	}
 	//this->drawBFSMap();
+
+
+
+	auto button = cocos2d::ui::Button::create("buttons/Button_Normal.png", "buttons/Button_Press.png", "buttons/Button_Disable.png");
+
+	button->setTitleText("Button Text");
+
+	button->addTouchEventListener([&](Ref* sender, cocos2d::ui::Widget::TouchEventType type){
+	        switch (type)
+	        {
+	                case cocos2d::ui::Widget::TouchEventType::BEGAN:
+						ninja->shootFireBall();
+						CCLOG("Shots fired");
+						break;
+	                case cocos2d::ui::Widget::TouchEventType::ENDED:
+	                	CCLOG("button clicked");
+						break;
+	                default:
+						break;
+	        }
+	});
+
+	this->addChild(button, 10000);
+
+
 
 	return true;
 
@@ -671,29 +697,6 @@ Point HelloWorld::tileCoordForPosition(Point position) {
 	return Point(x, y);
 }
 
-bool HelloWorldHud::init() {
-	if (!Layer::init()) {
-		return false;
-	}
-	auto visibleSize = Director::getInstance()->getVisibleSize();
-	label = LabelTTF::create("0", "fonts/Marker Felt.ttf", 18.0f, Size(50, 20),
-			TextHAlignment::RIGHT);
-	label->setColor(Color3B(0, 0, 0));
-	int margin = 10;
-	label->setPosition(
-			visibleSize.width - (label->getDimensions().width / 2) - margin,
-			label->getDimensions().height / 2 + margin);
-	this->addChild(label);
-
-	return true;
-}
-
-void HelloWorldHud::numCollectedChanged(int numCollected) {
-	char showStr[20];
-	sprintf(showStr, "%d", numCollected);
-	label->setString(showStr);
-}
-
 //Useful function
 /*void HelloWorld::addEnemyAtPos(Point pos) {
 	auto enemy = Sprite::create("030.png");
@@ -852,6 +855,32 @@ int HelloWorld::fixPositions(char dim, int val){
 		return (pf->getTileY() * ((int) (val / pf->getTileY())) + pf->getOffY());
 	}
 }
+
+
+
+bool HelloWorldHud::init() {
+	if (!Layer::init()) {
+		return false;
+	}
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	label = LabelTTF::create("0", "fonts/Marker Felt.ttf", 38.0f, Size(50, 50),
+			TextHAlignment::RIGHT);
+	label->setColor(Color3B(255, 255, 0));
+	int margin = 10;
+	label->setPosition(
+			visibleSize.width / 2 - (label->getDimensions().width / 2) - margin,
+			label->getDimensions().height / 2 + margin);
+	this->addChild(label);
+
+	return true;
+}
+
+void HelloWorldHud::numCollectedChanged(int numCollected) {
+	char showStr[20];
+	sprintf(showStr, "%d", numCollected);
+	label->setString(showStr);
+}
+
 
 void HelloWorld::menuCloseCallback(Ref* pSender) {
 	Director::getInstance()->end();
