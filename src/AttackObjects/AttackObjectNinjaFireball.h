@@ -14,6 +14,7 @@ protected:
 	bool init = false;
 	bool moving = false;
 	void setMoving(bool tf){moving = tf;};
+	cocos2d::Point dxy;
 
 public:
 	AttackObjectNinjaFireball();
@@ -24,7 +25,7 @@ public:
 	cocos2d::Point targetPos;
 	float attackInterval = 0.2;
 	int rotationIntervalAngle = 360;
-	int fbDistanceNum = 5;
+	int fbDistanceNum = 10;
 	float movementAngle;
 };
 

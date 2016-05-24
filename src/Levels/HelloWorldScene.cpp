@@ -221,6 +221,7 @@ bool HelloWorld::init() {
 			auto ppos = _plpos;
 			auto tpos = touch->getLocation();
 			tpos = convertToNodeSpace(tpos);
+			auto nodeTpos = tpos;
 
 			ppos = ninja->convertToPf(ppos);
 			tpos = ninja->convertToPf(tpos);
@@ -240,7 +241,7 @@ bool HelloWorld::init() {
 					goToMovementSprite(ninja, tpos);
 				}
 				else if(target == sprite4){
-					ninja->setFireBallLocation(tpos);
+					ninja->setFireBallLocation(nodeTpos);
 				}
 			}
 		};
@@ -432,6 +433,7 @@ bool HelloWorld::init() {
 	auto button = cocos2d::ui::Button::create("buttons/Button_Normal.png", "buttons/Button_Press.png", "buttons/Button_Disable.png");
 
 	button->setTitleText("Button Text");
+	button->setScale(4);
 
 	button->addTouchEventListener([&](Ref* sender, cocos2d::ui::Widget::TouchEventType type){
 	        switch (type)

@@ -29,7 +29,7 @@ protected:
 	//virtual void update(float dt);
 	bool removeThisUnit = false;
 	bool removeFromPf = true;
-	int initHealth = 2000;
+	int initHealth = 20000;
 
 	float initAttackSpeed = 1.2;
 

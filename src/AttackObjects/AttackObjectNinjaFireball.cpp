@@ -10,15 +10,15 @@ AttackObjectNinjaFireball::AttackObjectNinjaFireball() {
 AttackObjectNinjaFireball::~AttackObjectNinjaFireball() {
 }
 
-AttackObjectNinjaFireball* AttackObjectNinjaFireball::create(BasicUnit * attacker, cocos2d::Point location, int damage, char attackType, PathFinder<BasicUnit> * tpf) {
+AttackObjectNinjaFireball* AttackObjectNinjaFireball::create(BasicUnit * attacker, cocos2d::Point enemyPfLocation, int damage, char attackType, PathFinder<BasicUnit> * tpf) {
 	AttackObjectNinjaFireball* pSprite = new AttackObjectNinjaFireball();
 	pSprite->initWithFile("bullet.png");
 	pSprite->autorelease();
 	pSprite->parent = attacker;
-	pSprite->location = location;
+	pSprite->location = enemyPfLocation;
 	pSprite->damage = damage;
 	pSprite->pf = tpf;
-	pSprite->targetPos = location;
+	pSprite->targetPos = enemyPfLocation;
 	pSprite->scheduleUpdate();
 	//pSprite->init(location, damage, attackType);
 	return pSprite;
@@ -27,16 +27,31 @@ AttackObjectNinjaFireball* AttackObjectNinjaFireball::create(BasicUnit * attacke
 void AttackObjectNinjaFireball::initAttack(){
 	this->parent->getParent()->addChild(this);
 	this->setPosition(parent->getPosition());
-	movementAngle = parent->getAngle(this->getPosition(), targetPos);
+	movementAngle = parent->getAngle(this->getPosition(), targetPos) - 90;
 	init = true;
+	CCLOG("angle: %3.3f, this position: %3.3f %3.3f, targetPos: %3.3f, %3.3f", movementAngle, this->getPosition().x, this->getPosition().y,
+			targetPos.x, targetPos.y);
+
+	auto centered = targetPos - this->getPosition();
+	float hyp = sqrt(pow(centered.x, 2) + pow(centered.y, 2));
+
+
+	dxy.x = centered.x * pf->getTileX() / hyp;
+	dxy.y = centered.y * pf->getTileX() / hyp;
+
+	CCLOG("dxy: %3.3f %3.3f", dxy.x, dxy.y);
+
 }
 
 /*
  * Attack the unit at the pathFinder location
  */
 void AttackObjectNinjaFireball::attack(){
-	if(pf->getUnit(location.x, location.y) != 0 && pf->getUnit(location.x, location.y)->getTeam() != parent->getTeam()){
-		pf->getUnit(location.x, location.y)->attack(parent, damage, 'm');
+	auto thisPos = this->parent->convertToPf(this->getPosition());
+	//CCLOG("attack %3.3f %3.3f, unit at position: %p", thisPos.x, thisPos.y, pf->getUnit(thisPos.x, thisPos.y));
+	if(pf->getUnit(thisPos.x, thisPos.y) != 0 && pf->getUnit(thisPos.x, thisPos.y)->getTeam() != parent->getTeam()){
+		pf->getUnit(thisPos.x, thisPos.y)->attack(parent, damage, 'm');
+		CCLOG("fireball attack");
 	}
 }
 
@@ -45,8 +60,19 @@ void AttackObjectNinjaFireball::attack(){
  */
 cocos2d::Point AttackObjectNinjaFireball::intMove(float angle, cocos2d::Point curPos){
 	cocos2d::Point nextPoint;
-	nextPoint.x = curPos.x + pf->getTileX() * sinf(angle);
-	nextPoint.y = curPos.y + pf->getTileY() * cosf(angle);
+	auto p = this->getPosition();
+	nextPoint.x = p.x + dxy.x;
+	nextPoint.y = p.y + dxy.y;
+
+	/*auto p = this->getPosition();
+	nextPoint.x = p.x + pf->getTileX() * cos(angle);
+	nextPoint.y = p.y + pf->getTileX() * sin(angle);
+
+	auto diff = p - nextPoint;
+
+	CCLOG("angle of intMove: %3.3f, input angle: %3.3f", parent->getAngle(p, nextPoint) - 90, angle);
+	CCLOG("diff: %3.3f %3.3f", diff.x, diff.y);
+	*/
 	return nextPoint;
 }
 
@@ -74,7 +100,7 @@ void AttackObjectNinjaFireball::update(float dt){
 			auto spawn = cocos2d::Spawn::create(moveTo, rotateTo, nullptr);
 			auto seq = cocos2d::Sequence::create(spawn, callback, nullptr);
 			this->runAction(seq);
-			CCLOG("movementAngle: %3.3f fbDistanceNum: %d", movementAngle, fbDistanceNum);
+			//CCLOG("movementAngle: %3.3f fbDistanceNum: %d", movementAngle, fbDistanceNum);
 		} else if(!moving && fbDistanceNum == 0){
 			this->parent->getParent()->removeChild(this);
 		}

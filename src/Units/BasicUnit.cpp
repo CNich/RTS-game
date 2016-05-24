@@ -257,6 +257,8 @@ void BasicUnit::delayedMove() {
 
 /*
  * Get the counter clockwise angle between two points, with 0 degrees being down
+ * ~~~~~Subtract 90 to normalize to x~~~~~
+ *
  * remember the coordinate system
  * 	 ------> x
  * 	|
