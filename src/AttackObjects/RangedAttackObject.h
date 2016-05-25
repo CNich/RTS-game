@@ -8,6 +8,10 @@
 
 class RangedAttackObject : public AttackObject {
 
+protected:
+	void seqCallback();
+	virtual void seq();
+
 public:
 	RangedAttackObject();
 	~RangedAttackObject();

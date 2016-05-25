@@ -28,6 +28,16 @@ void RangedAttackObject::initAttack(){
 	this->parent->getParent()->addChild(this);
 	auto eloc = parent->getPosition();
 	this->setPosition(eloc.x, eloc.y);
+	seq();
+}
+
+void RangedAttackObject::seqCallback(){
+	this->attack();
+	this->parent->getParent()->removeChild(this);
+}
+
+void RangedAttackObject::seq(){
+	//std::function<void()> callback = [this](){ seqCallback(); };
 
 	auto callback = CallFunc::create([this]() {
 		this->attack();
@@ -35,11 +45,8 @@ void RangedAttackObject::initAttack(){
 	});
 
 	auto jumpTo = cocos2d::JumpTo::create(1, parent->getCurrentEnemy()->getPosition(),100, 1);
-
 	auto seq = cocos2d::Sequence::create(jumpTo, callback, nullptr);
 	this->runAction(seq);
-
-	//this->parent->getParent()->removeChild(this);
 }
 
 void RangedAttackObject::attack(){

@@ -2,11 +2,11 @@
 #define __NINJA_FIREBALL_ATTACK_OBJECT__
 
 #include "src/Utilities/GlobalVariables.h"
-#include "src/AttackObjects/AttackObject.h"
+#include "src/AttackObjects/RangedAttackObject.h"
 #include "src/Utilities/pathNode.h"
 #include "cocos2d.h"
 
-class AttackObjectNinjaFireball : public AttackObject {
+class AttackObjectNinjaFireball : public RangedAttackObject {
 
 protected:
 	cocos2d::Point intMove(float angle, cocos2d::Point curPos);

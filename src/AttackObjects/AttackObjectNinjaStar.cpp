@@ -23,6 +23,20 @@ AttackObjectNinjaStar* AttackObjectNinjaStar::create(BasicUnit * attacker, cocos
 	return pSprite;
 }
 
+void AttackObjectNinjaStar::seq(){
+	auto callback = CallFunc::create([this]() {
+		this->attack();
+		this->parent->getParent()->removeChild(this);
+	});
+
+	auto moveTo = cocos2d::MoveTo::create(0.5,parent->getCurrentEnemy()->getPosition());
+	auto rotateTo = cocos2d::RotateBy::create(0.5, 720);
+	auto spawn = cocos2d::Spawn::create(moveTo, rotateTo, nullptr);
+	auto seq = cocos2d::Sequence::create(spawn, callback, nullptr);
+	this->runAction(seq);
+}
+
+/*
 void AttackObjectNinjaStar::initAttack(){
 	this->parent->getParent()->addChild(this);
 	auto eloc = parent->getPosition();
@@ -44,5 +58,5 @@ void AttackObjectNinjaStar::attack(){
 	if(pf->getUnit(location.x, location.y) != 0 && pf->getUnit(location.x, location.y)->getTeam() != parent->getTeam()){
 		pf->getUnit(location.x, location.y)->attack(parent, damage, 'm');
 	}
-}
+}*/
 

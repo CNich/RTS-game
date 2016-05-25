@@ -7,13 +7,14 @@
 #include "cocos2d.h"
 
 class AttackObjectNinjaStar : public AttackObject {
-
+protected:
+	virtual void seq();
 public:
 	AttackObjectNinjaStar();
 	~AttackObjectNinjaStar();
 	static AttackObjectNinjaStar* create(BasicUnit * attacker, cocos2d::Point location, int damage, char attackType, PathFinder<BasicUnit> *tpf);
-	void attack();
-	void initAttack();
+	//void attack();
+	//void initAttack();
 };
 
 #endif //__NINJA_STAR_ATTACK_OBJECT__
