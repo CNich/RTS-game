@@ -20,12 +20,12 @@ public:
 	AttackObjectNinjaFireball();
 	~AttackObjectNinjaFireball();
 	static AttackObjectNinjaFireball* create(BasicUnit * attacker, cocos2d::Point location, int damage, char attackType, PathFinder<BasicUnit> *tpf);
-	void attack();
+	//void attack();
 	void initAttack();
 	cocos2d::Point targetPos;
 	float attackInterval = 0.2;
 	int rotationIntervalAngle = 360;
-	int fbDistanceNum = 10;
+	int fbDistanceNum = 20;
 	float movementAngle;
 };
 

@@ -2,11 +2,11 @@
 #define __NINJA_STAR_ATTACK_OBJECT__
 
 #include "src/Utilities/GlobalVariables.h"
-#include "src/AttackObjects/AttackObject.h"
+#include "src/AttackObjects/RangedAttackObject.h"
 #include "src/Utilities/pathNode.h"
 #include "cocos2d.h"
 
-class AttackObjectNinjaStar : public AttackObject {
+class AttackObjectNinjaStar : public RangedAttackObject {
 protected:
 	virtual void seq();
 public:

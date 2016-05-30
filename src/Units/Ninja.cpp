@@ -87,7 +87,7 @@ void Ninja::removeFromLevel(){
  * Set attack animation
  */
 void Ninja::animationAttack(){
-	AttackObjectNinjaStar *atk = AttackObjectNinjaStar::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
+	AttackObjectNinjaStar *atk = AttackObjectNinjaStar::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 0, 'm', pf);
 	atk->initAttack();
 
 	Vector<SpriteFrame *> attackFrames;
@@ -166,7 +166,7 @@ void Ninja::animationDie(){
  * Set fireball attack
  */
 void Ninja::shootFireBall(){
-	AttackObjectNinjaFireball *atk = AttackObjectNinjaFireball::create(this, fireBallLocation, 400, 'm', pf);
+	AttackObjectNinjaFireball *atk = AttackObjectNinjaFireball::create(this, fireBallLocation, 40, 'm', pf);
 	atk->initAttack();
 }
 

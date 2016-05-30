@@ -68,6 +68,7 @@ void EnemyBasicUnit::update(float dt) {
 				pf->unblock(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
 				pf->untaken(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
 				pf->setUnitZero(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
+				CCLOG("Unit Dead");
 				this->getParent()->removeChild(this);
 			});
 

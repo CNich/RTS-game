@@ -11,12 +11,15 @@ class RangedAttackObject : public AttackObject {
 protected:
 	void seqCallback();
 	virtual void seq();
+	int sigma2 = 20; //sigma^2
 
 public:
 	RangedAttackObject();
 	~RangedAttackObject();
 	static RangedAttackObject* create(BasicUnit * attacker, cocos2d::Point location, int damage, char attackType, PathFinder<BasicUnit> *tpf);
-	void attack();
+	void attack(cocos2d::Point pos_pf);
+	float gausFactor(int distance);
+	void attackArea();
 	void initAttack();
 };
 

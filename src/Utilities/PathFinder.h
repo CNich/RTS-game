@@ -47,6 +47,9 @@ public:
 	int getRows();
 	int getCols();
 
+	bool checkBounds_Pf(int x, int y);
+	bool checkBounds_Pf(cocos2d::Point p);
+
 	void setUnit(int x, int y, T *ty) { map[x][y].unit = ty; };
 	void setUnitZero(int x, int y) { map[x][y].unit = 0; };
 	T* getUnit(int x, int y) { return map[x][y].unit; };
@@ -340,10 +343,15 @@ void PathFinder<T>::unblock(int x, int y){
 
 /*
  * Check if a map coordinate is blocked
+ * If the point is out of bounds, return true (it is blocked)
  */
 template<class T>
 bool PathFinder<T>::checkBlock(int x, int y){
-	return map[x][y].blocked;
+	if(checkBounds_Pf(x, y)){
+		return map[x][y].blocked;
+	} else{
+		return true;
+	}
 }
 
 /*
@@ -371,7 +379,27 @@ void PathFinder<T>::untaken(int x, int y){
  */
 template<class T>
 bool PathFinder<T>::checkTaken(int x, int y){
-	return map[x][y].taken;
+	if(checkBounds_Pf(x, y)){
+		return map[x][y].taken;
+	} else{
+		return true;
+	}
+}
+
+/*
+ * Check if PF coordinates are within the map bounds
+ */
+template<class T>
+bool PathFinder<T>::checkBounds_Pf(int x, int y){
+return (x >= 0 && x < getCols() && y >= 0 && y < getRows());
+}
+
+/*
+ * Check if PF coordinates are within the map bounds
+ */
+template<class T>
+bool PathFinder<T>::checkBounds_Pf(cocos2d::Point p){
+return (p.x >= 0 && p.x < getCols() && p.y >= 0 && p.y < getRows());
 }
 
 /*

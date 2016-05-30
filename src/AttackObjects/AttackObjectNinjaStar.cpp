@@ -12,6 +12,7 @@ AttackObjectNinjaStar::~AttackObjectNinjaStar() {
 
 AttackObjectNinjaStar* AttackObjectNinjaStar::create(BasicUnit * attacker, cocos2d::Point location, int damage, char attackType, PathFinder<BasicUnit> * tpf) {
 	AttackObjectNinjaStar* pSprite = new AttackObjectNinjaStar();
+	CCLOG("NINJA STARRRR");
 	pSprite->initWithFile("star.png");
 	pSprite->autorelease();
 	pSprite->setScale(0.75);
@@ -25,7 +26,7 @@ AttackObjectNinjaStar* AttackObjectNinjaStar::create(BasicUnit * attacker, cocos
 
 void AttackObjectNinjaStar::seq(){
 	auto callback = CallFunc::create([this]() {
-		this->attack();
+		this->attackArea();
 		this->parent->getParent()->removeChild(this);
 	});
 

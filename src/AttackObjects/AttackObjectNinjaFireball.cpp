@@ -30,8 +30,8 @@ void AttackObjectNinjaFireball::initAttack(){
 	movementAngle = parent->getAngle(this->getPosition(), targetPos) - 90;
 	//movementAngle = cocos2d::RandomHelper::random_int((int)movementAngle - 10, (int)movementAngle + 10);
 	init = true;
-	CCLOG("angle: %3.3f, this position: %3.3f %3.3f, targetPos: %3.3f, %3.3f", movementAngle, this->getPosition().x, this->getPosition().y,
-			targetPos.x, targetPos.y);
+	//CCLOG("angle: %3.3f, this position: %3.3f %3.3f, targetPos: %3.3f, %3.3f", movementAngle, this->getPosition().x, this->getPosition().y,
+	//		targetPos.x, targetPos.y);
 
 	auto centered = targetPos - this->getPosition();
 	float hyp = sqrt(pow(centered.x, 2) + pow(centered.y, 2));
@@ -40,6 +40,8 @@ void AttackObjectNinjaFireball::initAttack(){
 	dxy.x = centered.x * pf->getTileX() / hyp;
 	dxy.y = centered.y * pf->getTileX() / hyp;
 
+	sigma2 = 20;
+
 	//CCLOG("dxy: %3.3f %3.3f", dxy.x, dxy.y);
 
 }
@@ -47,6 +49,7 @@ void AttackObjectNinjaFireball::initAttack(){
 /*
  * Attack the unit at the pathFinder location
  */
+/*
 void AttackObjectNinjaFireball::attack(){
 	auto thisPos = this->parent->convertToPf(this->getPosition());
 	//CCLOG("attack %3.3f %3.3f, unit at position: %p", thisPos.x, thisPos.y, pf->getUnit(thisPos.x, thisPos.y));
@@ -55,6 +58,7 @@ void AttackObjectNinjaFireball::attack(){
 		CCLOG("fireball attack");
 	}
 }
+*/
 
 /*
  * Calculate the next position of the attack object
@@ -74,8 +78,8 @@ cocos2d::Point AttackObjectNinjaFireball::intMove(float angle, cocos2d::Point cu
 
 	auto diff = p - nextPoint;
 
-	CCLOG("angle of intMove: %3.3f, input angle: %3.3f", parent->getAngle(p, nextPoint) - 90, angle);
-	CCLOG("diff: %3.3f %3.3f", diff.x, diff.y);
+	//CCLOG("angle of intMove: %3.3f, input angle: %3.3f", parent->getAngle(p, nextPoint) - 90, angle);
+	//CCLOG("diff: %3.3f %3.3f", diff.x, diff.y);
 
 	return nextPoint;
 }
@@ -90,11 +94,12 @@ void AttackObjectNinjaFireball::update(float dt){
 	if(init){
 		if(!moving && fbDistanceNum > 0){
 			fbDistanceNum--;
-			attack();
+			attackArea();
 			setMoving(true);
 
 			auto callback = CallFunc::create([this]() {
 				setMoving(false);
+				//CCLOG("Fireball Attack");
 			});
 
 			//create actions + run sequence
