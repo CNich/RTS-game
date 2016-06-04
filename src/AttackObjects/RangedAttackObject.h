@@ -12,6 +12,7 @@ protected:
 	void seqCallback();
 	virtual void seq();
 	int sigma2 = 20; //sigma^2
+	int attackAreaRange = 1;
 
 public:
 	RangedAttackObject();

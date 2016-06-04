@@ -53,8 +53,8 @@ void RangedAttackObject::seq(){
 
 void RangedAttackObject::attackArea(){
 	auto p_pf = this->parent->convertToPf(this->getPosition());
-	for(int i = -1; i <= 1; i++){
-		for(int j = -1; j <= 1; j++){
+	for(int i = -1 * attackAreaRange; i <= attackAreaRange; i++){
+		for(int j = -1 * attackAreaRange; j <= attackAreaRange; j++){
 			cocos2d::Point p2_pf = {p_pf.x + i, p_pf.y + j};
 			this->attack(p2_pf);
 		}
@@ -65,7 +65,7 @@ void RangedAttackObject::attackArea(){
  * Calculate Gaussian
  */
 float RangedAttackObject::gausFactor(int distance){
-	float pow2 = powf(distance/sigma2, 2);
+	float pow2 = powf((float)distance/sigma2, 2);
 	//CCLOG("pow2: %3.3f, distance: %d, sigma2: %d", pow2, distance, sigma2);
 	return expf(-pow2);
 }
@@ -81,7 +81,10 @@ void RangedAttackObject::attack(cocos2d::Point pos_pf){
 		auto pf3 = parent->convertToPf(p3);
 
 		float gf = gausFactor(distance);
-		CCLOG("damage: %2.3f, distance: %d , diff e: %3.0f,%3.0f | diff p: %3.0f,%3.0f", damage * gf, distance, p1.x - p2.x, p1.y - p2.y, p1.x - p3.x, p1.y - p3.y);
+		if(damage * gf < 35){
+			//CCLOG("damage: %2.3f, distance: %d , diff e: %3.0f,%3.0f | diff p: %3.0f,%3.0f", (float)damage * gf, distance, p1.x - p2.x, p1.y - p2.y, p1.x - p3.x, p1.y - p3.y);
+			CCLOG("damage: %2.3f, distance: %d , gf: %2.3f", (float)damage * gf, distance, gf);
+		}
 		pf->getUnit(pos_pf.x, pos_pf.y)->attack(parent, damage * gf, 'm');
 	}
 }

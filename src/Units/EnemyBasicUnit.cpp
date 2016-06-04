@@ -65,9 +65,20 @@ void EnemyBasicUnit::update(float dt) {
 			auto callback = CallFunc::create([this]() {
 				delete tpf;
 				delete lStack;
-				pf->unblock(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
-				pf->untaken(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
-				pf->setUnitZero(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
+
+				auto die_pf = convertToPf(this->getPosition());
+				cocos2d::Point delete_pf;
+				for(int i = -1; i <= 1; i++){
+					for(int j = -1; j <= 1; j++){
+						cocos2d::Point p2_pf = {die_pf.x + i, die_pf.y + j};
+						if(pf->checkBounds_Pf(p2_pf) && pf->getUnit(p2_pf.x, p2_pf.y) == this){
+							delete_pf = p2_pf;
+						}
+					}
+				}
+				pf->unblock(delete_pf.x, delete_pf.y);
+				pf->untaken(delete_pf.x, delete_pf.y);
+				pf->setUnitZero(delete_pf.x, delete_pf.y);
 				CCLOG("Unit Dead");
 				this->getParent()->removeChild(this);
 			});
