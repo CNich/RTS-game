@@ -57,6 +57,11 @@ public:
 
 	float getAngle(cocos2d::Point a, cocos2d::Point b);
 	void setUnitDir(float angle);
+	int getUnitDir(){return unitDir;};
+	float getUnitAngle(){return unitAngle;};
+	bool getMoving(){return moving;};
+	float getWalkingSpeed(){return walkingSpeed;};
+
 
 protected:
 	cocos2d::Point startingPos;
@@ -117,6 +122,7 @@ protected:
 	/*Animation section*/
 	/********************************************/
 	int unitDir = 0;
+	float unitAngle = 0.0f;
 	virtual cocos2d::Animate* animationWalk();
 	float walkingSpeed = 0.2;
 	bool walkingAnimationFlag = false;

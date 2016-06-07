@@ -299,6 +299,7 @@ float BasicUnit::getAngle(cocos2d::Point a, cocos2d::Point b){
  * Set the unit's direction for it's sprite based on the angle it is traveling
  */
 void BasicUnit::setUnitDir(float ang){
+	unitAngle = ang;
 	consoleDebugStatement(cocos2d::__String::createWithFormat("angle: %3.3f", ang));
 	float diff = 360;
 	int tmp = 0;

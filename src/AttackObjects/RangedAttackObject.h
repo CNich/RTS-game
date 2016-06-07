@@ -13,6 +13,15 @@ protected:
 	virtual void seq();
 	int sigma2 = 20; //sigma^2
 	int attackAreaRange = 1;
+	cocos2d::Point attackPos_nd;
+	void calculateAttackPos();
+	float diagonalFactor = 1.4;
+
+	float maxRange = 8.0f;
+	float maxHeight = 100.0f;
+	float maxTravelTime = 1.0f;
+	float distanceToEnemy_nd;
+	float distanceToEnemy_pf;
 
 public:
 	RangedAttackObject();
