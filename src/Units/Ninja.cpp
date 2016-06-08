@@ -30,6 +30,8 @@ Ninja* Ninja::create() {
 	pSprite->health = pSprite->initHealth;
 	pSprite->attackSpeed = pSprite->initAttackSpeed;
 
+	pSprite->attackTravelRange = 2;
+
 	pSprite->scheduleUpdate();
 
 	return pSprite;
@@ -52,6 +54,8 @@ Ninja* Ninja::create(cocos2d::Point tmp){
 
 	pSprite->scheduleUpdate();
 	pSprite->setPosition(tmp);
+
+	pSprite->attackTravelRange = 2;
 
 	//pf->block(pSprite->convertToPf(tmp).x, pSprite->convertToPf(tmp).y);
 	//pf->taken(pSprite->convertToPf(tmp).x, pSprite->convertToPf(tmp).y);

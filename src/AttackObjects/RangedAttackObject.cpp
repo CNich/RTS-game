@@ -61,7 +61,7 @@ void RangedAttackObject::calculateAttackPos(){
 			enemySpeed =  pf->getTileX() / ws;
 			travelFactor = pf->getTileX();
 		} else{
-			enemySpeed = diagFactor / ws;
+			enemySpeed = diagFactor / (ws * 1.4);
 			travelFactor = diagFactor;
 		}
 
@@ -69,18 +69,18 @@ void RangedAttackObject::calculateAttackPos(){
 			enemySpeed = 0;
 		}
 
-		float projectileSpeed = maxRange * travelFactor / maxTravelTime;
+		projectileSpeed = 2 * maxRange * (float)pf->getTileY() / maxTravelTime;
 
-		float a = pow(enemySpeed, 2) - pow(projectileSpeed, 2);
+		float a = powf(enemySpeed, 2) - powf(projectileSpeed, 2);
 		//float b = 2 * (target.velocityX * (target.startX - cannon.X) + target.velocityY * (target.startY - cannon.Y))
-		float b = 2 * (enemySpeed * sin(th) * (ep.x - tp.x) +
-				enemySpeed * cos(th) * (ep.y - tp.y));
-		float c = pow(ep.x - tp.x, 2) + pow(ep.y - tp.y, 2);
+		float b = 2.0f * (enemySpeed * sinf(th) * (ep.x - tp.x) +
+				enemySpeed * cosf(-th) * (ep.y - tp.y));
+		float c = powf(ep.x - tp.x, 2) + powf(ep.y - tp.y, 2);
 
-		float disc = pow(b, 2) - 4 * a * c;
+		float disc = powf(b, 2) - 4.0f * a * c;
 
-		float t1 = (-b + sqrt(disc)) / (2 * a);
-		float t2 = (-b - sqrt(disc)) / (2 * a);
+		float t1 = (-b + sqrt(disc)) / (2.0f * a);
+		float t2 = (-b - sqrt(disc)) / (2.0f * a);
 		float t;
 		if(t1 < t2 && t1 > 0){
 			t = t1;
@@ -88,10 +88,12 @@ void RangedAttackObject::calculateAttackPos(){
 			t = t2;
 		}
 
-		attackPos_nd.x = t * enemySpeed * sin(th) + ep.x;
-		attackPos_nd.y = t * enemySpeed * cos(th) + ep.y;
-		CCLOG("angle: %3.3f d, %3.3f r, pr speed: %3.3f, es: %3.3f", th * 180.0f / 3.14159265359, th,
-				projectileSpeed, enemySpeed);
+		attackPos_nd.x = t * enemySpeed * sinf(th) + ep.x;
+		attackPos_nd.y = t * enemySpeed * cosf(-th) + ep.y;
+
+		int an = parent->getAngle(this->getPosition(), attackPos_nd);
+
+		CCLOG("angle: %3.3f d, sin(th)=%3.3f, cos(-th)=%3.3f", th, sinf(th), cosf(-th));
 	//}
 
 }
@@ -111,10 +113,12 @@ void RangedAttackObject::seq(){
 		this->parent->getParent()->removeChild(this);
 	});
 
+	auto travelDistance =  (float)parent->pointToPointDistance(this->getPosition(), attackPos_nd);
+
 	auto jumpTo = cocos2d::JumpTo::create(
-			maxTravelTime / maxRange * distanceToEnemy_pf,
+			travelDistance / projectileSpeed,
 			attackPos_nd,
-			maxHeight / maxRange * distanceToEnemy_pf,
+			maxHeight / maxTravelTime * (travelDistance / projectileSpeed),
 			1);
 	auto seq = cocos2d::Sequence::create(jumpTo, cb2, nullptr);
 	this->runAction(seq);

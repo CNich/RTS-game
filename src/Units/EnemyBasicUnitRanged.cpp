@@ -127,7 +127,7 @@ void EnemyBasicUnitRanged::animationDie(){
 
 //Melee
 bool EnemyBasicUnitRanged::enemyIsAttackable(){
-	if(this->getCurrentEnemy() != 0 && unitToUnitDistance(this, getCurrentEnemy()) <= 6){
+	if(this->getCurrentEnemy() != 0 && unitToUnitDistance(this, getCurrentEnemy()) <= attackRange){
 		return true;
 	}
 	return false;

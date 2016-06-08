@@ -22,6 +22,7 @@ protected:
 	float maxTravelTime = 1.0f;
 	float distanceToEnemy_nd;
 	float distanceToEnemy_pf;
+	float projectileSpeed;
 
 public:
 	RangedAttackObject();
