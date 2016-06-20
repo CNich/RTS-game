@@ -2,6 +2,7 @@
 #include "SimpleAudioEngine.h"
 #include "stdlib.h"
 #include "src/AttackObjects/RangedAttackObject.h"
+#include "src/AttackObjects/AttackObjectNinjaStar.h"
 
 USING_NS_CC;
 
@@ -58,6 +59,7 @@ void EnemyBasicUnitRanged::attack(BasicUnit * attacker, int damage, char attackT
  */
 void EnemyBasicUnitRanged::animationAttack(){
 	RangedAttackObject* atk = RangedAttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
+	//AttackObjectNinjaStar* atk = AttackObjectNinjaStar::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
 	atk->initAttack();
 
 	Vector<SpriteFrame *> attackFrames;

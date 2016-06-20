@@ -13,7 +13,7 @@ public:
 	
 
 	//void attack(BasicUnit *attacker, int damage, char attackType);
-	int attackRange = 26;
+	int attackRange = 27;
 	//virtual void attack(BasicUnit *attacker, int damage, char attackType);
 
 	bool tracked = false;

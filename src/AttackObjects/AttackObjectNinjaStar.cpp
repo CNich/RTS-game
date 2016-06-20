@@ -30,8 +30,14 @@ void AttackObjectNinjaStar::seq(){
 		this->parent->getParent()->removeChild(this);
 	});
 
-	auto moveTo = cocos2d::MoveTo::create(0.5,parent->getCurrentEnemy()->getPosition());
-	auto rotateTo = cocos2d::RotateBy::create(0.5, 720);
+	auto travelDistance =  (float)parent->pointToPointDistance(this->getPosition(), attackPos_nd);
+
+	auto moveTo = cocos2d::MoveTo::create(
+			travelDistance / projectileSpeed,
+			attackPos_nd);
+	auto rotateTo = cocos2d::RotateBy::create(
+			travelDistance / projectileSpeed,
+			2 * 720 * travelDistance / projectileSpeed);
 	auto spawn = cocos2d::Spawn::create(moveTo, rotateTo, nullptr);
 	auto seq = cocos2d::Sequence::create(spawn, callback, nullptr);
 	this->runAction(seq);

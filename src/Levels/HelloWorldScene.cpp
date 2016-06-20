@@ -321,7 +321,7 @@ bool HelloWorld::init() {
 
 
 	int t1 = 10;
-	int t2 = 10;
+	int t2 = 0;
 
 	for(int i=0; i < t1; i+=2){
 		auto p = _plpos;

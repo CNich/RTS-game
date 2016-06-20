@@ -29,7 +29,7 @@ void RangedAttackObject::initAttack(){
 	auto eloc = parent->getPosition();
 	this->setPosition(eloc.x, eloc.y);
 	this->calculateAttackPos();
-	seq();
+	this->seq();
 }
 
 void RangedAttackObject::calculateAttackPos(){
@@ -99,9 +99,9 @@ void RangedAttackObject::calculateAttackPos(){
 
 		int an = parent->getAngle(this->getPosition(), attackPos_nd);
 
-		CCLOG("angle: %3.3f rads, sin(th)=%3.3f, cos(pi - th)=%3.3f", th, sinf(th), cosf(pi - th));
-		CCLOG("enemyDir: %d, enemySpeed: %3.3f", enemyDir, enemySpeed);
-		CCLOG("diff: %3.3f,%3.3f", diff_nd.x, diff_nd.y);
+		//CCLOG("angle: %3.3f rads, sin(th)=%3.3f, cos(pi - th)=%3.3f", th, sinf(th), cosf(pi - th));
+		//CCLOG("enemyDir: %d, enemySpeed: %3.3f", enemyDir, enemySpeed);
+		//CCLOG("diff: %3.3f,%3.3f", diff_nd.x, diff_nd.y);
 	//}
 
 }
@@ -164,7 +164,7 @@ void RangedAttackObject::attack(cocos2d::Point pos_pf){
 		float gf = gausFactor(distance);
 		if(damage * gf < 35){
 			//CCLOG("damage: %2.3f, distance: %d , diff e: %3.0f,%3.0f | diff p: %3.0f,%3.0f", (float)damage * gf, distance, p1.x - p2.x, p1.y - p2.y, p1.x - p3.x, p1.y - p3.y);
-			//CCLOG("damage: %2.3f, distance: %d , gf: %2.3f", (float)damage * gf, distance, gf);
+			CCLOG("damage: %2.3f, distance: %d , gf: %2.3f", (float)damage * gf, distance, gf);
 		}
 		pf->getUnit(pos_pf.x, pos_pf.y)->attack(parent, damage * gf, 'm');
 	}
