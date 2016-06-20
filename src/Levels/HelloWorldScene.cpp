@@ -321,7 +321,7 @@ bool HelloWorld::init() {
 
 
 	int t1 = 10;
-	int t2 = 1;
+	int t2 = 0;
 
 	for(int i=0; i < t1; i+=2){
 		auto p = _plpos;
@@ -417,7 +417,8 @@ bool HelloWorld::init() {
 	}
 
 
-	for(int i=0; i < t2; i+=2){
+	//for(int i=0; i < t2; i+=2){
+	for(int i=0; i < 1; i+=2){
 		cocos2d::Point p;
 		p.x = enemyX3 + pf->getTileX();
 		p.y = enemyY3 + pf->getTileY() * i;

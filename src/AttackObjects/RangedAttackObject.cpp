@@ -47,6 +47,7 @@ void RangedAttackObject::calculateAttackPos(){
 		//walking speed of enemy
 		auto ws = parent->getCurrentEnemy()->getWalkingSpeed();
 
+		float pi = 3.14159265359;
 		//enemy direction
 		int enemyDir = parent->getCurrentEnemy()->getUnitDir();
 		float th = 3.14159265359 * parent->getCurrentEnemy()->getUnitAngle() / 180.0f;
@@ -54,10 +55,10 @@ void RangedAttackObject::calculateAttackPos(){
 		//calculate enemy speed based on it's direction
 		float enemySpeed;
 		float travelFactor;
-		if(enemyDir == 0 || 4){
+		if(enemyDir == 0 || enemyDir == 4){
 			enemySpeed = pf->getTileY() / ws;
 			travelFactor = pf->getTileY();
-		} else if(enemyDir == 2 || 6){
+		} else if(enemyDir == 2 || enemyDir == 6){
 			enemySpeed =  pf->getTileX() / ws;
 			travelFactor = pf->getTileX();
 		} else{
@@ -73,8 +74,9 @@ void RangedAttackObject::calculateAttackPos(){
 
 		float a = powf(enemySpeed, 2) - powf(projectileSpeed, 2);
 		//float b = 2 * (target.velocityX * (target.startX - cannon.X) + target.velocityY * (target.startY - cannon.Y))
-		float b = 2.0f * (enemySpeed * sinf(th) * (ep.x - tp.x) +
-				enemySpeed * cosf(-th) * (ep.y - tp.y));
+		//x component - y component due to coordinate system
+		float b = 2.0f * (enemySpeed * sinf(th) * (ep.x - tp.x) -
+				enemySpeed * cosf(th) * (ep.y - tp.y));
 		float c = powf(ep.x - tp.x, 2) + powf(ep.y - tp.y, 2);
 
 		float disc = powf(b, 2) - 4.0f * a * c;
@@ -88,12 +90,18 @@ void RangedAttackObject::calculateAttackPos(){
 			t = t2;
 		}
 
+		t *= 1.0;
+
 		attackPos_nd.x = t * enemySpeed * sinf(th) + ep.x;
-		attackPos_nd.y = t * enemySpeed * cosf(-th) + ep.y;
+		attackPos_nd.y = -1 * t * enemySpeed * cosf(th) + ep.y;
+
+		cocos2d::Point diff_nd = parent->getCurrentEnemy()->getPosition() - attackPos_nd;
 
 		int an = parent->getAngle(this->getPosition(), attackPos_nd);
 
-		CCLOG("angle: %3.3f d, sin(th)=%3.3f, cos(-th)=%3.3f", th, sinf(th), cosf(-th));
+		CCLOG("angle: %3.3f rads, sin(th)=%3.3f, cos(th)=%3.3f", th, sinf(th), cosf(th));
+		CCLOG("enemyDir: %d, enemySpeed: %3.3f", enemyDir, enemySpeed);
+		CCLOG("diff: %3.3f,%3.3f", diff_nd.x, diff_nd.y);
 	//}
 
 }
