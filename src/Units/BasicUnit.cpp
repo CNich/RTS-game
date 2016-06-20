@@ -259,12 +259,12 @@ void BasicUnit::delayedMove() {
  * Get the counter clockwise angle between two points, with 0 degrees being down
  * ~~~~~Subtract 90 to normalize to x~~~~~
  *
- * remember the coordinate system
+ * remember the NODE coordinate system (tilemap has y inverted?)
+ *  _
+ * / \  y
+ * 	|
+ * 	|
  * 	 ------> x
- * 	|
- * 	|
- * 	v
- * 	 y
  */
 float BasicUnit::getAngle(cocos2d::Point a, cocos2d::Point b){
 	cocos2d::Point centered;

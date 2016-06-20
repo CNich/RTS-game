@@ -74,9 +74,9 @@ void RangedAttackObject::calculateAttackPos(){
 
 		float a = powf(enemySpeed, 2) - powf(projectileSpeed, 2);
 		//float b = 2 * (target.velocityX * (target.startX - cannon.X) + target.velocityY * (target.startY - cannon.Y))
-		//x component - y component due to coordinate system
-		float b = 2.0f * (enemySpeed * sinf(th) * (ep.x - tp.x) -
-				enemySpeed * cosf(th) * (ep.y - tp.y));
+		//pi - th due to coordinate system: up is positive???????
+		float b = 2.0f * (enemySpeed * sinf(th) * (ep.x - tp.x) +
+				enemySpeed * cosf(pi - th) * (ep.y - tp.y));
 		float c = powf(ep.x - tp.x, 2) + powf(ep.y - tp.y, 2);
 
 		float disc = powf(b, 2) - 4.0f * a * c;
@@ -93,13 +93,13 @@ void RangedAttackObject::calculateAttackPos(){
 		t *= 1.0;
 
 		attackPos_nd.x = t * enemySpeed * sinf(th) + ep.x;
-		attackPos_nd.y = -1 * t * enemySpeed * cosf(th) + ep.y;
+		attackPos_nd.y = t * enemySpeed * cosf(pi - th) + ep.y;
 
 		cocos2d::Point diff_nd = parent->getCurrentEnemy()->getPosition() - attackPos_nd;
 
 		int an = parent->getAngle(this->getPosition(), attackPos_nd);
 
-		CCLOG("angle: %3.3f rads, sin(th)=%3.3f, cos(th)=%3.3f", th, sinf(th), cosf(th));
+		CCLOG("angle: %3.3f rads, sin(th)=%3.3f, cos(pi - th)=%3.3f", th, sinf(th), cosf(pi - th));
 		CCLOG("enemyDir: %d, enemySpeed: %3.3f", enemyDir, enemySpeed);
 		CCLOG("diff: %3.3f,%3.3f", diff_nd.x, diff_nd.y);
 	//}

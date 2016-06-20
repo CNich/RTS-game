@@ -321,7 +321,7 @@ bool HelloWorld::init() {
 
 
 	int t1 = 10;
-	int t2 = 0;
+	int t2 = 10;
 
 	for(int i=0; i < t1; i+=2){
 		auto p = _plpos;
@@ -354,7 +354,7 @@ bool HelloWorld::init() {
 		r->setColor(Color3B::RED);
 		bvec2.pushBack(r);
 		initUnit(r, 1);
-		if(i == 3){
+		if(i == 0){
 			r->setColor(Color3B::BLUE);
 			//r->tracked = true;
 			//r->consoleTrack = true;
@@ -381,7 +381,7 @@ bool HelloWorld::init() {
 		r->setColor(Color3B::GREEN);
 		bvec2.pushBack(r);
 		initUnit(r, 1);
-		if(i == 4){
+		if(i == 0){
 			r->setColor(Color3B::BLUE);
 			//r->tracked = true;
 			//r->consoleTrack = true;
@@ -408,7 +408,7 @@ bool HelloWorld::init() {
 		r->setColor(Color3B::GREEN);
 		bvec2.pushBack(r);
 		initUnit(r, 1);
-		if(i == 4){
+		if(i == 0){
 			r->setColor(Color3B::BLUE);
 			//r->tracked = true;
 			//r->consoleTrack = true;
