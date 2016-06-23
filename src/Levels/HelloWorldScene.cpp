@@ -6,7 +6,8 @@ using namespace CocosDenshion;
 
 USING_NS_CC;
 
-HelloWorldHud *HelloWorld::_hud = NULL;
+//HelloWorldHud *HelloWorld::_hud = NULL;
+HelloWorldHud * _HUD = nullptr;// = NULL;
 
 Scene* HelloWorld::createScene() {
 	// 'scene' is an autorelease object
@@ -18,10 +19,12 @@ Scene* HelloWorld::createScene() {
 	// add layer as a child to scene
 	scene->addChild(layer);
 
-	auto hud = HelloWorldHud::create();
-	_hud = hud;
-
+	HelloWorldHud * hud = new HelloWorldHud();
+	hud = HelloWorldHud::create();
 	scene->addChild(hud);
+	layer->_hudB = hud;
+	_HUD = hud;
+	hud->Level1 = layer;
 
 	// return the scene
 	return scene;
@@ -319,6 +322,12 @@ bool HelloWorld::init() {
 	ninja->BFSInit(bfsp.x, bfsp.y);
 	//ninja->consoleTrack = true;
 
+	CCLOG("%p %p %p", _hudB, _hudB, _hudB);
+	CCLOG("%p %p %p", _HUD, _HUD, _HUD);
+	CCLOG("%p %p %p", _hudB, _hudB, _hudB);
+	CCLOG("%p %p %p", _HUD, _HUD, _HUD);
+
+	//this->_hudB->setNinja(ninja, _hudB);
 
 	int t1 = 10;
 	int t2 = 0;
@@ -431,6 +440,7 @@ bool HelloWorld::init() {
 
 
 
+	/*
 	auto button = cocos2d::ui::Button::create("buttons/Button_Normal.png", "buttons/Button_Press.png", "buttons/Button_Disable.png");
 
 	button->setTitleText("Button Text");
@@ -451,7 +461,10 @@ bool HelloWorld::init() {
 	        }
 	});
 
-	this->addChild(button, 10000);
+	CCLOG("HUD: %p", _hud);
+	//_hud->addChild(button, 10000);
+	*/
+
 
 
 
@@ -526,6 +539,10 @@ void HelloWorld::onTouchEnded(Touch *touch, Event *unused_event) {
 	if (!firstTouch) {
 		//this->setMap();
 		CCLOG("first touch of the game................");
+		this->_hudB->setNinja();
+		CCLOG("%p %p %p", _hudB, _hudB, _hudB);
+		CCLOG("%p %p %p", _HUD, _HUD, _HUD);
+		CCLOG("%p %p %p", ninja, ninja, ninja);
 		CCLOG("getTileX: %d, getTileY: %d",pf->getTileX(), pf->getTileY());
 		CCLOG("getRows: %d, getCols: %d, getOffX: %d, getOffY: %d",
 				pf->getRows(), pf->getCols(), pf->getOffX(), pf->getOffY());
@@ -860,7 +877,7 @@ int HelloWorld::fixPositions(char dim, int val){
 }
 
 
-
+/*
 bool HelloWorldHud::init() {
 	if (!Layer::init()) {
 		return false;
@@ -878,11 +895,44 @@ bool HelloWorldHud::init() {
 	return true;
 }
 
+void HelloWorldHud::setNinja(){
+	cocos2d::ui::Button * button = cocos2d::ui::Button::create("buttons/Button_Normal.png", "buttons/Button_Press.png", "buttons/Button_Disable.png");
+	button->setTitleText("Button Text");
+	button->setScale(4);
+
+	CCLOG("HERERERERERERE");
+
+	CCLOG("WHAST IS THIS THIS?");
+	CCLOG("WHAST IS THIS THIS %p", this);
+	CCLOG("WHAST IS THIS THIS %p", button);
+	//CCLOG("WHAST IS THIS THIS %p", Level1);
+
+	button->addTouchEventListener([&](Ref* sender, cocos2d::ui::Widget::TouchEventType type){
+		switch (type)
+		{
+			case cocos2d::ui::Widget::TouchEventType::BEGAN:
+				CCLOG("Shots fired");
+				this->Level1->ninja->shootFireBall();
+				break;
+			case cocos2d::ui::Widget::TouchEventType::ENDED:
+				CCLOG("button clicked");
+				break;
+			default:
+				break;
+		}
+	});
+
+
+	this->addChild(button, 10000);
+}
+
 void HelloWorldHud::numCollectedChanged(int numCollected) {
 	char showStr[20];
 	sprintf(showStr, "%d", numCollected);
 	label->setString(showStr);
 }
+
+*/
 
 
 void HelloWorld::menuCloseCallback(Ref* pSender) {

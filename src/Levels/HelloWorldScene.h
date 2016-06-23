@@ -12,6 +12,7 @@
 #include "src/Units/RangedBasicUnit.h"
 #include "src/Units/EnemyBasicUnitRanged.h"
 #include "src/Units/Ninja.h"
+#include "src/Levels/HelloWorldHud.h"
 #include <vector>
 
 
@@ -19,16 +20,23 @@
 
 #define SCORE_FONT_SIZE 0.1
 //PathFinder<int> * pf;
-
+/*
 class HelloWorldHud : public cocos2d::Layer
 {
 public:
     void numCollectedChanged(int numCollected);
     virtual bool init();
+    void setNinja();
+    Ninja *nin;
     CREATE_FUNC(HelloWorldHud);
 
+    cocos2d::ui::Button * hudbutton;
     cocos2d::LabelTTF *label;
+    HelloWorld * Level1;
 };
+*/
+
+class HelloWorldHud;
 
 class HelloWorld : public cocos2d::Layer
 {
@@ -41,7 +49,8 @@ private:
 	cocos2d::TMXLayer *_background5;
 	cocos2d::Sprite *_player;
 	int _numCollected;
-	static HelloWorldHud *_hud;
+	//static HelloWorldHud *_hudB;
+	HelloWorldHud *_hudB;
 	cocos2d::Point _topLeft;
 	cocos2d::Point _topRight;
 	cocos2d::Point _bottomLeft;
