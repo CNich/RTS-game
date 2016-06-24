@@ -4,15 +4,15 @@ bool HelloWorldHud::init() {
 	if (!Layer::init()) {
 		return false;
 	}
-	//auto visibleSize = Director::getInstance()->getVisibleSize();
-	/*label = LabelTTF::create("0", "fonts/Marker Felt.ttf", 38.0f, Size(50, 50),
-			TextHAlignment::RIGHT);
-	label->setColor(Color3B(255, 255, 0));
+	auto visibleSize = cocos2d::Director::getInstance()->getVisibleSize();
+	label = cocos2d::LabelTTF::create("0", "fonts/Marker Felt.ttf", 38.0f, cocos2d::Size(50, 50),
+			cocos2d::TextHAlignment::RIGHT);
+	label->setColor(cocos2d::Color3B(255, 255, 0));
 	int margin = 10;
 	label->setPosition(
 			visibleSize.width / 2 - (label->getDimensions().width / 2) - margin,
 			label->getDimensions().height / 2 + margin);
-	this->addChild(label);*/
+	this->addChild(label);
 
 	return true;
 }
@@ -21,6 +21,8 @@ void HelloWorldHud::setNinja(){
 	cocos2d::ui::Button * button = cocos2d::ui::Button::create("buttons/Button_Normal.png", "buttons/Button_Press.png", "buttons/Button_Disable.png");
 	button->setTitleText("Button Text");
 	button->setScale(4);
+
+	auto visibleSize = cocos2d::Director::getInstance()->getVisibleSize();
 
 	CCLOG("HERERERERERERE");
 
@@ -44,8 +46,9 @@ void HelloWorldHud::setNinja(){
 		}
 	});
 
-
 	this->addChild(button, 10000);
+
+	button->setPosition({button->getContentSize().width * 2.0f, button->getContentSize().height * 2.0f});
 }
 
 void HelloWorldHud::numCollectedChanged(int numCollected) {
