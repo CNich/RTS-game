@@ -18,18 +18,14 @@ bool HelloWorldHud::init() {
 }
 
 void HelloWorldHud::setNinja(){
+	this->removeUI();
 	cocos2d::ui::Button * button = cocos2d::ui::Button::create("buttons/Button_Normal.png", "buttons/Button_Press.png", "buttons/Button_Disable.png");
+	cocos2d::ui::Button * buttonRed = cocos2d::ui::Button::create("buttons/Button_Normal_Red.png", "buttons/Button_Press.png", "buttons/Button_Disable.png");
 	button->setTitleText("Button Text");
 	button->setScale(4);
+	buttonRed->setScale(4);
 
 	auto visibleSize = cocos2d::Director::getInstance()->getVisibleSize();
-
-	CCLOG("HERERERERERERE");
-
-	CCLOG("WHAST IS THIS THIS?");
-	CCLOG("WHAST IS THIS THIS %p", this);
-	CCLOG("WHAST IS THIS THIS %p", button);
-	//CCLOG("WHAST IS THIS THIS %p", Level1);
 
 	button->addTouchEventListener([&](Ref* sender, cocos2d::ui::Widget::TouchEventType type){
 		switch (type)
@@ -47,9 +43,43 @@ void HelloWorldHud::setNinja(){
 	});
 
 	this->addChild(button, 10000);
+	this->addChild(buttonRed, 10000);
 
-	button->setPosition({button->getContentSize().width * 2.0f, button->getContentSize().height * 2.0f});
+	button->setPosition({button->getContentSize().width * button->getScale() / 2.0f, button->getContentSize().height * button->getScale() / 2.0f});
+	buttonRed->setPosition({button->getContentSize().width * buttonRed->getScale() / 2.0f, buttonRed->getContentSize().height * buttonRed->getScale() * 1.5});
 }
+
+void HelloWorldHud::setBasicUnit(){
+	this->removeUI();
+	cocos2d::ui::Button * button = cocos2d::ui::Button::create("buttons/Button_Normal_Aqua.png", "buttons/Button_Normal.png", "buttons/Button_Disable.png");
+	button->setTitleText("Button Text");
+	button->setScale(4);
+
+	auto visibleSize = cocos2d::Director::getInstance()->getVisibleSize();
+
+	button->addTouchEventListener([&](Ref* sender, cocos2d::ui::Widget::TouchEventType type){
+		switch (type)
+		{
+			case cocos2d::ui::Widget::TouchEventType::BEGAN:
+				break;
+			case cocos2d::ui::Widget::TouchEventType::ENDED:
+				this->Level1->_infoHud->addGold(10);
+				break;
+			default:
+				break;
+		}
+	});
+
+	this->addChild(button, 10000);
+
+	button->setPosition({button->getContentSize().width * button->getScale() / 2.0f, button->getContentSize().height * button->getScale() / 2.0f});
+}
+
+void HelloWorldHud::removeUI(){
+	this->removeAllChildren();
+}
+
+
 
 void HelloWorldHud::numCollectedChanged(int numCollected) {
 	char showStr[20];

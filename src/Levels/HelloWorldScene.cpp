@@ -26,6 +26,12 @@ Scene* HelloWorld::createScene() {
 	_HUD = hud;
 	hud->Level1 = layer;
 
+	InfoHud * ihud = new InfoHud();
+	ihud = InfoHud::create();
+	scene->addChild(ihud);
+	layer->_infoHud = ihud;
+	ihud->Level1 = layer;
+
 	// return the scene
 	return scene;
 }
@@ -235,16 +241,20 @@ bool HelloWorld::init() {
 					for(BasicUnit *i : bvec){
 						goToMovementSprite(i, tpos);
 					}
+					_hudB->setBasicUnit();
 				} else if(target == sprite2){
 					for(RangedBasicUnit *i : rangedBasicUnitVec){
 						goToMovementSprite(i, tpos);
 					}
+					_hudB->setBasicUnit();
 				}
 				else if(target == sprite3){
 					goToMovementSprite(ninja, tpos);
+					_hudB->setNinja();
 				}
 				else if(target == sprite4){
 					ninja->setFireBallLocation(nodeTpos);
+					_hudB->setNinja();
 				}
 			}
 		};
@@ -332,14 +342,14 @@ bool HelloWorld::init() {
 	int t1 = 10;
 	int t2 = 0;
 
-	for(int i=0; i < t1; i+=2){
+	/*for(int i=0; i < t1; i+=2){
 		auto p = _plpos;
 		p.x = _plpos.x + pf->getTileX() * 3;
 		p.y = _plpos.y  + pf->getTileY() * (i - 13);
 		BasicUnit * r = BasicUnit::create(p);
 		bvec.pushBack(r);
 		initUnit(r, 0);
-	}
+	}*/
 
 	for(int i=0; i < t1; i+=2){
 		auto p = _plpos;

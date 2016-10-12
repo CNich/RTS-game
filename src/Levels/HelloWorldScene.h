@@ -13,6 +13,7 @@
 #include "src/Units/EnemyBasicUnitRanged.h"
 #include "src/Units/Ninja.h"
 #include "src/Levels/HelloWorldHud.h"
+#include "src/Levels/InfoHud.h"
 #include <vector>
 
 
@@ -21,6 +22,7 @@
 #define SCORE_FONT_SIZE 0.1
 
 class HelloWorldHud;
+class InfoHud;
 
 class HelloWorld : public cocos2d::Layer
 {
@@ -35,6 +37,7 @@ private:
 	int _numCollected;
 	//static HelloWorldHud *_hudB;
 	HelloWorldHud *_hudB;
+	//InfoHud *_infoHud;
 	cocos2d::Point _topLeft;
 	cocos2d::Point _topRight;
 	cocos2d::Point _bottomLeft;
@@ -77,6 +80,7 @@ private:
 	int fixPositions(char dim, int val);
 
 public:
+	InfoHud *_infoHud;
 	PathFinder<BasicUnit> * pf;
 	Ninja *ninja;
 	cocos2d::Vector<BasicUnit *> bvec;

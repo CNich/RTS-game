@@ -108,7 +108,7 @@ void BasicUnit::ASolve(int x, int y) {
 
 	auto ppos = this->convertToPf(this->getPosition());
 
-	if (x >= 0 && x < pf->getRows() && y >= 0 && y < pf->getCols()){// && !pf->checkBlock(x, y)) {
+	if (x >= 0 && x < pf->getRows() && y >= 0 && y < pf->getCols() && !pf->checkBlock(x, y)) {
 
 		tpf->setStart(ppos.x, ppos.y);
 		tpf->setEnd(x, y);
@@ -125,6 +125,8 @@ void BasicUnit::ASolve(int x, int y) {
 				"ASolve: %3d xy: %d, %d", lStack->getLength(), x, y));
 		//if(consoleTrack) CCLOG("ASolve: %2d lStack->getLength()", lStack->getLength());
 
+		CCLOG("ASolve: %3d xy: %d, %d,  %p", lStack->getLength(), x, y, this);
+
 		/*
 		PathFinder<BasicUnit> tpf2 = PathFinder<BasicUnit>(50, 50);
 		tpf2.setTileX(32);
@@ -139,6 +141,8 @@ void BasicUnit::ASolve(int x, int y) {
 
 		lStack = tpf2.solve();
 		*/
+	} else{
+		CCLOG("ASolve Blocked: %3d xy: %d, %d,  %p", lStack->getLength(), x, y, this);
 	}
 }
 
@@ -587,6 +591,7 @@ void BasicUnit::update(float dt) {
 				consoleCount++;
 				CCLOG("%2d %2d goalPositionAsolve SET!", consoleCount, lStack->getLength());
 			}
+			CCLOG("Goal Position Updated");
 			this->ASolve(goalPosition.x, goalPosition.y);
 		}
 
@@ -615,6 +620,7 @@ void BasicUnit::update(float dt) {
 					"%2d %2d idle", consoleCount, lStack->getLength()));
 				//consoleCount++;
 			//CCLOG("lStack->empty(): %d   %7.7f", lStack->empty(), dt);
+			CCLOG("Empty lStack");
 			this->ASolve(goalPosition.x, goalPosition.y);
 		}
 
