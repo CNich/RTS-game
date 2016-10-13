@@ -415,8 +415,6 @@ LinkedList<cocos2d::Point> * PathFinder<T>::solve(){
 	//reset the queue
 	queueP->reset();
 
-	CCLOG("solve start end parent: %d, %d", map[end.x][end.y].parent.x, map[end.x][end.y].parent.y);
-
 	//insert start into the heap
 	openL->insert(&map[start.x][start.y]);
 
@@ -497,11 +495,6 @@ LinkedList<cocos2d::Point> * PathFinder<T>::solve(){
 	}
 	////cout << "done" << endl;
 
-	if(end.x == start.x && end.y == start.y){
-		queueP->reset();
-		CCLOG("all the way");
-	}
-	CCLOG("solve end end parent: %d, %d", map[end.x][end.y].parent.x, map[end.x][end.y].parent.y);
 	return queueP;
 }
 
