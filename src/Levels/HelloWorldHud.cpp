@@ -42,6 +42,19 @@ void HelloWorldHud::setNinja(){
 		}
 	});
 
+	buttonRed->addTouchEventListener([&](Ref* sender, cocos2d::ui::Widget::TouchEventType type){
+		switch (type)
+		{
+			case cocos2d::ui::Widget::TouchEventType::BEGAN:
+				break;
+			case cocos2d::ui::Widget::TouchEventType::ENDED:
+				this->Level1->_infoHud->addGold(10);
+				break;
+			default:
+				break;
+		}
+	});
+
 	this->addChild(button, 10000);
 	this->addChild(buttonRed, 10000);
 

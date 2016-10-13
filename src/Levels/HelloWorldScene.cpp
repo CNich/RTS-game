@@ -342,14 +342,14 @@ bool HelloWorld::init() {
 	int t1 = 10;
 	int t2 = 0;
 
-	/*for(int i=0; i < t1; i+=2){
+	for(int i=0; i < t1; i+=2){
 		auto p = _plpos;
 		p.x = _plpos.x + pf->getTileX() * 3;
 		p.y = _plpos.y  + pf->getTileY() * (i - 13);
 		BasicUnit * r = BasicUnit::create(p);
 		bvec.pushBack(r);
 		initUnit(r, 0);
-	}*/
+	}
 
 	for(int i=0; i < t1; i+=2){
 		auto p = _plpos;
