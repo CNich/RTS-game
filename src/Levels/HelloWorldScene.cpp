@@ -144,12 +144,6 @@ bool HelloWorld::init() {
 	_plpos.y = fixPositions('y', y);
 
 
-
-	//_plpos.x = pf->getTileX() * ((int) (x / pf->getTileX()));
-	//_plpos.y = pf->getTileY() * ((int) (y / pf->getTileY()));
-
-	CCLOG("GET PLAYER SHOW UP POINT: %3.3f %3.3f", _plpos.x, _plpos.y);
-
 	//set touch events for pan/zoom
 	auto listener = EventListenerTouchOneByOne::create();
 	listener->onTouchBegan = [&](Touch *touch, Event *unused_event)->bool {
@@ -173,108 +167,6 @@ bool HelloWorld::init() {
 
 	setViewPointCenter(_plpos);
 	this->setScale(1);
-
-	//create and set up sprites for controlling unit movement
-	auto sprite1 = setMovementSprites("Cyansquare.png", Point(x + 16, y + 16));
-	auto sprite2 = setMovementSprites("Redsquare.png", Point(x + 16, y + 48));
-	auto sprite3 = setMovementSprites("Yellowsquare.png", Point(x + 48, y + 48));
-	auto sprite4 = setMovementSprites("Orangesquare.png", Point(x, y));
-
-	wayPointSprites.push_back(sprite1);
-	wayPointSprites.push_back(sprite2);
-	//wayPointSprites.push_back(sprite3);
-	//wayPointSprites.push_back(sprite4);
-
-	//delete sprite is protected... Maybe cant do this
-	//std::shared_ptr<cocos2d::Sprite> sprite4 (setMovementSprites("Orangesquare.png", Point(x, y)));
-
-	/*********************************************************************************************/
-	//Event Listener: http://www.cocos2d-x.org/wiki/EventDispatcher_Mechanism
-	/*********************************************************************************************/
-
-	//Create a "one by one" touch event listener (processes one touch at a time)
-	movementSpriteListener = EventListenerTouchOneByOne::create();
-	// When "swallow touches" is true, then returning 'true' from the onTouchBegan method will "swallow" the touch event, preventing other listeners from using it.
-	movementSpriteListener->setSwallowTouches(true);
-
-	// Example of using a lambda expression to implement onTouchBegan event callback function
-	movementSpriteListener->onTouchBegan = [=](Touch* touch, Event* event) {
-
-		// event->getCurrentTarget() returns the *listener's* sceneGraphPriority node.
-		auto target = static_cast<Sprite*>(event->getCurrentTarget());
-
-		//Get the position of the current point relative to the button
-		Point locationInNode = target->convertToNodeSpace(touch->getLocation());
-		Size s = target->getContentSize();
-		Rect rect = Rect(0, 0, s.width, s.height);
-
-		//Check the click area
-		if (rect.containsPoint(locationInNode))
-		{
-			//CCLOG("sprite began... x = %f, y = %f", locationInNode.x, locationInNode.y);
-			target->setOpacity(180);
-			return true;
-		}
-		return false;
-	};
-
-	//Trigger when moving touch
-	movementSpriteListener->onTouchMoved = [=](Touch* touch, Event* event) {
-		auto target = static_cast<Sprite*>(event->getCurrentTarget());
-		auto tempScale = this->getScale();
-		//Move the position of current button sprite
-			target->setPosition(target->getPosition() +
-					cocos2d::Point(touch->getDelta().x / tempScale,
-					touch->getDelta().y / tempScale));
-		};
-
-	//Process the touch end event
-	movementSpriteListener->onTouchEnded = [=](Touch* touch, Event* event) {
-		auto target = static_cast<Sprite*>(event->getCurrentTarget());
-		//CCLOG("sprite onTouchesEnded.. ");
-		target->setOpacity(255);
-
-			lStack->reset();
-			auto ppos = _plpos;
-			auto tpos = touch->getLocation();
-			tpos = convertToNodeSpace(tpos);
-			auto nodeTpos = tpos;
-
-			ppos = ninja->convertToPf(ppos);
-			tpos = ninja->convertToPf(tpos);
-
-			if (tpos.x >= 0 && tpos.x < pf->getRows() && tpos.y >= 0 && tpos.y < pf->getCols()) {
-				if(target == sprite3){
-					goToMovementSprite(ninja, tpos);
-					_hudB->setNinja();
-				}
-				else if(target == sprite4){
-					ninja->setFireBallLocation(nodeTpos);
-					_hudB->setNinja();
-				}
-
-				for(int i = 0; i < wayPointSprites.size(); i++){
-					if(target == wayPointSprites[i]){
-						cocos2d::Vector<BasicUnit *> p = goodUnitVectors[i];
-						for(BasicUnit *i : p){
-							goToMovementSprite(i, tpos);
-						}
-						_hudB->setBasicUnit();
-						CCLOG("Sprite %d was touched, size = %d", i, wayPointSprites.size());
-					}
-				}
-			}
-		};
-
-	//Add listener
-	//_eventDispatcher->addEventListenerWithSceneGraphPriority(movementSpriteListener, sprite1);
-	//_eventDispatcher->addEventListenerWithSceneGraphPriority(movementSpriteListener->clone(), sprite2);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(movementSpriteListener->clone(), sprite3);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(movementSpriteListener->clone(), sprite4);
-
-	for(int i = 0; i < wayPointSprites.size(); i++){
-		_eventDispatcher->addEventListenerWithSceneGraphPriority(movementSpriteListener->clone(), wayPointSprites[i]);
-	}
 
 	auto tL = objects->getObject("topLeft");
 	_topLeft.x = tL["x"].asInt();
@@ -329,41 +221,11 @@ bool HelloWorld::init() {
 			"fonts/Marker Felt.ttf", winSize.height * SCORE_FONT_SIZE);
 	tileAtrs->setColor(Color3B::BLUE);
 	tileAtrs->setPosition(Point(winSize.width / 2, winSize.height * 0.75));
-	//this->addChild(tileAtrs, 10000);
-
-	auto ninjaPos = _plpos;
-	//ninjaPos.x = _plpos.x + pf->getTileX() * 10;
-	//ninjaPos.y = _plpos.y  - pf->getTileY();
-	ninja = Ninja::create(ninjaPos);
-	initUnit(ninja, 0);
-
-	//init enemy following
-	auto bfsp = ninja->convertToPf(ninja->getPosition());
-	ninja->setBFSmap();
-	ninja->BFSInit(bfsp.x, bfsp.y);
-	//ninja->consoleTrack = true;
-
-	CCLOG("%p %p %p", _hudB, _hudB, _hudB);
-	CCLOG("%p %p %p", _HUD, _HUD, _HUD);
-	CCLOG("%p %p %p", _hudB, _hudB, _hudB);
-	CCLOG("%p %p %p", _HUD, _HUD, _HUD);
-
-	//this->_hudB->setNinja(ninja, _hudB);
 
 	int t1 = 10;
 	int t2 = 0;
 
-	/*cocos2d::Vector<BasicUnit *> bvx1;
-	for(int i=0; i < t1; i+=2){
-		auto p = _plpos;
-		p.x = _plpos.x + pf->getTileX() * 3;
-		p.y = _plpos.y  + pf->getTileY() * (i - 13);
-		BasicUnit * r = BasicUnit::create(p);
-		bvec.pushBack(r);
-		bvx1.pushBack(r);
-		initUnit(r, 0);
-	}
-	goodUnitVectors.push_back(bvx1);*/
+	createUnitGroup(2, _plpos);
 
 	auto pnt = _plpos;
 	pnt.x = _plpos.x + pf->getTileX() * 3;
@@ -372,24 +234,6 @@ bool HelloWorld::init() {
 
 	pnt.y -= pf->getTileX() * 3;
 	createUnitGroup(1, pnt);
-
-	/*
-	cocos2d::Vector<BasicUnit *> bv2;
-	for(int i=0; i < t1; i+=2){
-		auto p = _plpos;
-		p.x = _plpos.x + pf->getTileX();
-		p.y = _plpos.y  + pf->getTileY() * (i - 13);
-		RangedBasicUnit * r = RangedBasicUnit::create(p);
-		rangedBasicUnitVec.pushBack(r);
-		initUnit(r, 0);
-		bv2.pushBack(r);
-		//if(i == 2) {
-		//	r->consoleTrack = true;
-		//	r->setColor(Color3B::RED);
-		//}
-	}
-	goodUnitVectors.push_back(bv2);
-	*/
 
 	for(int i=0; i < t2; i+=1){
 		cocos2d::Point p;
@@ -474,33 +318,6 @@ bool HelloWorld::init() {
 	}
 	//this->drawBFSMap();
 
-
-
-	/*
-	auto button = cocos2d::ui::Button::create("buttons/Button_Normal.png", "buttons/Button_Press.png", "buttons/Button_Disable.png");
-
-	button->setTitleText("Button Text");
-	button->setScale(4);
-
-	button->addTouchEventListener([&](Ref* sender, cocos2d::ui::Widget::TouchEventType type){
-	        switch (type)
-	        {
-	                case cocos2d::ui::Widget::TouchEventType::BEGAN:
-						ninja->shootFireBall();
-						CCLOG("Shots fired");
-						break;
-	                case cocos2d::ui::Widget::TouchEventType::ENDED:
-	                	CCLOG("button clicked");
-						break;
-	                default:
-						break;
-	        }
-	});
-
-	CCLOG("HUD: %p", _hud);
-	//_hud->addChild(button, 10000);
-	*/
-
 	return true;
 
 }
@@ -559,7 +376,7 @@ void HelloWorld::createUnitGroup(int option, cocos2d::Point spawnLocation){
 			bv1.pushBack(r);
 			initUnit(r, 0);
 		}
-	} else{
+	} else if(option == 1){
 		for(int i=0; i < 5; i++){
 			auto p = spawnLocation;
 			p.x = spawnLocation.x + pf->getTileX() * 3;
@@ -568,6 +385,17 @@ void HelloWorld::createUnitGroup(int option, cocos2d::Point spawnLocation){
 			bv1.pushBack(r);
 			initUnit(r, 0);
 		}
+	} else if(option == 2){
+		auto ninjaPos = _plpos;
+		ninja = Ninja::create(spawnLocation);
+		initUnit(ninja, 0);
+
+		//init enemy following
+		auto bfsp = ninja->convertToPf(ninja->getPosition());
+		ninja->setBFSmap();
+		ninja->BFSInit(bfsp.x, bfsp.y);
+		//ninja->consoleTrack = true;
+		bv1.pushBack(ninja);
 	}
 	goodUnitVectors.push_back(bv1);
 
@@ -577,9 +405,22 @@ void HelloWorld::createUnitGroup(int option, cocos2d::Point spawnLocation){
 	int x = playerShowUpPoint["x"].asInt();
 	int y = playerShowUpPoint["y"].asInt();
 
-	auto tSprite = setMovementSprites("Redsquare.png", Point(x + 16, y + 48));
+	char* wayPointPng;
+	if(option == 0){
+		wayPointPng = "Redsquare.png";
+	} else if(option == 1){
+		wayPointPng = "Cyansquare.png";
+	} else if(option == 2){
+		wayPointPng = "Yellowsquare.png";
+	}
+	auto tSprite = setMovementSprites(wayPointPng, Point(x + 16, y + 48));
 	wayPointSprites.push_back(tSprite);
 
+	cocos2d::Sprite * spellLocationSprite;
+	if(option == 2){
+		spellLocationSprite = setMovementSprites("Orangesquare.png", Point(x, y));
+		wayPointSprites.push_back(spellLocationSprite);
+	}
 	//Create a "one by one" touch event listener (processes one touch at a time)
 	auto listener = EventListenerTouchOneByOne::create();
 	// When "swallow touches" is true, then returning 'true' from the onTouchBegan method will "swallow" the touch event, preventing other listeners from using it.
@@ -611,10 +452,10 @@ void HelloWorld::createUnitGroup(int option, cocos2d::Point spawnLocation){
 		auto target = static_cast<Sprite*>(event->getCurrentTarget());
 		auto tempScale = this->getScale();
 		//Move the position of current button sprite
-			target->setPosition(target->getPosition() +
-					cocos2d::Point(touch->getDelta().x / tempScale,
-					touch->getDelta().y / tempScale));
-		};
+		target->setPosition(target->getPosition() +
+			cocos2d::Point(touch->getDelta().x / tempScale,
+			touch->getDelta().y / tempScale));
+	};
 
 	//Process the touch end event
 	listener->onTouchEnded = [=](Touch* touch, Event* event) {
@@ -622,27 +463,36 @@ void HelloWorld::createUnitGroup(int option, cocos2d::Point spawnLocation){
 		//CCLOG("sprite onTouchesEnded.. ");
 		target->setOpacity(255);
 
-			lStack->reset();
-			auto ppos = _plpos;
-			auto tpos = touch->getLocation();
-			tpos = convertToNodeSpace(tpos);
-			auto nodeTpos = tpos;
+		auto tpos = touch->getLocation();
+		tpos = convertToNodeSpace(tpos);
+		auto nodeTpos = tpos;
 
-			ppos = ninja->convertToPf(ppos);
-			tpos = ninja->convertToPf(tpos);
+		tpos = ninja->convertToPf(tpos);
 
-			if (tpos.x >= 0 && tpos.x < pf->getRows() && tpos.y >= 0 && tpos.y < pf->getCols()) {
+		if (tpos.x >= 0 && tpos.x < pf->getRows() && tpos.y >= 0 && tpos.y < pf->getCols()) {
+			if(option == 2){
 				if(target == tSprite){
-					for(BasicUnit *i : bv1){
-						goToMovementSprite(i, tpos);
-					}
-					_hudB->setBasicUnit();
+					goToMovementSprite(ninja, tpos);
+					_hudB->setNinja();
 				}
+				else if(target == spellLocationSprite){
+					ninja->setFireBallLocation(nodeTpos);
+					_hudB->setNinja();
+				}
+			} else if(target == tSprite){
+				for(BasicUnit *i : bv1){
+					goToMovementSprite(i, tpos);
+				}
+				_hudB->setBasicUnit();
 			}
-		};
+		}
+	};
 
-		//Add listener
-		_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, tSprite);
+	//Add listener
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, tSprite);
+	if(option == 2){
+		_eventDispatcher->addEventListenerWithSceneGraphPriority(listener->clone(), spellLocationSprite);
+	}
 }
 
 void HelloWorld::setViewPointCenter(Point position) {
@@ -741,6 +591,15 @@ void HelloWorld::enemyDistances(float dt){
 		team1.pushBack(ninja);
 	}
 
+	for(auto p : goodUnitVectors){
+		for(auto u : p){
+			if(u != 0 && !u->isDead()){
+				team1.pushBack(u);
+			}
+		}
+	}
+
+	/*
 	cocos2d::Vector<BasicUnit *> bvecTemp;
 	for(BasicUnit * p : bvec){
 		if(p != 0 && !p->isDead()){
@@ -765,6 +624,7 @@ void HelloWorld::enemyDistances(float dt){
 	for(RangedBasicUnit * p : rangedBasicUnitVecTemp){
 		//rangedBasicUnitVec.erase(rangedBasicUnitVec.find(p));
 	}
+	*/
 
 	cocos2d::Vector<EnemyBasicUnit *> bvecTemp2;
 	for(EnemyBasicUnit * p : bvec2){
