@@ -48,7 +48,7 @@ void HelloWorldHud::setNinja(){
 			case cocos2d::ui::Widget::TouchEventType::BEGAN:
 				break;
 			case cocos2d::ui::Widget::TouchEventType::ENDED:
-				this->Level1->_infoHud->addGold(10);
+				this->Level1->createUnitGroup(0, this->Level1->_plpos);
 				break;
 			default:
 				break;

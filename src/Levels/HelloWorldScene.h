@@ -15,6 +15,7 @@
 #include "src/Levels/HelloWorldHud.h"
 #include "src/Levels/InfoHud.h"
 #include <vector>
+#include <memory>
 
 
 #include "ui/CocosGUI.h"
@@ -75,6 +76,8 @@ private:
 	cocos2d::Sprite* setMovementSprites(char* str, cocos2d::Point pt);
 	void goToMovementSprite(BasicUnit *i, cocos2d::Point tpos);
 
+	cocos2d::EventListenerTouchOneByOne * movementSpriteListener;
+
 	void initUnit(BasicUnit *r, char team);
 
 	int fixPositions(char dim, int val);
@@ -87,6 +90,10 @@ public:
 	cocos2d::Vector<EnemyBasicUnit *> bvec2;
 	cocos2d::Vector<RangedBasicUnit *> rangedBasicUnitVec;
 	cocos2d::Vector<EnemyBasicUnitRanged *> rangedBasicUnitVec2;
+
+	std::vector<cocos2d::Sprite *> wayPointSprites;
+	std::vector<cocos2d::Vector<BasicUnit *>> goodUnitVectors;
+	std::vector<cocos2d::Vector<BasicUnit *>> badUnitVectors;
 
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
     static cocos2d::Scene* createScene();
@@ -128,6 +135,8 @@ public:
     int getNumSoundsPlaying() {return numSoundsPlaying;};
     void incrementNumSoundsPlaying() { numSoundsPlaying++; };
     void decrementNumSoundsPlaying() { numSoundsPlaying++; };
+
+    void createUnitGroup(int option, cocos2d::Point spawnLocation);
 
     cocos2d::Point _plpos;
 

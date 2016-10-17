@@ -15,6 +15,7 @@ public:
     void numCollectedChanged(int numCollected);
     virtual bool init();
     void setNinja();
+    void createUnits();
     void setBasicUnit();
     void removeUI();
     CREATE_FUNC(HelloWorldHud);
