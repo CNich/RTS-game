@@ -40,9 +40,7 @@ void AttackObjectNinjaFireball::initAttack(){
 	dxy.x = centered.x * pf->getTileX() / hyp;
 	dxy.y = centered.y * pf->getTileX() / hyp;
 
-	sigma2 = 20;
-
-	//CCLOG("dxy: %3.3f %3.3f", dxy.x, dxy.y);
+	sigma2 = this->getContentSize().width / 3;
 
 }
 

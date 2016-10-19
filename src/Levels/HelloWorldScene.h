@@ -82,6 +82,13 @@ private:
 
 	int fixPositions(char dim, int val);
 
+	cocos2d::Sprite * spawnLocationSprite;
+	cocos2d::Point enemySpawnLocation1_nd;
+	cocos2d::Point enemySpawnLocation2_nd;
+
+	float enemyBasicUnitRespawn = 5.0f;
+	float enemyRangedBasicUnitRespawn = 7.0f;
+
 public:
 	InfoHud *_infoHud;
 	PathFinder<BasicUnit> * pf;
@@ -136,7 +143,10 @@ public:
     void incrementNumSoundsPlaying() { numSoundsPlaying++; };
     void decrementNumSoundsPlaying() { numSoundsPlaying++; };
 
+    void createEnemyUnit(int option, cocos2d::Point spawnLocation);
     void createUnitGroup(int option, cocos2d::Point spawnLocation);
+    void createUnitGroup(int option);
+    cocos2d::Point getSpawnLocation_nd();
 
     cocos2d::Point _plpos;
 

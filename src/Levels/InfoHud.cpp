@@ -41,7 +41,6 @@ void InfoHud::updateGoldUI() {
 void InfoHud::update(float dt) {
 	timer -= dt;
 
-	CCLOG("%2.4f   %1.4f   %d   %d", timer, dt, (int)timer, timerInt);
 	if(timerInt != (int)timer){
 		timerInt = (int)timer;
 		char showStr[20];

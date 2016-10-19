@@ -164,7 +164,7 @@ void RangedAttackObject::attack(cocos2d::Point pos_pf){
 		float gf = gausFactor(distance);
 		if(damage * gf < 35){
 			//CCLOG("damage: %2.3f, distance: %d , diff e: %3.0f,%3.0f | diff p: %3.0f,%3.0f", (float)damage * gf, distance, p1.x - p2.x, p1.y - p2.y, p1.x - p3.x, p1.y - p3.y);
-			CCLOG("damage: %2.3f, distance: %d , gf: %2.3f", (float)damage * gf, distance, gf);
+			CCLOG("damage: %2.3f, distance: %d , gf: %2.3f", (float)((float)damage * gf), distance, gf);
 		}
 		pf->getUnit(pos_pf.x, pos_pf.y)->attack(parent, damage * gf, 'm');
 	}

@@ -235,6 +235,11 @@ bool HelloWorld::init() {
 	pnt.y -= pf->getTileX() * 3;
 	createUnitGroup(1, pnt);
 
+	enemySpawnLocation1_nd.x =  (float)enemyX;
+	enemySpawnLocation1_nd.y =  (float)enemyY;
+	enemySpawnLocation2_nd.x =  (float)enemyX2;
+	enemySpawnLocation2_nd.y =  (float)enemyY2;
+
 	for(int i=0; i < t2; i+=1){
 		cocos2d::Point p;
 		p.x = enemyX + pf->getTileX() * i;
@@ -365,13 +370,28 @@ void HelloWorld::initUnit(BasicUnit *r, char team){
 	}
 }
 
+void HelloWorld::createUnitGroup(int option){
+	createUnitGroup(option, getSpawnLocation_nd());
+}
+
+void HelloWorld::createEnemyUnit(int option, cocos2d::Point spawnLocation){
+	if(option == 31){
+		EnemyBasicUnit * r = EnemyBasicUnit::create(spawnLocation);
+		bvec2.pushBack(r);
+		initUnit(r, 1);
+	} else if(option == 32){
+		EnemyBasicUnitRanged * r = EnemyBasicUnitRanged::create(spawnLocation);
+		rangedBasicUnitVec2.pushBack(r);
+		initUnit(r, 1);
+	}
+}
+
 void HelloWorld::createUnitGroup(int option, cocos2d::Point spawnLocation){
 	cocos2d::Vector<BasicUnit *> bv1;
 	if(option == 0){
 		for(int i=0; i < 5; i++){
 			auto p = spawnLocation;
-			p.x = spawnLocation.x + pf->getTileX() * 3;
-			p.y = spawnLocation.y  + pf->getTileY() * (i - 13);
+			p.y = spawnLocation.y  + pf->getTileY() * i;
 			BasicUnit * r = BasicUnit::create(p);
 			bv1.pushBack(r);
 			initUnit(r, 0);
@@ -379,8 +399,7 @@ void HelloWorld::createUnitGroup(int option, cocos2d::Point spawnLocation){
 	} else if(option == 1){
 		for(int i=0; i < 5; i++){
 			auto p = spawnLocation;
-			p.x = spawnLocation.x + pf->getTileX() * 3;
-			p.y = spawnLocation.y  + pf->getTileY() * (i - 13);
+			p.y = spawnLocation.y  + pf->getTileY() * i;
 			RangedBasicUnit * r = RangedBasicUnit::create(p);
 			bv1.pushBack(r);
 			initUnit(r, 0);
@@ -397,6 +416,7 @@ void HelloWorld::createUnitGroup(int option, cocos2d::Point spawnLocation){
 		//ninja->consoleTrack = true;
 		bv1.pushBack(ninja);
 	}
+
 	goodUnitVectors.push_back(bv1);
 
 	TMXObjectGroup *objects = _tileMap->getObjectGroup("Objects");
@@ -420,6 +440,7 @@ void HelloWorld::createUnitGroup(int option, cocos2d::Point spawnLocation){
 	if(option == 2){
 		spellLocationSprite = setMovementSprites("Orangesquare.png", Point(x, y));
 		wayPointSprites.push_back(spellLocationSprite);
+		spawnLocationSprite = setMovementSprites("bluesquare.png", Point(x + pf->getTileX() * 4, y));
 	}
 	//Create a "one by one" touch event listener (processes one touch at a time)
 	auto listener = EventListenerTouchOneByOne::create();
@@ -492,7 +513,16 @@ void HelloWorld::createUnitGroup(int option, cocos2d::Point spawnLocation){
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, tSprite);
 	if(option == 2){
 		_eventDispatcher->addEventListenerWithSceneGraphPriority(listener->clone(), spellLocationSprite);
+		_eventDispatcher->addEventListenerWithSceneGraphPriority(listener->clone(), spawnLocationSprite);
 	}
+}
+
+cocos2d::Point HelloWorld::getSpawnLocation_nd(){
+	cocos2d::Point t;
+	t = spawnLocationSprite->getPosition();
+	t.x = (float)fixPositions('x', t.x);
+	t.y = (float)fixPositions('y', t.y);
+	return t;
 }
 
 void HelloWorld::setViewPointCenter(Point position) {
@@ -697,6 +727,20 @@ void HelloWorld::update(float dt) {
 	elapsedTime += dt;
 	testCollisions(dt);
 	enemyDistances(dt);
+
+	enemyBasicUnitRespawn -= dt;
+	enemyRangedBasicUnitRespawn -= dt;
+
+	if(enemyBasicUnitRespawn < 0){
+		enemyBasicUnitRespawn += 5.0f;
+		createEnemyUnit(31, enemySpawnLocation1_nd);
+	}
+
+	if(enemyRangedBasicUnitRespawn < 0){
+		enemyRangedBasicUnitRespawn += 7.0f;
+		createEnemyUnit(32, enemySpawnLocation2_nd);
+	}
+
 }
 
 Point HelloWorld::tileCoordForPosition(Point position) {
