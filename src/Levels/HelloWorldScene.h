@@ -55,6 +55,7 @@ private:
 	bool firstTouch = false;
 	bool checked = false;
 	float elapsedTime = 0;
+
 	float touchBeganTime = 0;
 	float touchMovedTime = 0;
 	cocos2d::Point touchBeganPoint;
@@ -68,6 +69,8 @@ private:
 	bool move2 = false;
 	int tmcase = 0;
 	int numTouch = 0;
+	cocos2d::DrawNode * tilemapCenter;
+	cocos2d::DrawNode * tilemapTopRight;
 
 	int numSoundsPlaying = 0;
 

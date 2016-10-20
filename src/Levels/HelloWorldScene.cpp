@@ -95,8 +95,9 @@ bool HelloWorld::init() {
 	//int imageY = imagePoint["y"].asInt();
 	//CCLOG("imgx: %d, imgy: %d", imageX, imageY);
 
-	bgImg = cocos2d::Sprite::create("grassland/background cropped.png");
+	bgImg = cocos2d::Sprite::create("grassland/background cropped - small.png");
 	bgImg->setAnchorPoint(Vec2(0,0));
+	bgImg->setScale(2);
 	this->addChild(bgImg,-2);
 	bgImg->setPosition(this->convertToNodeSpace(cocos2d::Point(3.0, -6.0)));
 
@@ -105,9 +106,13 @@ bool HelloWorld::init() {
 	//bgImg->addChild(drawNode, 1000);
 	/**********************************************************************/
 
-	auto tilemapCenter = DrawNode::create();
+	tilemapCenter = DrawNode::create();
 	tilemapCenter->drawDot(cocos2d::Point(0,0), 16, Color4F::GREEN);
 	this->addChild(tilemapCenter, 10);
+	tilemapTopRight = DrawNode::create();
+	this->addChild(tilemapTopRight, 10);
+	tilemapTopRight->drawDot({0,0}, 16, Color4F::BLUE);
+	tilemapTopRight->setPosition({cocos2d::Point(bgImg->getContentSize().width * bgImg->getScale(), bgImg->getContentSize().height * bgImg->getScale())});
 	__String *ts2 = __String::createWithFormat("%2.0f %2.0f, %2.0f %2.0f",
 			_tileMap->getMapSize().height, _tileMap->getMapSize().width,
 			_tileMap->getTileSize().height, _tileMap->getTileSize().width);
@@ -569,6 +574,7 @@ void HelloWorld::onTouchEnded(Touch *touch, Event *unused_event) {
 }
 
 void HelloWorld::onTouchMoved(Touch *touch, Event *unused_event) {
+	//panning
 	if (numTouch == 1) {
 		moveDiff.x = 0;
 		moveDiff.y = 0;
@@ -579,15 +585,50 @@ void HelloWorld::onTouchMoved(Touch *touch, Event *unused_event) {
 		auto currPos = this->getPosition();
 
 		int s = 1.5;
+
+		/* delta (movement of touch)
+		 * - - - - >+
+		 * |
+		 * |
+		 * V
+		 *  +
+		 */
 		delta.x = s * delta.x;
 		delta.y = s * delta.y;
+
+		//getContentSize(): width: 1920, height:  1080 | _topRight x:1581.00000, y:1585.00000
+		CCLOG("----------------------------------------");
+		CCLOG("========================================");
+		CCLOG("world tilemapCenter %5.1f, y:%5.1f, scale: %2.2f", convertToWorldSpace(tilemapCenter->getPosition()).x, convertToWorldSpace(tilemapCenter->getPosition()).y, this->getScale());
+		CCLOG("node  tilemapCenter %5.1f, y:%5.1f, scale: %2.2f", convertToNodeSpace(tilemapCenter->getPosition()).x, convertToWorldSpace(tilemapCenter->getPosition()).y, this->getScale());
+		CCLOG("      tilemapCenter %5.1f, y:%5.1f, scale: %2.2f", tilemapCenter->getPosition().x, tilemapCenter->getPosition().y, this->getScale());
+		CCLOG("world tilemapTopRight %5.1f, y:%5.1f, scale: %2.2f", convertToWorldSpace(tilemapTopRight->getPosition()).x, convertToWorldSpace(tilemapTopRight->getPosition()).y, this->getScale());
+		CCLOG("node  tilemapTopRight %5.1f, y:%5.1f, scale: %2.2f", convertToNodeSpace(tilemapTopRight->getPosition()).x, convertToWorldSpace(tilemapTopRight->getPosition()).y, this->getScale());
+		CCLOG("      tilemapTopRight %5.1f, y:%5.1f, scale: %2.2f", tilemapTopRight->getPosition().x, tilemapTopRight->getPosition().y, this->getScale());
+		CCLOG("bgImg dimensions: %5.1f, y:%5.1f", bgImg->getContentSize().width, bgImg->getContentSize().height );
+		CCLOG("this  dimensions: %5.1f, y:%5.1f", this->getContentSize().width, this->getContentSize().height );
+		CCLOG("ninja: %5.1f, y:%5.1f", ninja->getPosition().x, this->getPosition().y );
+		CCLOG("========================================");
+
+		if(delta.x < 0 && convertToWorldSpace(tilemapCenter->getPosition()).x < -1 * (bgImg->getContentSize().width * bgImg->getScale() * this->getScale() - Director::getInstance()->getWinSize().width)){
+			delta.x = 0;
+		} else if(delta.x > 0 && convertToWorldSpace(tilemapCenter->getPosition()).x > 10){
+			delta.x = 0;
+		}
+		if(delta.y < 0 && convertToWorldSpace(tilemapCenter->getPosition()).y < -1 * (bgImg->getContentSize().height * bgImg->getScale() * this->getScale() - Director::getInstance()->getWinSize().height)){
+			delta.y = 0;
+		} else if(delta.y > 0 && convertToWorldSpace(tilemapCenter->getPosition()).y > 10){
+			delta.y = 0;
+		}
 
 		auto newPos = currPos + delta;
 
 		touchBeganPoint = touchMovedPoint;
 
 		this->setPosition(newPos);
-	} else if (numTouch == 2) {
+	}
+	//zooming in/out
+	else if (numTouch == 2) {
 		cocos2d::Point moved = touch->getLocation();
 		if (touch->getStartLocation() == touchBegan1) {
 			touchMoved1 = moved;
@@ -733,12 +774,12 @@ void HelloWorld::update(float dt) {
 
 	if(enemyBasicUnitRespawn < 0){
 		enemyBasicUnitRespawn += 5.0f;
-		createEnemyUnit(31, enemySpawnLocation1_nd);
+		//createEnemyUnit(31, enemySpawnLocation1_nd);
 	}
 
 	if(enemyRangedBasicUnitRespawn < 0){
 		enemyRangedBasicUnitRespawn += 7.0f;
-		createEnemyUnit(32, enemySpawnLocation2_nd);
+		//createEnemyUnit(32, enemySpawnLocation2_nd);
 	}
 
 }
