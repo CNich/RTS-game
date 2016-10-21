@@ -584,6 +584,20 @@ void HelloWorld::onTouchMoved(Touch *touch, Event *unused_event) {
 		auto delta = touchMovedPoint - touchBeganPoint;
 		auto currPos = this->getPosition();
 
+		//don't slide too fast + quick fx for zoom bug that changes the pan very quick
+		if(delta.x > 50){
+			delta.x = 50;
+		} else if(delta.x < -50){
+			delta.x = -50;
+		}
+
+		if(delta.y > 50){
+			delta.y = 50;
+		} else if(delta.y < -50){
+			delta.y = -50;
+		}
+
+		//panning factor
 		int s = 1.5;
 
 		/* delta (movement of touch)
@@ -596,29 +610,21 @@ void HelloWorld::onTouchMoved(Touch *touch, Event *unused_event) {
 		delta.x = s * delta.x;
 		delta.y = s * delta.y;
 
-		//getContentSize(): width: 1920, height:  1080 | _topRight x:1581.00000, y:1585.00000
-		CCLOG("----------------------------------------");
-		CCLOG("========================================");
-		CCLOG("world tilemapCenter %5.1f, y:%5.1f, scale: %2.2f", convertToWorldSpace(tilemapCenter->getPosition()).x, convertToWorldSpace(tilemapCenter->getPosition()).y, this->getScale());
-		CCLOG("node  tilemapCenter %5.1f, y:%5.1f, scale: %2.2f", convertToNodeSpace(tilemapCenter->getPosition()).x, convertToWorldSpace(tilemapCenter->getPosition()).y, this->getScale());
-		CCLOG("      tilemapCenter %5.1f, y:%5.1f, scale: %2.2f", tilemapCenter->getPosition().x, tilemapCenter->getPosition().y, this->getScale());
-		CCLOG("world tilemapTopRight %5.1f, y:%5.1f, scale: %2.2f", convertToWorldSpace(tilemapTopRight->getPosition()).x, convertToWorldSpace(tilemapTopRight->getPosition()).y, this->getScale());
-		CCLOG("node  tilemapTopRight %5.1f, y:%5.1f, scale: %2.2f", convertToNodeSpace(tilemapTopRight->getPosition()).x, convertToWorldSpace(tilemapTopRight->getPosition()).y, this->getScale());
-		CCLOG("      tilemapTopRight %5.1f, y:%5.1f, scale: %2.2f", tilemapTopRight->getPosition().x, tilemapTopRight->getPosition().y, this->getScale());
-		CCLOG("bgImg dimensions: %5.1f, y:%5.1f", bgImg->getContentSize().width, bgImg->getContentSize().height );
-		CCLOG("this  dimensions: %5.1f, y:%5.1f", this->getContentSize().width, this->getContentSize().height );
-		CCLOG("ninja: %5.1f, y:%5.1f", ninja->getPosition().x, this->getPosition().y );
-		CCLOG("========================================");
-
-		if(delta.x < 0 && convertToWorldSpace(tilemapCenter->getPosition()).x < -1 * (bgImg->getContentSize().width * bgImg->getScale() * this->getScale() - Director::getInstance()->getWinSize().width)){
-			delta.x = 0;
-		} else if(delta.x > 0 && convertToWorldSpace(tilemapCenter->getPosition()).x > 10){
-			delta.x = 0;
+		//right side of screen (x = bgImg.width - screen width (1920 in my case)) while dragging touch left
+		if(delta.x < 0 && convertToWorldSpace(tilemapCenter->getPosition()).x + delta.x < -1 * (bgImg->getContentSize().width * bgImg->getScale() * this->getScale() - Director::getInstance()->getWinSize().width)){
+			delta.x = -1 * (bgImg->getContentSize().width * bgImg->getScale() * this->getScale() - Director::getInstance()->getWinSize().width) - convertToWorldSpace(tilemapCenter->getPosition()).x;
 		}
+		//left side of screen (x = 0) while dragging touch right
+		else if(delta.x > 0 && convertToWorldSpace(tilemapCenter->getPosition()).x + delta.x > 0){
+			delta.x = -convertToWorldSpace(tilemapCenter->getPosition()).x;
+		}
+		//top side of screen (y = bgImg.height - screen width (1080 in my case)) while dragging touch up
 		if(delta.y < 0 && convertToWorldSpace(tilemapCenter->getPosition()).y < -1 * (bgImg->getContentSize().height * bgImg->getScale() * this->getScale() - Director::getInstance()->getWinSize().height)){
-			delta.y = 0;
-		} else if(delta.y > 0 && convertToWorldSpace(tilemapCenter->getPosition()).y > 10){
-			delta.y = 0;
+			delta.y = -1 * (bgImg->getContentSize().height * bgImg->getScale() * this->getScale() - Director::getInstance()->getWinSize().height) - convertToWorldSpace(tilemapCenter->getPosition()).y;
+		}
+		//bottom side of screen (y = 0) while dragging touch down
+		else if(delta.y > 0 && convertToWorldSpace(tilemapCenter->getPosition()).y + delta.y > 0){
+			delta.y = -convertToWorldSpace(tilemapCenter->getPosition()).y;
 		}
 
 		auto newPos = currPos + delta;
@@ -639,6 +645,7 @@ void HelloWorld::onTouchMoved(Touch *touch, Event *unused_event) {
 		}
 		cocos2d::Point cdiff = touchMoved1 - touchMoved2;
 		if (move1 && move2) {
+
 			float tdiff = (cdiff.x * cdiff.x + cdiff.y * cdiff.y)
 					/ (moveDiff.x * moveDiff.x + moveDiff.y * moveDiff.y);
 			moveDiff = cdiff;
@@ -647,7 +654,37 @@ void HelloWorld::onTouchMoved(Touch *touch, Event *unused_event) {
 			} else if (tdiff < 0.98) {
 				tdiff = 0.98;
 			}
+
+			if(bgImg->getContentSize().width > bgImg->getContentSize().height &&
+					( bgImg->getContentSize().width * bgImg->getScale() * this->getScale() ) * ( this->getScale() * tdiff ) < Director::getInstance()->getWinSize().width){
+				tdiff = Director::getInstance()->getWinSize().width / ( (bgImg->getContentSize().width * bgImg->getScale() * this->getScale() ) * ( this->getScale()) );
+			} else if(bgImg->getContentSize().width < bgImg->getContentSize().height &&
+					( bgImg->getContentSize().height * bgImg->getScale() * this->getScale() ) * ( this->getScale() * tdiff ) < Director::getInstance()->getWinSize().height){
+				tdiff = Director::getInstance()->getWinSize().height / ( (bgImg->getContentSize().height * bgImg->getScale() * this->getScale() ) * ( this->getScale()) );
+			}
+
 			this->setScale(this->getScale() * tdiff);
+
+			cocos2d::Point delta = {0, 0};
+
+			//right side of screen (x = bgImg.width - screen width (1920 in my case))
+			if(convertToWorldSpace(tilemapCenter->getPosition()).x < -1 * (bgImg->getContentSize().width * bgImg->getScale() * this->getScale() - Director::getInstance()->getWinSize().width)){
+				delta.x = -1 * (bgImg->getContentSize().width * bgImg->getScale() * this->getScale() - Director::getInstance()->getWinSize().width) - convertToWorldSpace(tilemapCenter->getPosition()).x;
+			}
+			//left side of screen (x = 0)
+			else if(convertToWorldSpace(tilemapCenter->getPosition()).x + delta.x > 0){
+				delta.x = -convertToWorldSpace(tilemapCenter->getPosition()).x;
+			}
+			//top side of screen (y = bgImg.height - screen width (1080 in my case))
+			if(convertToWorldSpace(tilemapCenter->getPosition()).y < -1 * (bgImg->getContentSize().height * bgImg->getScale() * this->getScale() - Director::getInstance()->getWinSize().height)){
+				delta.y = -1 * (bgImg->getContentSize().height * bgImg->getScale() * this->getScale() - Director::getInstance()->getWinSize().height) - convertToWorldSpace(tilemapCenter->getPosition()).y;
+			}
+			//bottom side of screen (y = 0)
+			else if(convertToWorldSpace(tilemapCenter->getPosition()).y + delta.y > 0){
+				delta.y = -convertToWorldSpace(tilemapCenter->getPosition()).y;
+			}
+
+			this->setPosition(this->getPosition() + delta);
 
 		}
 		moveDiff = cdiff;
