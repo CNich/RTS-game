@@ -27,10 +27,14 @@ Ninja* Ninja::create() {
 	*/
 	pSprite->bfsMap = new BFS(50, 50);
 
+	pSprite->attackTravelRange = 2;
+
 	pSprite->health = pSprite->initHealth;
 	pSprite->attackSpeed = pSprite->initAttackSpeed;
-
-	pSprite->attackTravelRange = 2;
+	pSprite->attackDamage = pSprite->initAttackDamage;
+	pSprite->attackRange = pSprite->initAttackRange;
+	pSprite->movementRange = pSprite->initMovementRange;
+	pSprite->walkingSpeed = pSprite->initWalkingSpeed;
 
 	pSprite->scheduleUpdate();
 
@@ -39,14 +43,17 @@ Ninja* Ninja::create() {
 }
 
 Ninja* Ninja::create(cocos2d::Point tmp){
-	Ninja* pSprite = new Ninja();
-	pSprite->initWithFile("Units/Wizard/WizardWalk00000.png");
+	Ninja* pSprite = create();
+	pSprite->setPosition(tmp);
+	return pSprite;
+
+	/*pSprite->initWithFile("Units/Wizard/WizardWalk00000.png");
 	srand((unsigned) time(NULL));
 	pSprite->autorelease();
 	/*pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
 	pSprite->tpf->setTileX(32);
 	pSprite->tpf->setTileY(32);
-	*/
+
 	pSprite->bfsMap = new BFS(50, 50);
 
 	pSprite->health = pSprite->initHealth;
@@ -62,6 +69,7 @@ Ninja* Ninja::create(cocos2d::Point tmp){
 	//pf->setUnit(pSprite->convertToPf(tmp).x, pSprite->convertToPf(tmp).y, pSprite);
 
 	return pSprite;
+	*/
 
 }
 

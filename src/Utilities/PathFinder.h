@@ -43,6 +43,9 @@ public:
 	void taken(int x, int y);
 	void untaken(int x, int y);
 	bool checkTaken(int x, int y);
+	void setEnemySpawnArea(int x, int y);
+	bool checkEnemySpawnArea(int x, int y);
+
 	LinkedList<cocos2d::Point> * solve();
 	int getRows();
 	int getCols();
@@ -384,6 +387,27 @@ template<class T>
 bool PathFinder<T>::checkTaken(int x, int y){
 	if(checkBounds_Pf(x, y)){
 		return map[x][y].taken;
+	} else{
+		return true;
+	}
+}
+
+/*
+ * Declare point as EnemySpawnArea only. Still valid for pathfinding, but cannot set goalposition on these areas
+ */
+template<class T>
+void PathFinder<T>::setEnemySpawnArea(int x, int y){
+	if(checkBounds_Pf(x,y)){
+		map[x][y].enemySpawnArea = true;
+	}
+}
+/*
+ * Check if point is an EnemySpawnArea
+ */
+template<class T>
+bool PathFinder<T>::checkEnemySpawnArea(int x, int y){
+	if(checkBounds_Pf(x, y)){
+		return map[x][y].enemySpawnArea;
 	} else{
 		return true;
 	}

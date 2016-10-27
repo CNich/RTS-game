@@ -44,6 +44,7 @@ public:
 	int attackRange = 7;
 	int movementRange = 7;
 	int attackTravelRange = 7;
+	int price = 200;
 	float blockDelay = 0.25;
 	int pointToPointDistance(cocos2d::Point a, cocos2d::Point b);
 
@@ -61,7 +62,6 @@ public:
 	float getUnitAngle(){return unitAngle;};
 	bool getMoving(){return moving;};
 	float getWalkingSpeed(){return walkingSpeed;};
-
 
 protected:
 	cocos2d::Point startingPos;
@@ -116,6 +116,7 @@ protected:
 
 	virtual int getHealth();
 	int health = 240;
+	int attackDamage = 60;
 
 	float attackSpeed = 2.0f;
 
@@ -132,6 +133,7 @@ protected:
 
 	virtual void animationAttack();
 	float attackDuration = 0.08;
+	int numAttackFrames = 8;
 	/********************************************/
 	virtual void update(float dt);
 };

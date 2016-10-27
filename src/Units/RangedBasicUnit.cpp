@@ -32,36 +32,20 @@ RangedBasicUnit* RangedBasicUnit::create() {
 	pSprite->scheduleUpdate();
 
 	pSprite->health = pSprite->initHealth;
+	pSprite->attackDamage = pSprite->initAttackDamage;
 	pSprite->attackRange = pSprite->initAttackRange;
 	pSprite->movementRange = pSprite->initMovementRange;
 	pSprite->walkingSpeed = pSprite->initWalkingSpeed;
+	pSprite->price = pSprite->initPrice;
 
 	return pSprite;
 
 }
 
 RangedBasicUnit* RangedBasicUnit::create(cocos2d::Point tmp){
-	RangedBasicUnit* pSprite = new RangedBasicUnit();
-	auto *filename = __String::createWithFormat("ElfWalk00016.png");
-	auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
-	pSprite->initWithSpriteFrame(wframe);
-	srand((unsigned) time(NULL));
-	pSprite->autorelease();
-	/*pSprite->tpf = new PathFinder<BasicUnit>(50, 50);
-	pSprite->tpf->setTileX(32);
-	pSprite->tpf->setTileY(32);
-	*/
-	//pSprite->setScale(0.5);
-
-	pSprite->scheduleUpdate();
+	RangedBasicUnit* pSprite = create();
 	pSprite->setPosition(tmp);
-
-	pSprite->health = pSprite->initHealth;
-	pSprite->attackRange = pSprite->initAttackRange;
-	pSprite->movementRange = pSprite->initMovementRange;
-	pSprite->walkingSpeed = pSprite->initWalkingSpeed;
 	return pSprite;
-
 }
 
 void RangedBasicUnit::removeFromLevel(){
@@ -73,7 +57,7 @@ void RangedBasicUnit::removeFromLevel(){
  * Set attack animation
  */
 void RangedBasicUnit::animationAttack(){
-	RangedAttackObject* atk = RangedAttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
+	RangedAttackObject* atk = RangedAttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), attackDamage, 'r', pf);
 	atk->initAttack();
 
 	Vector<SpriteFrame *> attackFrames;

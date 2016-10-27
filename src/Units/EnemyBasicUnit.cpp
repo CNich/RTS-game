@@ -28,6 +28,10 @@ EnemyBasicUnit* EnemyBasicUnit::create() {
 	*/
 	//pSprite->setScale(0.5);
 
+	pSprite->movementRange = pSprite->initMovementRange;
+	pSprite->health = pSprite->initHealth;
+	pSprite->attackDamage = pSprite->initAttackDamage;
+
 	pSprite->scheduleUpdate();
 
 	return pSprite;
@@ -56,11 +60,6 @@ void EnemyBasicUnit::update(float dt) {
 
 	//if dead, die
 	if(dead){
-		//figure out how to delete
-		//delete this;
-
-		//delete tpf;
-		//delete lStack;
 		if(removeFromPf){
 			auto callback = CallFunc::create([this]() {
 				delete tpf;
@@ -86,6 +85,7 @@ void EnemyBasicUnit::update(float dt) {
 			auto seq = Sequence::create(DelayTime::create(3), callback, nullptr);
 			this->runAction(seq);
 			removeFromPf = false;
+			//this->_infoHud->addGold(loot);
 		}
 		//this->getParent()->removeChild(this);
 	}
@@ -126,7 +126,7 @@ void EnemyBasicUnit::update(float dt) {
 		}*/
 
 		//else if(currentEnemyIsCloseEnough && !currentEnemyMoved && unitToUnitDistance(this, currentEnemy) < attackRange){
-		else if(currentEnemy != 0 && currentEnemyMoved && unitToUnitDistance(this, currentEnemy) < attackRange){
+		else if(currentEnemy != 0 && currentEnemyMoved && unitToUnitDistance(this, currentEnemy) < movementRange){
 			auto t = convertToPf(currentEnemy->getPosition());
 			this->ASolve(t.x, t.y);
 			currentEnemyMoved = false;

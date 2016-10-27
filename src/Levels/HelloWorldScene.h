@@ -92,6 +92,8 @@ private:
 	float enemyBasicUnitRespawn = 5.0f;
 	float enemyRangedBasicUnitRespawn = 7.0f;
 
+    void createUnitGroupHelper(int option, cocos2d::Point spawnLocation);
+
 public:
 	InfoHud *_infoHud;
 	PathFinder<BasicUnit> * pf;

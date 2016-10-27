@@ -108,7 +108,7 @@ void BasicUnit::ASolve(int x, int y) {
 
 	auto ppos = this->convertToPf(this->getPosition());
 
-	if (x >= 0 && x < pf->getRows() && y >= 0 && y < pf->getCols()){// && !pf->checkBlock(x, y)) {
+	if (!pf->checkEnemySpawnArea(x, y) && x >= 0 && x < pf->getRows() && y >= 0 && y < pf->getCols()){// && !pf->checkBlock(x, y)) {
 
 		tpf->setStart(ppos.x, ppos.y);
 		tpf->setEnd(x, y);
@@ -150,6 +150,8 @@ void BasicUnit::getMap() {
 		for (int j = 0; j < h; j++) {
 			if (pf->checkBlock(i, j)) {
 				tpf->block(i, j);
+			} else if(pf->checkEnemySpawnArea(i, j)){
+				tpf->setEnemySpawnArea(i, j);
 			}
 		}
 	}
@@ -560,6 +562,7 @@ void BasicUnit::update(float dt) {
 			lStack->reset();
 			auto seq = Sequence::create(DelayTime::create(attackSpeed), callback, nullptr);
 			this->runAction(seq);
+
 			this->animationAttack();
 		}
 
@@ -612,13 +615,7 @@ void BasicUnit::update(float dt) {
 			badMove = 0;
 			consoleDebugStatement(__String::createWithFormat(
 					"%2d %2d idle", consoleCount, lStack->getLength()));
-				//consoleCount++;
-			//CCLOG("lStack->empty(): %d   %7.7f", lStack->empty(), dt);
-			/*CCLOG("Empty lStack");
-			auto nd_ppos = convertToPf(this->getPosition());
-			if(nd_ppos == goalPosition){
-				this->ASolve(goalPosition.x, goalPosition.y);
-			}*/
+			this->ASolve(goalPosition.x, goalPosition.y);
 		}
 
 		//movedYet, tempMoving
@@ -731,11 +728,16 @@ void BasicUnit::attack(BasicUnit * attacker, int damage, char attackType){
 }
 
 void BasicUnit::animationAttack(){
-	AttackObject* atk = AttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 40, 'm', pf);
-	atk->initAttack();
+
+	auto attackCallback = CallFunc::create([this]() {
+		AttackObject* atk = AttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), attackDamage, 'm', pf);
+		atk->initAttack();
+	});
+	auto attackSeq = Sequence::create(DelayTime::create(numAttackFrames * attackDuration / 2), attackCallback, nullptr);
+	this->runAction(attackSeq);
 
 	Vector<SpriteFrame *> trollFrames;
-	for (int i = 0; i <= 8; i++){
+	for (int i = 0; i <= numAttackFrames; i++){
 		auto *filename = __String::createWithFormat("TrollAttack%d001%d.png", unitDir, i);
 		//CCLOG("%s", filename->getCString());
 		auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());

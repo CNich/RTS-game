@@ -29,19 +29,23 @@ protected:
 	//virtual void update(float dt);
 	bool removeThisUnit = false;
 	bool removeFromPf = true;
-	int initHealth = 20000;
-
-	float initAttackSpeed = 1.2;
 
 	/*Animation section*/
 	/********************************************/
 	virtual cocos2d::Animate* animationWalk();
-	float initWalkingSpeed = 0.35;
 	bool walkingAnimationFlag = false;
-
 	virtual void animationDie();
-
 	virtual void animationAttack();
+	/********************************************/
+
+	/*initialization variables*/
+	/********************************************/
+	int initHealth = 500;
+	int initAttackRange = 10;
+	int initMovementRange = 13;
+	int initAttackDamage = 60;
+	float initAttackSpeed = 1.2;
+	float initWalkingSpeed = 0.35;
 	/********************************************/
 
 	cocos2d::Point fireBallLocation;

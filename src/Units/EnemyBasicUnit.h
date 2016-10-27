@@ -2,6 +2,7 @@
 #define __ENEMY_BASIC_UNIT__
 
 #include "src/Units/BasicUnit.h"
+//#include "src/Levels/InfoHud.h"
 
 class EnemyBasicUnit : public BasicUnit
 {
@@ -13,8 +14,9 @@ public:
 	
 	bool tracked = false;
 
+	//InfoHud *_infoHud;
+
 	//void attack(BasicUnit *attacker, int damage, char attackType);
-	int attackRange = 6;
 	virtual void attack(BasicUnit *attacker, int damage, char attackType);
 
 protected:
@@ -22,9 +24,17 @@ protected:
 	virtual void update(float dt);
 	bool removeThisUnit = false;
 	bool removeFromPf = true;
-	int health = 40;
 	bool movingAlongBFSMap = false;
 	virtual void removeFromLevel();
+
+	int loot = 40;
+
+	/*initialization variables*/
+	/********************************************/
+	int initHealth = 240;
+	int initMovementRange = 10;
+	int initAttackDamage = 120;
+	/********************************************/
 };
 
 #endif // __ENEMY_BASIC_UNIT__

@@ -21,6 +21,7 @@ struct pathNode{
 	bool closed;
 	bool success;
 	bool checked;
+	bool enemySpawnArea;
 
 	//pathNode's location
 	int x;

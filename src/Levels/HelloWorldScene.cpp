@@ -367,6 +367,7 @@ void HelloWorld::initUnit(BasicUnit *r, char team){
 	r->setForegroundMap(_foreground);
 	r->setTileMap(_tileMap);
 	r->setTeam(team);
+	//r->_infoHud = _infoHud;
 	if(team == 0){
 		auto pos = r->convertToPf(r->getPosition());
 		//r->goalPosition.x = pos.x;
@@ -375,8 +376,19 @@ void HelloWorld::initUnit(BasicUnit *r, char team){
 	}
 }
 
+void HelloWorld::createUnitGroup(int option, cocos2d::Point spawnLocation){
+	/*
+	 * if(option == 0 && _infoHud->getGoldAmount() >= 200){
+		createUnitGroupHelper(option, spawnLocation);
+		_infoHud->spendGold(200);
+	} else if(option == 1 && _infoHud->getGoldAmount() >= 250){
+		createUnitGroupHelper(option, spawnLocation);
+		_infoHud->spendGold(250);
+	}*/
+	createUnitGroupHelper(option, spawnLocation);
+}
 void HelloWorld::createUnitGroup(int option){
-	createUnitGroup(option, getSpawnLocation_nd());
+	createUnitGroupHelper(option, getSpawnLocation_nd());
 }
 
 void HelloWorld::createEnemyUnit(int option, cocos2d::Point spawnLocation){
@@ -391,7 +403,7 @@ void HelloWorld::createEnemyUnit(int option, cocos2d::Point spawnLocation){
 	}
 }
 
-void HelloWorld::createUnitGroup(int option, cocos2d::Point spawnLocation){
+void HelloWorld::createUnitGroupHelper(int option, cocos2d::Point spawnLocation){
 	cocos2d::Vector<BasicUnit *> bv1;
 	if(option == 0){
 		for(int i=0; i < 5; i++){
@@ -408,6 +420,9 @@ void HelloWorld::createUnitGroup(int option, cocos2d::Point spawnLocation){
 			RangedBasicUnit * r = RangedBasicUnit::create(p);
 			bv1.pushBack(r);
 			initUnit(r, 0);
+			if(i == 4){
+				r->setColor(cocos2d::Color3B::YELLOW);
+			}
 		}
 	} else if(option == 2){
 		auto ninjaPos = _plpos;
@@ -619,7 +634,7 @@ void HelloWorld::onTouchMoved(Touch *touch, Event *unused_event) {
 			delta.x = -convertToWorldSpace(tilemapCenter->getPosition()).x;
 		}
 		//top side of screen (y = bgImg.height - screen width (1080 in my case)) while dragging touch up
-		if(delta.y < 0 && convertToWorldSpace(tilemapCenter->getPosition()).y < -1 * (bgImg->getContentSize().height * bgImg->getScale() * this->getScale() - Director::getInstance()->getWinSize().height)){
+		if(delta.y < 0 && convertToWorldSpace(tilemapCenter->getPosition()).y + delta.y < -1 * (bgImg->getContentSize().height * bgImg->getScale() * this->getScale() - Director::getInstance()->getWinSize().height)){
 			delta.y = -1 * (bgImg->getContentSize().height * bgImg->getScale() * this->getScale() - Director::getInstance()->getWinSize().height) - convertToWorldSpace(tilemapCenter->getPosition()).y;
 		}
 		//bottom side of screen (y = 0) while dragging touch down
@@ -811,12 +826,12 @@ void HelloWorld::update(float dt) {
 
 	if(enemyBasicUnitRespawn < 0){
 		enemyBasicUnitRespawn += 5.0f;
-		//createEnemyUnit(31, enemySpawnLocation1_nd);
+		createEnemyUnit(31, enemySpawnLocation1_nd);
 	}
 
 	if(enemyRangedBasicUnitRespawn < 0){
 		enemyRangedBasicUnitRespawn += 7.0f;
-		//createEnemyUnit(32, enemySpawnLocation2_nd);
+		createEnemyUnit(32, enemySpawnLocation2_nd);
 	}
 
 }
@@ -888,6 +903,9 @@ void HelloWorld::testCollisions(float dt) {
 	projectilesToDelete.clear();
 }
 
+/*
+ * Initializes the Meta Tile map (blocked coordinates/Enemy spawn areas)
+ */
 void HelloWorld::setMap() {
 	int tw = _tileMap->getTileSize().width;
 	int th = _tileMap->getTileSize().height;
@@ -903,6 +921,7 @@ void HelloWorld::setMap() {
 				auto properties = _tileMap->getPropertiesForGID(tileGid).asValueMap();
 				if (!properties.empty()) {
 					auto collision = properties["Collidable"].asString();
+					auto enemySpawnArea = properties["EnemySpawnArea"].asString();
 					if ("True" == collision) {
 						//pf->block(tileCoord.x - 1, -1 * (tileCoord.y - 25) + 25 - 1);
 						//pf->permaBlock(tileCoord.x - 1, -1 * (tileCoord.y - 25) + 25 - 1);
@@ -912,6 +931,8 @@ void HelloWorld::setMap() {
 
 						//pf->block(tileCoord.x, tileCoord.y);
 						//pf->permaBlock(tileCoord.x, tileCoord.y);
+					} else if("True" == enemySpawnArea){
+						pf->setEnemySpawnArea(tileCoord.x, -1 * (tileCoord.y - 25) + 25 - 1);
 					}
 				}
 			}
@@ -919,6 +940,9 @@ void HelloWorld::setMap() {
 	}
 }
 
+/*
+ * Draws the Meta tile map - For Debugging purposes
+ */
 void HelloWorld::checkMap() {
 	int tw = _tileMap->getTileSize().width;
 	int th = _tileMap->getTileSize().height;
@@ -937,6 +961,9 @@ void HelloWorld::checkMap() {
 	}
 }
 
+/*
+ * Draws the BFS Map (for debugging purposes)
+ */
 void HelloWorld::drawBFSMap() {
 	int tw = _tileMap->getTileSize().width;
 	int th = _tileMap->getTileSize().height;
@@ -980,6 +1007,12 @@ void HelloWorld::drawBFSMap() {
 
 }
 
+/*
+ * Fixes the positions of a coordinate so they align with the tilemap
+ * We want things to lie in the center of a tile
+ * Eg. If we have a 64 x 32 tile, we want to place a unit at the center of (0,0), meaning (32, 18)
+ * Thus, if we are given (46, 29), we round it down to (32, 18)
+ */
 int HelloWorld::fixPositions(char dim, int val){
 	if(dim == 'x'){
 		return (pf->getTileX() * ((int) (val / pf->getTileX())) + pf->getOffX());

@@ -29,6 +29,12 @@ EnemyBasicUnitRanged* EnemyBasicUnitRanged::create() {
 	*/
 	//pSprite->setScale(0.5);
 
+	pSprite->movementRange = pSprite->initMovementRange;
+	pSprite->health = pSprite->initHealth;
+	pSprite->attackDamage = pSprite->initAttackDamage;
+	pSprite->attackRange = pSprite->initAttackRange;
+	pSprite->loot = pSprite->initLoot;
+
 	pSprite->scheduleUpdate();
 
 	return pSprite;
@@ -127,7 +133,7 @@ void EnemyBasicUnitRanged::animationDie(){
 	}
 }
 
-//Melee
+//Ranged
 bool EnemyBasicUnitRanged::enemyIsAttackable(){
 	if(this->getCurrentEnemy() != 0 && unitToUnitDistance(this, getCurrentEnemy()) <= attackRange){
 		return true;

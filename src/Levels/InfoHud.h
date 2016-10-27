@@ -12,6 +12,7 @@ class InfoHud : public cocos2d::Layer
 public:
 	void addGold(int n) { gold += n; updateGoldUI(); };
     void spendGold(int n) { if(gold >= n) { gold -= n; } updateGoldUI(); };
+    int getGoldAmount() { return gold; };
 	virtual bool init();
 	HelloWorld * Level1;
 	CREATE_FUNC(InfoHud);

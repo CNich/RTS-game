@@ -22,24 +22,27 @@ protected:
 	//virtual void update(float dt);
 	bool removeThisUnit = false;
 	bool removeFromPf = true;
-	int initHealth = 40;
 
 	/*Animation section*/
 	/********************************************/
 	virtual cocos2d::Animate* animationWalk();
-	float initWalkingSpeed = 0.15;
 	bool walkingAnimationFlag = false;
 
 	virtual void animationDie();
-
 	virtual void animationAttack();
 	/********************************************/
 
 	virtual void removeFromLevel();
 
-	int initAttackRange = 5;
-	int initMovementRange = 7;
-
+	/*initialization variables*/
+	/********************************************/
+	int initAttackRange = 10;
+	int initMovementRange = 13;
+	int initHealth = 120;
+	int initAttackDamage = 40;
+	float initWalkingSpeed = 0.15;
+	int initPrice = 250;
+	/********************************************/
 };
 
 #endif // __RANGED_BASIC_UNIT_H__
