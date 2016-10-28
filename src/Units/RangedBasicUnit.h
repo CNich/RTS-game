@@ -38,7 +38,7 @@ protected:
 	/********************************************/
 	int initAttackRange = 10;
 	int initMovementRange = 13;
-	int initHealth = 120;
+	//int initHealth = 120;
 	int initAttackDamage = 40;
 	float initWalkingSpeed = 0.15;
 	int initPrice = 250;

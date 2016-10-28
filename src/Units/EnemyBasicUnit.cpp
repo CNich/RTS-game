@@ -2,6 +2,7 @@
 #include "SimpleAudioEngine.h"
 #include "stdlib.h"
 #include "src/AttackObjects/AttackObject.h"
+#include "src/Levels/InfoHud.h"
 
 USING_NS_CC;
 
@@ -29,6 +30,7 @@ EnemyBasicUnit* EnemyBasicUnit::create() {
 	//pSprite->setScale(0.5);
 
 	pSprite->movementRange = pSprite->initMovementRange;
+	pSprite->initHealth = 240;
 	pSprite->health = pSprite->initHealth;
 	pSprite->attackDamage = pSprite->initAttackDamage;
 
@@ -85,7 +87,7 @@ void EnemyBasicUnit::update(float dt) {
 			auto seq = Sequence::create(DelayTime::create(3), callback, nullptr);
 			this->runAction(seq);
 			removeFromPf = false;
-			//this->_infoHud->addGold(loot);
+			this->_infoHud->addGold(loot);
 		}
 		//this->getParent()->removeChild(this);
 	}
@@ -476,11 +478,13 @@ void EnemyBasicUnit::removeFromLevel(){
 	this->getParent()->removeChild(this);
 }
 
+/*
 void EnemyBasicUnit::attack(BasicUnit * attacker, int damage, char attackType){
 	health -= damage;
 	//CCLOG("%p EnemyBasicUnit WAS ATTACKEDDDD for %d damage", this, damage);
 	//CCLOG("%p's (EnemyBasicUnit) health: %d", this, health);
 }
+*/
 
 //Melee
 bool EnemyBasicUnit::enemyIsAttackable(){

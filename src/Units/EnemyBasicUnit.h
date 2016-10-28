@@ -2,7 +2,8 @@
 #define __ENEMY_BASIC_UNIT__
 
 #include "src/Units/BasicUnit.h"
-//#include "src/Levels/InfoHud.h"
+
+class InfoHud;
 
 class EnemyBasicUnit : public BasicUnit
 {
@@ -14,10 +15,10 @@ public:
 	
 	bool tracked = false;
 
-	//InfoHud *_infoHud;
+	InfoHud *_infoHud;
 
 	//void attack(BasicUnit *attacker, int damage, char attackType);
-	virtual void attack(BasicUnit *attacker, int damage, char attackType);
+	//virtual void attack(BasicUnit *attacker, int damage, char attackType);
 
 protected:
 	bool enemyIsAttackable();
@@ -31,7 +32,7 @@ protected:
 
 	/*initialization variables*/
 	/********************************************/
-	int initHealth = 240;
+	//int initHealth = 240;
 	int initMovementRange = 10;
 	int initAttackDamage = 120;
 	/********************************************/

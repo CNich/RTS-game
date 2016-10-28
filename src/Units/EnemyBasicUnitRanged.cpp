@@ -30,6 +30,7 @@ EnemyBasicUnitRanged* EnemyBasicUnitRanged::create() {
 	//pSprite->setScale(0.5);
 
 	pSprite->movementRange = pSprite->initMovementRange;
+	pSprite->initHealth = 120;
 	pSprite->health = pSprite->initHealth;
 	pSprite->attackDamage = pSprite->initAttackDamage;
 	pSprite->attackRange = pSprite->initAttackRange;

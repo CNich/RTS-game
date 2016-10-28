@@ -31,6 +31,7 @@ RangedBasicUnit* RangedBasicUnit::create() {
 
 	pSprite->scheduleUpdate();
 
+	pSprite->initHealth = 120;
 	pSprite->health = pSprite->initHealth;
 	pSprite->attackDamage = pSprite->initAttackDamage;
 	pSprite->attackRange = pSprite->initAttackRange;

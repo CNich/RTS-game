@@ -32,7 +32,7 @@ protected:
 	/********************************************/
 	int initAttackRange = 13;
 	int initMovementRange = 16;
-	int initHealth = 120;
+	//int initHealth = 120;
 	int initAttackDamage = 40;
 	float initWalkingSpeed = 0.15;
 	int initLoot = 30;

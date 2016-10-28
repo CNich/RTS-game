@@ -29,6 +29,7 @@ Ninja* Ninja::create() {
 
 	pSprite->attackTravelRange = 2;
 
+	pSprite->initHealth = 5000;
 	pSprite->health = pSprite->initHealth;
 	pSprite->attackSpeed = pSprite->initAttackSpeed;
 	pSprite->attackDamage = pSprite->initAttackDamage;
@@ -99,7 +100,7 @@ void Ninja::removeFromLevel(){
  * Set attack animation
  */
 void Ninja::animationAttack(){
-	AttackObjectNinjaStar *atk = AttackObjectNinjaStar::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), 0, 'm', pf);
+	AttackObjectNinjaStar *atk = AttackObjectNinjaStar::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), attackDamage, 'm', pf);
 	atk->initAttack();
 
 	Vector<SpriteFrame *> attackFrames;

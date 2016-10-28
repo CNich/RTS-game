@@ -40,12 +40,12 @@ protected:
 
 	/*initialization variables*/
 	/********************************************/
-	int initHealth = 500;
+	//int initHealth = 5000;
 	int initAttackRange = 10;
 	int initMovementRange = 13;
 	int initAttackDamage = 60;
 	float initAttackSpeed = 1.2;
-	float initWalkingSpeed = 0.35;
+	float initWalkingSpeed = 0.25;
 	/********************************************/
 
 	cocos2d::Point fireBallLocation;

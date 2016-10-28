@@ -230,21 +230,22 @@ bool HelloWorld::init() {
 	int t1 = 10;
 	int t2 = 0;
 
-	createUnitGroup(2, _plpos);
+	createUnitGroup(2, _plpos, true);
 
 	auto pnt = _plpos;
 	pnt.x = _plpos.x + pf->getTileX() * 3;
 	pnt.y = _plpos.y  + pf->getTileY();
-	createUnitGroup(0, pnt);
+	createUnitGroup(0, pnt, true);
 
 	pnt.y -= pf->getTileX() * 3;
-	createUnitGroup(1, pnt);
+	createUnitGroup(1, pnt, true);
 
 	enemySpawnLocation1_nd.x =  (float)enemyX;
 	enemySpawnLocation1_nd.y =  (float)enemyY;
 	enemySpawnLocation2_nd.x =  (float)enemyX2;
 	enemySpawnLocation2_nd.y =  (float)enemyY2;
 
+	/*
 	for(int i=0; i < t2; i+=1){
 		cocos2d::Point p;
 		p.x = enemyX + pf->getTileX() * i;
@@ -327,6 +328,7 @@ bool HelloWorld::init() {
 		initUnit(r, 1);
 	}
 	//this->drawBFSMap();
+	*/
 
 	return true;
 
@@ -367,6 +369,7 @@ void HelloWorld::initUnit(BasicUnit *r, char team){
 	r->setForegroundMap(_foreground);
 	r->setTileMap(_tileMap);
 	r->setTeam(team);
+	r->initHealthBar();
 	//r->_infoHud = _infoHud;
 	if(team == 0){
 		auto pos = r->convertToPf(r->getPosition());
@@ -376,19 +379,23 @@ void HelloWorld::initUnit(BasicUnit *r, char team){
 	}
 }
 
-void HelloWorld::createUnitGroup(int option, cocos2d::Point spawnLocation){
-	/*
-	 * if(option == 0 && _infoHud->getGoldAmount() >= 200){
+void HelloWorld::createUnitGroup(int option, cocos2d::Point spawnLocation, bool onLevelInit = false){
+	CCLOG("onLevelInit = %b", onLevelInit);
+	if(!onLevelInit){
+		 if(option == 0 && _infoHud->getGoldAmount() >= 200){
+			createUnitGroupHelper(option, spawnLocation);
+			_infoHud->spendGold(200);
+		} else if(option == 1 && _infoHud->getGoldAmount() >= 250){
+			createUnitGroupHelper(option, spawnLocation);
+			_infoHud->spendGold(250);
+		}
+		CCLOG("gold: %d, createUnitGroup %p", _infoHud->getGoldAmount(), this->_infoHud);
+	} else{
 		createUnitGroupHelper(option, spawnLocation);
-		_infoHud->spendGold(200);
-	} else if(option == 1 && _infoHud->getGoldAmount() >= 250){
-		createUnitGroupHelper(option, spawnLocation);
-		_infoHud->spendGold(250);
-	}*/
-	createUnitGroupHelper(option, spawnLocation);
+	}
 }
 void HelloWorld::createUnitGroup(int option){
-	createUnitGroupHelper(option, getSpawnLocation_nd());
+	createUnitGroup(option, getSpawnLocation_nd());
 }
 
 void HelloWorld::createEnemyUnit(int option, cocos2d::Point spawnLocation){
@@ -396,11 +403,14 @@ void HelloWorld::createEnemyUnit(int option, cocos2d::Point spawnLocation){
 		EnemyBasicUnit * r = EnemyBasicUnit::create(spawnLocation);
 		bvec2.pushBack(r);
 		initUnit(r, 1);
+		r->_infoHud = _infoHud;
 	} else if(option == 32){
 		EnemyBasicUnitRanged * r = EnemyBasicUnitRanged::create(spawnLocation);
 		rangedBasicUnitVec2.pushBack(r);
 		initUnit(r, 1);
+		r->_infoHud = _infoHud;
 	}
+	CCLOG("createUnitGroup %p", this->_infoHud);
 }
 
 void HelloWorld::createUnitGroupHelper(int option, cocos2d::Point spawnLocation){
@@ -455,6 +465,7 @@ void HelloWorld::createUnitGroupHelper(int option, cocos2d::Point spawnLocation)
 	}
 	auto tSprite = setMovementSprites(wayPointPng, Point(x + 16, y + 48));
 	wayPointSprites.push_back(tSprite);
+	tSprite->setPosition(spawnLocation.x - pf->getTileX() * 2, spawnLocation.y - pf->getTileY() * 2);
 
 	cocos2d::Sprite * spellLocationSprite;
 	if(option == 2){
@@ -573,6 +584,7 @@ void HelloWorld::onTouchEnded(Touch *touch, Event *unused_event) {
 		CCLOG("%p %p %p", _hudB, _hudB, _hudB);
 		CCLOG("%p %p %p", _HUD, _HUD, _HUD);
 		CCLOG("%p %p %p", ninja, ninja, ninja);
+		CCLOG("%p %p %p", _infoHud, _infoHud, _infoHud);
 		CCLOG("getTileX: %d, getTileY: %d",pf->getTileX(), pf->getTileY());
 		CCLOG("getRows: %d, getCols: %d, getOffX: %d, getOffY: %d",
 				pf->getRows(), pf->getCols(), pf->getOffX(), pf->getOffY());

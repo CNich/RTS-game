@@ -5,27 +5,20 @@ bool InfoHud::init() {
 		return false;
 	}
 	auto visibleSize = cocos2d::Director::getInstance()->getVisibleSize();
-	goldLabel = cocos2d::LabelTTF::create("0", "fonts/Marker Felt.ttf", 38.0f, cocos2d::Size(50, 50),
-			cocos2d::TextHAlignment::RIGHT);
-	goldLabel->setColor(cocos2d::Color3B(255, 255, 0));
 	int margin = 10;
-	goldLabel->setPosition(
-			visibleSize.width / 2 - (goldLabel->getDimensions().width / 2) - margin,
-			goldLabel->getDimensions().height / 2 + margin);
+
+	goldLabel = cocos2d::Label::createWithTTF("0","fonts/Marker Felt.ttf",64);
+	goldLabel->setPosition(visibleSize.width / 2 - (goldLabel->getBoundingBox().size.width / 2) - margin,
+			goldLabel->getBoundingBox().size.height / 2 + margin);
 	this->addChild(goldLabel);
+	goldLabel->setTextColor(cocos2d::Color4B::YELLOW);
 
-	timerLabel = cocos2d::LabelTTF::create("0", "fonts/Marker Felt.ttf", 38.0f, cocos2d::Size(50, 50),
-			cocos2d::TextHAlignment::RIGHT);
-	timerLabel->setColor(cocos2d::Color3B(255, 255, 255));
+	timerLabel = cocos2d::Label::createWithTTF("90", "fonts/Marker Felt.ttf", 38.0f);
+	timerLabel->setTextColor(cocos2d::Color4B::WHITE);
 
-	timerLabel->setPosition(
-			visibleSize.width / 2 - (timerLabel->getDimensions().width / 2) - margin,
-			visibleSize.height - timerLabel->getDimensions().height - margin);
+	timerLabel->setPosition(visibleSize.width / 2 - (timerLabel->getDimensions().width / 2) - margin,
+			visibleSize.height - timerLabel->getBoundingBox().size.height - margin);
 	this->addChild(timerLabel);
-
-	char showStr[20];
-	sprintf(showStr, "%d", timerInt);
-	timerLabel->setString(showStr);
 
 	this->scheduleUpdate();
 
@@ -33,9 +26,8 @@ bool InfoHud::init() {
 }
 
 void InfoHud::updateGoldUI() {
-	char showStr[20];
-	sprintf(showStr, "%d", gold);
-	goldLabel->setString(showStr);
+	goldLabel->setString(cocos2d::__String::createWithFormat("%d", gold)->getCString());
+	CCLOG("gold: %d.", gold);
 }
 
 void InfoHud::update(float dt) {
@@ -43,8 +35,6 @@ void InfoHud::update(float dt) {
 
 	if(timerInt != (int)timer){
 		timerInt = (int)timer;
-		char showStr[20];
-		sprintf(showStr, "%d", timerInt);
-		timerLabel->setString(showStr);
+		timerLabel->setString(cocos2d::__String::createWithFormat("%.0f", timer)->getCString());
 	}
 }

@@ -11,7 +11,7 @@ class RangedAttackObject : public AttackObject {
 protected:
 	void seqCallback();
 	virtual void seq();
-	int sigma2 = 20; //sigma^2
+	int sigma2 = 60; //sigma^2
 	int attackAreaRange = 1;
 	cocos2d::Point attackPos_nd;
 	void calculateAttackPos();

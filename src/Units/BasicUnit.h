@@ -63,6 +63,9 @@ public:
 	bool getMoving(){return moving;};
 	float getWalkingSpeed(){return walkingSpeed;};
 
+	void initHealthBar();
+	void setHealthBar();
+
 protected:
 	cocos2d::Point startingPos;
 	bool enemy = false;
@@ -116,6 +119,7 @@ protected:
 
 	virtual int getHealth();
 	int health = 240;
+	int initHealth = 240;
 	int attackDamage = 60;
 
 	float attackSpeed = 2.0f;
@@ -135,6 +139,11 @@ protected:
 	float attackDuration = 0.08;
 	int numAttackFrames = 8;
 	/********************************************/
+
+	cocos2d::Sprite * greenHealth;
+	cocos2d::Sprite * redHealth;
+	cocos2d::Sprite * healthBarOutline;
+
 	virtual void update(float dt);
 };
 

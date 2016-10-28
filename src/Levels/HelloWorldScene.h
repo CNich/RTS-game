@@ -7,13 +7,15 @@
 #include "src/Utilities/PathFinder.h"
 #include "src/Utilities/HeapPathFinder.h"
 #include "src/Utilities/GlobalVariables.h"
+#include "src/Levels/HelloWorldHud.h"
+#include "src/Levels/InfoHud.h"
 #include "src/Units/BasicUnit.h"
 #include "src/Units/EnemyBasicUnit.h"
 #include "src/Units/RangedBasicUnit.h"
 #include "src/Units/EnemyBasicUnitRanged.h"
 #include "src/Units/Ninja.h"
-#include "src/Levels/HelloWorldHud.h"
-#include "src/Levels/InfoHud.h"
+//#include "src/Levels/HelloWorldHud.h"
+//#include "src/Levels/InfoHud.h"
 #include <vector>
 #include <memory>
 
@@ -149,7 +151,7 @@ public:
     void decrementNumSoundsPlaying() { numSoundsPlaying++; };
 
     void createEnemyUnit(int option, cocos2d::Point spawnLocation);
-    void createUnitGroup(int option, cocos2d::Point spawnLocation);
+    void createUnitGroup(int option, cocos2d::Point spawnLocation, bool onLevelInit);
     void createUnitGroup(int option);
     cocos2d::Point getSpawnLocation_nd();
 

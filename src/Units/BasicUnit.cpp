@@ -170,6 +170,41 @@ void BasicUnit::getMap(PathFinder<BasicUnit> *tpf2) {
 	}
 }
 
+void BasicUnit::initHealthBar(){
+	greenHealth = cocos2d::Sprite::create("healthBars/GreenHealthBar.png");
+	greenHealth->setAnchorPoint({0,0});
+	this->addChild(greenHealth, GREEN_HEALTH_Z_ORDER);
+	auto thisSize = this->getBoundingBox().size;
+	greenHealth->setPosition({(thisSize.width - greenHealth->getBoundingBox().size.width) / 2,
+		thisSize.height - greenHealth->getBoundingBox().size.height});
+
+	redHealth = cocos2d::Sprite::create("healthBars/RedHealthBar.png");
+	redHealth->setAnchorPoint({0,0});
+	this->addChild(redHealth, RED_HEALTH_Z_ORDER);
+	redHealth->setPosition({(thisSize.width - redHealth->getBoundingBox().size.width) / 2,
+		thisSize.height - redHealth->getBoundingBox().size.height});
+
+	healthBarOutline = cocos2d::Sprite::create("healthBars/Outline.png");
+	healthBarOutline->setAnchorPoint({0,0});
+	this->addChild(healthBarOutline, RED_HEALTH_Z_ORDER - 1);
+	auto op = redHealth->getPosition();
+
+	float dx = healthBarOutline->getContentSize().width - redHealth->getContentSize().width;
+	float dy = healthBarOutline->getContentSize().height - redHealth->getContentSize().height;
+
+	healthBarOutline->setPosition({op.x - dx / 2, op.y - dy / 2});
+}
+
+void BasicUnit::setHealthBar(){
+	if(health > 0){
+		float hpercent = (float)health / (float)initHealth;
+		greenHealth->setScaleX(hpercent);
+	} else{
+		greenHealth->setVisible(false);
+	}
+	CCLOG("health bar: %d %d", health, initHealth);
+}
+
 void BasicUnit::delayedMove() {
 	if (!lStack->empty() && !moving) {
 		consoleDebugStatement(cocos2d::__String::createWithFormat(
@@ -723,6 +758,7 @@ bool BasicUnit::enemyIsAttackable(){
 void BasicUnit::attack(BasicUnit * attacker, int damage, char attackType){
 	//if(health > 0) CCLOG("%p's health: %d", this, health);
 	health = health - damage;
+	setHealthBar();
 	//CCLOG("%p WAS ATTACKEDDDD for %d damage", this, damage);
 	//if(health >= 0) CCLOG("%p's health after attack: %d", this, health);
 }

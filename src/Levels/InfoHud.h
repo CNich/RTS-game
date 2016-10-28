@@ -20,11 +20,11 @@ public:
 private:
     int gold = 0;
 	void updateGoldUI();
-	cocos2d::LabelTTF *goldLabel;
+	cocos2d::Label *goldLabel;
 
 	float timer = 90.0f;
 	int timerInt = (int)timer;
-	cocos2d::LabelTTF *timerLabel;
+	cocos2d::Label *timerLabel;
 
 	void update(float dt);
 };
