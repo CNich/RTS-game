@@ -21,7 +21,7 @@ public:
 	//virtual void attack(BasicUnit *attacker, int damage, char attackType);
 
 protected:
-	bool enemyIsAttackable();
+	virtual bool enemyIsAttackable();
 	virtual void update(float dt);
 	bool removeThisUnit = false;
 	bool removeFromPf = true;

@@ -10,6 +10,8 @@ class BasicUnit;
 #define PI 3.14159265;
 static int GREEN_HEALTH_Z_ORDER = 100;
 static int RED_HEALTH_Z_ORDER = 99;
+static float DISPLAY_TIME_SPLASH_SCREEN = 3.0f;
+static float TRANSITION_TIME = 3.0f;
 
 int numSounds = 0;
 static void decNumSounds(){ numSounds--; }

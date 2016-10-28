@@ -41,11 +41,6 @@ public:
 	void returnHealth(int healthTaken, char attackType);
 
 	virtual void attack(BasicUnit *attacker, int damage, char attackType);
-	int attackRange = 7;
-	int movementRange = 7;
-	int attackTravelRange = 7;
-	int price = 200;
-	float blockDelay = 0.25;
 	int pointToPointDistance(cocos2d::Point a, cocos2d::Point b);
 
 	bool consoleTrack = false;
@@ -118,9 +113,18 @@ protected:
 	bool removeFromPf = true;
 
 	virtual int getHealth();
-	int health = 240;
-	int initHealth = 240;
+	int health = 320;
+	int initHealth = 320;
 	int attackDamage = 60;
+	int attackRange = 7;
+
+	//how far a unit is willing to travel to it's closest enemy
+	int movementRange = 13;
+
+	//how far a unit is willing to travel away from it's goal position to attack another unit
+	int attackTravelRange = 7;
+	int price = 200;
+	float blockDelay = 0.25;
 
 	float attackSpeed = 2.0f;
 

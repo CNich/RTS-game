@@ -36,7 +36,7 @@ protected:
 
 	/*initialization variables*/
 	/********************************************/
-	int initAttackRange = 10;
+	int initAttackRange = 8;
 	int initMovementRange = 13;
 	//int initHealth = 120;
 	int initAttackDamage = 40;

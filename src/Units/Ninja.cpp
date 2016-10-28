@@ -29,7 +29,7 @@ Ninja* Ninja::create() {
 
 	pSprite->attackTravelRange = 2;
 
-	pSprite->initHealth = 5000;
+	pSprite->initHealth = 500;
 	pSprite->health = pSprite->initHealth;
 	pSprite->attackSpeed = pSprite->initAttackSpeed;
 	pSprite->attackDamage = pSprite->initAttackDamage;

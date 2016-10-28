@@ -16,7 +16,7 @@ public:
 	virtual void BFSInit(int x, int y){ bfsMap->setStart(x, y); bfsMap->solve();};
 
 	//void attack(BasicUnit *attacker, int damage, char attackType);
-	int attackRange = 26;
+	//int attackRange = 26;
 	//virtual void attack(BasicUnit *attacker, int damage, char attackType);
 	virtual void updateDelayedMove();
 

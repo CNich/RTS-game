@@ -1,15 +1,15 @@
-#ifndef __ENEMY_BASIC_UNIT_RANGED__
-#define __ENEMY_BASIC_UNIT_RANGED__
+#ifndef __ENEMY_TROLL_ERODED_METAL__
+#define __ENEMY_TROLL_ERODED_METAL__
 
 #include "src/Units/EnemyBasicUnit.h"
 
-class EnemyBasicUnitRanged : public EnemyBasicUnit
+class EnemyTrollErodedMetal : public EnemyBasicUnit
 {
 public:
-	EnemyBasicUnitRanged();
-	~EnemyBasicUnitRanged();
-	static EnemyBasicUnitRanged* create();
-	static EnemyBasicUnitRanged* create(cocos2d::Point tmp);
+	EnemyTrollErodedMetal();
+	~EnemyTrollErodedMetal();
+	static EnemyTrollErodedMetal* create();
+	static EnemyTrollErodedMetal* create(cocos2d::Point tmp);
 	
 
 	//void attack(BasicUnit *attacker, int damage, char attackType);
@@ -18,7 +18,7 @@ public:
 	bool tracked = false;
 
 protected:
-	virtual bool enemyIsAttackable();
+	//virtual bool enemyIsAttackable();
 	//virtual void update(float dt);
 	bool removeThisUnit = false;
 	bool removeFromPf = true;
@@ -33,10 +33,10 @@ protected:
 	int initAttackRange = 12;
 	int initMovementRange = 16;
 	//int initHealth = 120;
-	int initAttackDamage = 40;
-	float initWalkingSpeed = 0.15;
-	int initLoot = 30;
+	int initAttackDamage = 100;
+	float initWalkingSpeed = 0.45;
+	int initLoot = 300;
 	/********************************************/
 };
 
-#endif // __ENEMY_BASIC_UNIT_RANGED__
+#endif // __ENEMY_TROLL_ERODED_METAL__

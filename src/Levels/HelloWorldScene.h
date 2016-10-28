@@ -13,6 +13,7 @@
 #include "src/Units/EnemyBasicUnit.h"
 #include "src/Units/RangedBasicUnit.h"
 #include "src/Units/EnemyBasicUnitRanged.h"
+#include "src/Units/Enemies/EnemyTrollErodedMetal.h"
 #include "src/Units/Ninja.h"
 //#include "src/Levels/HelloWorldHud.h"
 //#include "src/Levels/InfoHud.h"
@@ -93,6 +94,8 @@ private:
 
 	float enemyBasicUnitRespawn = 5.0f;
 	float enemyRangedBasicUnitRespawn = 7.0f;
+	float fireballTimer = 1.0f;
+	float ErodedMetalTrollTimer = 10.0f;
 
     void createUnitGroupHelper(int option, cocos2d::Point spawnLocation);
 
@@ -104,6 +107,7 @@ public:
 	cocos2d::Vector<EnemyBasicUnit *> bvec2;
 	cocos2d::Vector<RangedBasicUnit *> rangedBasicUnitVec;
 	cocos2d::Vector<EnemyBasicUnitRanged *> rangedBasicUnitVec2;
+	cocos2d::Vector<EnemyTrollErodedMetal *> TrollErodedMetalVec;
 
 	std::vector<cocos2d::Sprite *> wayPointSprites;
 	std::vector<cocos2d::Vector<BasicUnit *>> goodUnitVectors;
@@ -145,6 +149,7 @@ public:
 
     void testCollisions(float dt);
     void enemyDistances(float dt);
+    void clearEmptyWaypoints(float dt);
 
     int getNumSoundsPlaying() {return numSoundsPlaying;};
     void incrementNumSoundsPlaying() { numSoundsPlaying++; };

@@ -43,6 +43,7 @@ bool HelloWorld::init() {
 
 	auto wframeCache = SpriteFrameCache::getInstance();
 	wframeCache->addSpriteFramesWithFile("Units/Troll/Troll.plist");
+	wframeCache->addSpriteFramesWithFile("Units/Troll/Troll - Eroded Metal.plist");
 	wframeCache->addSpriteFramesWithFile("Units/Elf/Elf.plist");
 	wframeCache->addSpriteFramesWithFile("Units/Wizard/Wizard.plist");
 
@@ -245,91 +246,6 @@ bool HelloWorld::init() {
 	enemySpawnLocation2_nd.x =  (float)enemyX2;
 	enemySpawnLocation2_nd.y =  (float)enemyY2;
 
-	/*
-	for(int i=0; i < t2; i+=1){
-		cocos2d::Point p;
-		p.x = enemyX + pf->getTileX() * i;
-		p.y = enemyY;
-		EnemyBasicUnit * r = EnemyBasicUnit::create(p);
-		r->setColor(Color3B::RED);
-		bvec2.pushBack(r);
-		initUnit(r, 1);
-		if(i == 0){
-			r->setColor(Color3B::BLUE);
-			//r->tracked = true;
-			//r->consoleTrack = true;
-			//r->consoleTrackNum = 0;
-		}
-	}
-
-
-	for(int i=0; i < t2; i+=2){
-		cocos2d::Point p;
-		p.x = enemyX + pf->getTileX() * i;
-		p.y = enemyY - pf->getTileY();
-		EnemyBasicUnitRanged * r = EnemyBasicUnitRanged::create(p);
-		rangedBasicUnitVec2.pushBack(r);
-		r->setColor(Color3B::RED);
-		initUnit(r, 1);
-	}
-
-	for(int i=0; i < t2; i+=2){
-		cocos2d::Point p;
-		p.x = enemyX2;
-		p.y = enemyY2 + pf->getTileY() * i;
-		EnemyBasicUnit * r = EnemyBasicUnit::create(p);
-		r->setColor(Color3B::GREEN);
-		bvec2.pushBack(r);
-		initUnit(r, 1);
-		if(i == 0){
-			r->setColor(Color3B::BLUE);
-			//r->tracked = true;
-			//r->consoleTrack = true;
-			//r->consoleTrackNum = 2;
-		}
-	}
-
-
-	for(int i=0; i < t2; i+=2){
-		cocos2d::Point p;
-		p.x = enemyX2 + pf->getTileX();
-		p.y = enemyY2 + pf->getTileY() * i;
-		EnemyBasicUnitRanged * r = EnemyBasicUnitRanged::create(p);
-		rangedBasicUnitVec2.pushBack(r);
-		r->setColor(Color3B::GREEN);
-		initUnit(r, 1);
-	}
-
-	for(int i=0; i < t2; i+=2){
-		cocos2d::Point p;
-		p.x = enemyX3;
-		p.y = enemyY3 + pf->getTileY() * i;
-		EnemyBasicUnit * r = EnemyBasicUnit::create(p);
-		r->setColor(Color3B::GREEN);
-		bvec2.pushBack(r);
-		initUnit(r, 1);
-		if(i == 0){
-			r->setColor(Color3B::BLUE);
-			//r->tracked = true;
-			//r->consoleTrack = true;
-			//r->consoleTrackNum = 3;
-		}
-	}
-
-
-	//for(int i=0; i < t2; i+=2){
-	for(int i=0; i < 1; i+=2){
-		cocos2d::Point p;
-		p.x = enemyX3 + pf->getTileX();
-		p.y = enemyY3 + pf->getTileY() * i;
-		EnemyBasicUnitRanged * r = EnemyBasicUnitRanged::create(p);
-		rangedBasicUnitVec2.pushBack(r);
-		r->setColor(Color3B::GREEN);
-		initUnit(r, 1);
-	}
-	//this->drawBFSMap();
-	*/
-
 	return true;
 
 }
@@ -404,9 +320,16 @@ void HelloWorld::createEnemyUnit(int option, cocos2d::Point spawnLocation){
 		bvec2.pushBack(r);
 		initUnit(r, 1);
 		r->_infoHud = _infoHud;
+		r->setColor(cocos2d::Color3B::BLUE);
 	} else if(option == 32){
 		EnemyBasicUnitRanged * r = EnemyBasicUnitRanged::create(spawnLocation);
 		rangedBasicUnitVec2.pushBack(r);
+		initUnit(r, 1);
+		r->_infoHud = _infoHud;
+		r->setColor(cocos2d::Color3B::BLUE);
+	} else if(option == 33){
+		EnemyTrollErodedMetal * r = EnemyTrollErodedMetal::create(spawnLocation);
+		TrollErodedMetalVec.pushBack(r);
 		initUnit(r, 1);
 		r->_infoHud = _infoHud;
 	}
@@ -470,7 +393,7 @@ void HelloWorld::createUnitGroupHelper(int option, cocos2d::Point spawnLocation)
 	cocos2d::Sprite * spellLocationSprite;
 	if(option == 2){
 		spellLocationSprite = setMovementSprites("Orangesquare.png", Point(x, y));
-		wayPointSprites.push_back(spellLocationSprite);
+		//wayPointSprites.push_back(spellLocationSprite);
 		spawnLocationSprite = setMovementSprites("bluesquare.png", Point(x + pf->getTileX() * 4, y));
 	}
 	//Create a "one by one" touch event listener (processes one touch at a time)
@@ -718,6 +641,9 @@ void HelloWorld::onTouchMoved(Touch *touch, Event *unused_event) {
 	}
 }
 
+/*
+ * Finds and sets the closest enemy of each unit
+ */
 void HelloWorld::enemyDistances(float dt){
 	cocos2d::Vector<BasicUnit *> team1;
 	cocos2d::Vector<BasicUnit *> team2;
@@ -785,6 +711,18 @@ void HelloWorld::enemyDistances(float dt){
 		//rangedBasicUnitVec2.erase(rangedBasicUnitVec2.find(p));
 	}
 
+	cocos2d::Vector<EnemyTrollErodedMetal *> temv;
+	for(EnemyTrollErodedMetal * p : TrollErodedMetalVec){
+		if(p != 0 && !p->isDead()){
+			team2.pushBack(p);
+		} else{
+			temv.pushBack(p);
+		}
+	}
+	for(EnemyBasicUnitRanged * p : rangedBasicUnitVec2Temp){
+		//rangedBasicUnitVec2.erase(rangedBasicUnitVec2.find(p));
+	}
+
 
 	//reset newClosestEnemy
 	if(team1.size() > 0 && team2.size() > 0){
@@ -828,13 +766,33 @@ void HelloWorld::enemyDistances(float dt){
 	}
 }
 
+/*
+ * if all units of a group are dead, hide it's waypoint sprite
+ */
+void HelloWorld::clearEmptyWaypoints(float dt){
+	for(int i = 0; i < wayPointSprites.size(); i++){
+		bool spriteVisible = false;
+		for(BasicUnit * b : goodUnitVectors[i]){
+			if(b != 0 && !b->isDead()){
+				spriteVisible = true;
+			}
+		}
+		if(!spriteVisible){
+			wayPointSprites[i]->setVisible(false);
+		}
+	}
+}
+
 void HelloWorld::update(float dt) {
 	elapsedTime += dt;
 	testCollisions(dt);
 	enemyDistances(dt);
+	clearEmptyWaypoints(dt);
 
 	enemyBasicUnitRespawn -= dt;
 	enemyRangedBasicUnitRespawn -= dt;
+	fireballTimer -= dt;
+	ErodedMetalTrollTimer -= dt;
 
 	if(enemyBasicUnitRespawn < 0){
 		enemyBasicUnitRespawn += 5.0f;
@@ -842,10 +800,22 @@ void HelloWorld::update(float dt) {
 	}
 
 	if(enemyRangedBasicUnitRespawn < 0){
-		enemyRangedBasicUnitRespawn += 7.0f;
+		enemyRangedBasicUnitRespawn += 15.0f;
 		createEnemyUnit(32, enemySpawnLocation2_nd);
 	}
 
+	if(fireballTimer < 0){
+		fireballTimer += 1.4;
+		ninja->shootFireBall();
+	}
+
+	if(ErodedMetalTrollTimer < 0){
+		ErodedMetalTrollTimer += 30.0f;
+		auto e2_nd = enemySpawnLocation1_nd;
+		e2_nd.x += 1;
+		e2_nd.y -= 1;
+		createEnemyUnit(33, e2_nd);
+	}
 }
 
 Point HelloWorld::tileCoordForPosition(Point position) {

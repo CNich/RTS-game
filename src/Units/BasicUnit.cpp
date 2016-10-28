@@ -202,7 +202,6 @@ void BasicUnit::setHealthBar(){
 	} else{
 		greenHealth->setVisible(false);
 	}
-	CCLOG("health bar: %d %d", health, initHealth);
 }
 
 void BasicUnit::delayedMove() {
@@ -575,7 +574,7 @@ void BasicUnit::update(float dt) {
 				//this->getParent()->removeChild(this);
 				this->removeFromLevel();
 			});
-			auto seq = Sequence::create(DelayTime::create(4), callback, nullptr);
+			auto seq = Sequence::create(DelayTime::create(5), callback, nullptr);
 			this->runAction(seq);
 			removeFromPf = false;
 		}

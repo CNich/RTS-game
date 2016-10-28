@@ -2,6 +2,7 @@
 #define __HEAPPATHFINDER_H__
 
 #include "src/Utilities/pathNode.h"
+#include "cocos2d.h"
 #include <vector>
 
 class HeapPathFinder {
@@ -90,15 +91,24 @@ void HeapPathFinder::up(int a){
 }
 
 void HeapPathFinder::down(int a){
+	bool heapDebug = false;
+	if(length > 2000) heapDebug = true;
 	int b = a + 1;
+	if(heapDebug) CCLOG("length: %d, b: %d, a: %d", length, b, a);
 	if (length >= (b * 2 + 1)){
+		if(heapDebug) CCLOG("first if");
 		auto left = *arr[b * 2 - 1];
 		auto right = *arr[b * 2 + 1 - 1];
 		//////cout << "a: " << a << "\t" << "b: " << b << "\t" << "arr[" << b - 1 << "]" << arr[b - 1]->F
 		//	<< "\t" << "arr[" << b * 2 - 1 << "]" << arr[b * 2 - 1]->F << "\t" << "arr[" << b * 2 + 1 - 1
 		//	<< "]" << "\t" << arr[b * 2 + 1 - 1]->F << endl;
+		if(heapDebug) CCLOG("left: %d, right: %d", left.F, right.F);
 		if (left <= right){
+			if(heapDebug) CCLOG("left <= right");
+			if(heapDebug) CCLOG("arr[b - 1]: %d, arr[b * 2 - 1]: %d", arr[b - 1]->F, arr[b * 2 - 1]->F);
+			if(heapDebug) CCLOG("%d", (*arr[b - 1] > *arr[b * 2 - 1]));
 			if (*arr[b - 1] > *arr[b * 2 - 1]){
+				if(heapDebug) CCLOG("left <= right inner");
 				swap(b - 1, b * 2 - 1);
 				down(b * 2 - 1);
 			}
@@ -107,15 +117,23 @@ void HeapPathFinder::down(int a){
 			//	////cout << "a: " << a << "\t" << "b: " << b << "\t" << "arr[" << b - 1 << "]" << arr[b - 1]->F
 			//		<< "\t" << "arr[" << b * 2 - 1 << "]" << arr[b * 2 - 1]->F << "\t" << "arr[" << b * 2 + 1 - 1
 			//		<< "]" << "\t" << arr[b * 2 + 1 - 1]->F << endl;
+			if(heapDebug) CCLOG("else:");
+			if(heapDebug) CCLOG("arr[b - 1]: %d, arr[b * 2 + 1 - 1]: %d", arr[b - 1]->F, arr[b * 2 + 1 - 1]->F);
+			if(heapDebug) CCLOG("%d", (*arr[b - 1] > *arr[b * 2 + 1 - 1]));
 			if (*arr[b - 1] > *arr[b * 2 + 1 - 1]){
+				if(heapDebug) CCLOG("left <= right else inner");
 				swap(b - 1, b * 2 + 1 - 1);
 				down(b * 2 + 1 - 1);
 			}
 		}
 	}
 	else if (length >= (b * 2)){
+		if(heapDebug) CCLOG("length >= b*2");
 		auto left = *arr[b * 2 - 1];
+		if(heapDebug) CCLOG("%d", (*arr[b - 1] > *arr[b * 2 - 1]));
+		if(heapDebug) CCLOG("*arr[b - 1]: %d, *arr[b * 2 - 1]: %d", arr[b - 1]->F, arr[b * 2 - 1]->F);
 		if (*arr[b - 1] > *arr[b * 2 - 1]){
+			if(heapDebug) CCLOG("else else inner");
 			swap(b - 1, b * 2 - 1);
 			down(b * 2 - 1);
 		}
