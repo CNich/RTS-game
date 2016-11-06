@@ -44,6 +44,9 @@ bool HelloWorld::init() {
 	auto wframeCache = SpriteFrameCache::getInstance();
 	wframeCache->addSpriteFramesWithFile("Units/Troll/Troll.plist");
 	wframeCache->addSpriteFramesWithFile("Units/Troll/Troll - Eroded Metal.plist");
+	wframeCache->addSpriteFramesWithFile("Units/Skinny Troll/attack/Skinny Troll attack.plist");
+	wframeCache->addSpriteFramesWithFile("Units/Skinny Troll/die/Skinny Troll die.plist");
+	wframeCache->addSpriteFramesWithFile("Units/Skinny Troll/walk/Skinny Troll walk.plist");
 	wframeCache->addSpriteFramesWithFile("Units/Elf/Elf.plist");
 	wframeCache->addSpriteFramesWithFile("Units/Wizard/Wizard.plist");
 
@@ -330,6 +333,11 @@ void HelloWorld::createEnemyUnit(int option, cocos2d::Point spawnLocation){
 	} else if(option == 33){
 		EnemyTrollErodedMetal * r = EnemyTrollErodedMetal::create(spawnLocation);
 		TrollErodedMetalVec.pushBack(r);
+		initUnit(r, 1);
+		r->_infoHud = _infoHud;
+	} else if(option == 34){
+		EnemySkinnyTroll * r = EnemySkinnyTroll::create(spawnLocation);
+		SkinnyTrollVec.pushBack(r);
 		initUnit(r, 1);
 		r->_infoHud = _infoHud;
 	}
@@ -723,6 +731,18 @@ void HelloWorld::enemyDistances(float dt){
 		//rangedBasicUnitVec2.erase(rangedBasicUnitVec2.find(p));
 	}
 
+	cocos2d::Vector<EnemySkinnyTroll *> temv2;
+	for(EnemySkinnyTroll * p : SkinnyTrollVec){
+		if(p != 0 && !p->isDead()){
+			team2.pushBack(p);
+		} else{
+			temv2.pushBack(p);
+		}
+	}
+	for(EnemyBasicUnitRanged * p : rangedBasicUnitVec2Temp){
+		//rangedBasicUnitVec2.erase(rangedBasicUnitVec2.find(p));
+	}
+
 
 	//reset newClosestEnemy
 	if(team1.size() > 0 && team2.size() > 0){
@@ -815,6 +835,8 @@ void HelloWorld::update(float dt) {
 		e2_nd.x += 1;
 		e2_nd.y -= 1;
 		createEnemyUnit(33, e2_nd);
+		e2_nd.x -= 3;
+		createEnemyUnit(34, e2_nd);
 	}
 }
 

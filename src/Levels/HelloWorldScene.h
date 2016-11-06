@@ -14,6 +14,7 @@
 #include "src/Units/RangedBasicUnit.h"
 #include "src/Units/EnemyBasicUnitRanged.h"
 #include "src/Units/Enemies/EnemyTrollErodedMetal.h"
+#include "src/Units/Enemies/EnemySkinnyTroll.h"
 #include "src/Units/Ninja.h"
 //#include "src/Levels/HelloWorldHud.h"
 //#include "src/Levels/InfoHud.h"
@@ -108,6 +109,7 @@ public:
 	cocos2d::Vector<RangedBasicUnit *> rangedBasicUnitVec;
 	cocos2d::Vector<EnemyBasicUnitRanged *> rangedBasicUnitVec2;
 	cocos2d::Vector<EnemyTrollErodedMetal *> TrollErodedMetalVec;
+	cocos2d::Vector<EnemySkinnyTroll*> SkinnyTrollVec;
 
 	std::vector<cocos2d::Sprite *> wayPointSprites;
 	std::vector<cocos2d::Vector<BasicUnit *>> goodUnitVectors;
