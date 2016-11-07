@@ -47,6 +47,9 @@ bool HelloWorld::init() {
 	wframeCache->addSpriteFramesWithFile("Units/Skinny Troll/attack/Skinny Troll attack.plist");
 	wframeCache->addSpriteFramesWithFile("Units/Skinny Troll/die/Skinny Troll die.plist");
 	wframeCache->addSpriteFramesWithFile("Units/Skinny Troll/walk/Skinny Troll walk.plist");
+	wframeCache->addSpriteFramesWithFile("Units/Goblin Ranged/GoblinRangedAttack.plist");
+	wframeCache->addSpriteFramesWithFile("Units/Goblin Ranged/GoblinRangedWalk.plist");
+	wframeCache->addSpriteFramesWithFile("Units/Goblin Ranged/GoblinRangedDie.plist");
 	wframeCache->addSpriteFramesWithFile("Units/Elf/Elf.plist");
 	wframeCache->addSpriteFramesWithFile("Units/Wizard/Wizard.plist");
 
@@ -338,6 +341,11 @@ void HelloWorld::createEnemyUnit(int option, cocos2d::Point spawnLocation){
 	} else if(option == 34){
 		EnemySkinnyTroll * r = EnemySkinnyTroll::create(spawnLocation);
 		SkinnyTrollVec.pushBack(r);
+		initUnit(r, 1);
+		r->_infoHud = _infoHud;
+	} else if(option == 35){
+		EnemyGoblinRanged * r = EnemyGoblinRanged::create(spawnLocation);
+		GoblinRangedVec.pushBack(r);
 		initUnit(r, 1);
 		r->_infoHud = _infoHud;
 	}
@@ -743,6 +751,11 @@ void HelloWorld::enemyDistances(float dt){
 		//rangedBasicUnitVec2.erase(rangedBasicUnitVec2.find(p));
 	}
 
+	for(EnemyGoblinRanged * p : GoblinRangedVec){
+		if(p != 0 && !p->isDead()){
+			team2.pushBack(p);
+		}
+	}
 
 	//reset newClosestEnemy
 	if(team1.size() > 0 && team2.size() > 0){
@@ -816,12 +829,13 @@ void HelloWorld::update(float dt) {
 
 	if(enemyBasicUnitRespawn < 0){
 		enemyBasicUnitRespawn += 5.0f;
-		createEnemyUnit(31, enemySpawnLocation1_nd);
+		//createEnemyUnit(31, enemySpawnLocation1_nd);
+		createEnemyUnit(35, enemySpawnLocation1_nd);
 	}
 
 	if(enemyRangedBasicUnitRespawn < 0){
 		enemyRangedBasicUnitRespawn += 15.0f;
-		createEnemyUnit(32, enemySpawnLocation2_nd);
+		//createEnemyUnit(32, enemySpawnLocation2_nd);
 	}
 
 	if(fireballTimer < 0){
@@ -834,9 +848,13 @@ void HelloWorld::update(float dt) {
 		auto e2_nd = enemySpawnLocation1_nd;
 		e2_nd.x += 1;
 		e2_nd.y -= 1;
-		createEnemyUnit(33, e2_nd);
+		//createEnemyUnit(33, e2_nd);
 		e2_nd.x -= 3;
-		createEnemyUnit(34, e2_nd);
+		//createEnemyUnit(34, e2_nd);
+
+		auto e1_nd = enemySpawnLocation1_nd;
+		e1_nd.x += 2;
+		createEnemyUnit(35, e1_nd);
 	}
 }
 
