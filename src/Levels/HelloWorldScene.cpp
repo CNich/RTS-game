@@ -1,6 +1,6 @@
 #include "src/Levels/HelloWorldScene.h"
 #include "SimpleAudioEngine.h"
-#include <AudioEngine.h>
+//#include <AudioEngine.h>
 
 using namespace CocosDenshion;
 
@@ -50,6 +50,9 @@ bool HelloWorld::init() {
 	wframeCache->addSpriteFramesWithFile("Units/Goblin Ranged/GoblinRangedAttack.plist");
 	wframeCache->addSpriteFramesWithFile("Units/Goblin Ranged/GoblinRangedWalk.plist");
 	wframeCache->addSpriteFramesWithFile("Units/Goblin Ranged/GoblinRangedDie.plist");
+	wframeCache->addSpriteFramesWithFile("Units/Troll Hammer/TrollHammerAttack.plist");
+	wframeCache->addSpriteFramesWithFile("Units/Troll Hammer/TrollHammerDie.plist");
+	wframeCache->addSpriteFramesWithFile("Units/Troll Hammer/TrollHammerWalk.plist");
 	wframeCache->addSpriteFramesWithFile("Units/Elf/Elf.plist");
 	wframeCache->addSpriteFramesWithFile("Units/Wizard/Wizard.plist");
 
@@ -348,6 +351,12 @@ void HelloWorld::createEnemyUnit(int option, cocos2d::Point spawnLocation){
 		GoblinRangedVec.pushBack(r);
 		initUnit(r, 1);
 		r->_infoHud = _infoHud;
+	} else if(option == 36){
+		EnemyTrollHammer * r = EnemyTrollHammer::create(spawnLocation);
+		TrollHammerVec.pushBack(r);
+		initUnit(r, 1);
+		r->_infoHud = _infoHud;
+		//r->tracked = true;
 	}
 	CCLOG("createUnitGroup %p", this->_infoHud);
 }
@@ -355,12 +364,14 @@ void HelloWorld::createEnemyUnit(int option, cocos2d::Point spawnLocation){
 void HelloWorld::createUnitGroupHelper(int option, cocos2d::Point spawnLocation){
 	cocos2d::Vector<BasicUnit *> bv1;
 	if(option == 0){
-		for(int i=0; i < 5; i++){
+		for(int i=0; i < 2; i++){
 			auto p = spawnLocation;
-			p.y = spawnLocation.y  + pf->getTileY() * i;
+			p.y = spawnLocation.y  + pf->getTileY() * i * 3;
 			BasicUnit * r = BasicUnit::create(p);
 			bv1.pushBack(r);
 			initUnit(r, 0);
+			r->debug_pathFinder = true;
+			r->debug_decisionTree = true;
 		}
 	} else if(option == 1){
 		for(int i=0; i < 5; i++){
@@ -382,6 +393,7 @@ void HelloWorld::createUnitGroupHelper(int option, cocos2d::Point spawnLocation)
 		auto bfsp = ninja->convertToPf(ninja->getPosition());
 		ninja->setBFSmap();
 		ninja->BFSInit(bfsp.x, bfsp.y);
+		//ninja->tracked = true;
 		//ninja->consoleTrack = true;
 		bv1.pushBack(ninja);
 	}
@@ -757,6 +769,12 @@ void HelloWorld::enemyDistances(float dt){
 		}
 	}
 
+	for(EnemyTrollHammer * p : TrollHammerVec){
+		if(p != 0 && !p->isDead()){
+			team2.pushBack(p);
+		}
+	}
+
 	//reset newClosestEnemy
 	if(team1.size() > 0 && team2.size() > 0){
 
@@ -828,19 +846,26 @@ void HelloWorld::update(float dt) {
 	ErodedMetalTrollTimer -= dt;
 
 	if(enemyBasicUnitRespawn < 0){
-		enemyBasicUnitRespawn += 5.0f;
+		enemyBasicUnitRespawn += 30.0f;
 		//createEnemyUnit(31, enemySpawnLocation1_nd);
-		createEnemyUnit(35, enemySpawnLocation1_nd);
+		//createEnemyUnit(35, enemySpawnLocation1_nd);
+		createEnemyUnit(36, enemySpawnLocation1_nd);
 	}
 
 	if(enemyRangedBasicUnitRespawn < 0){
-		enemyRangedBasicUnitRespawn += 15.0f;
+		enemyRangedBasicUnitRespawn += 5.0f;
 		//createEnemyUnit(32, enemySpawnLocation2_nd);
+		//createEnemyUnit(36, enemySpawnLocation2_nd);
 	}
 
-	if(fireballTimer < 0){
+	if(!ninjaDead && ninja->isDead()){
+        ninjaDead = true;
+	}
+
+	if(fireballTimer < 0 && !ninjaDead){
 		fireballTimer += 1.4;
-		ninja->shootFireBall();
+		//ninja->shootFireBall();
+		testGlobalVariable++;
 	}
 
 	if(ErodedMetalTrollTimer < 0){
@@ -854,7 +879,7 @@ void HelloWorld::update(float dt) {
 
 		auto e1_nd = enemySpawnLocation1_nd;
 		e1_nd.x += 2;
-		createEnemyUnit(35, e1_nd);
+		//createEnemyUnit(35, e1_nd);
 	}
 }
 

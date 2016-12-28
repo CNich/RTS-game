@@ -12,8 +12,6 @@ public:
 	~EnemyBasicUnit();
 	static EnemyBasicUnit* create();
 	static EnemyBasicUnit* create(cocos2d::Point tmp);
-	
-	bool tracked = false;
 
 	InfoHud *_infoHud;
 

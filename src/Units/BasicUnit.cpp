@@ -7,7 +7,7 @@
 #include "src/AttackObjects/RangedAttackObject.h"
 #include "src/Utilities/GlobalVariables.h"
 
-#include <AudioEngine.h>
+//#include <AudioEngine.h>
 
 using namespace cocos2d::experimental;
 
@@ -34,6 +34,8 @@ BasicUnit* BasicUnit::create() {
 	srand((unsigned) time(NULL));
 	pSprite->autorelease();
 	//pSprite->setScale(0.5);
+    pSprite->setScale(1.5);
+	pSprite->setPfSize(2,2);
 
 	pSprite->scheduleUpdate();
 
@@ -110,9 +112,22 @@ void BasicUnit::ASolve(int x, int y) {
 
 	if (!pf->checkEnemySpawnArea(x, y) && x >= 0 && x < pf->getRows() && y >= 0 && y < pf->getCols()){// && !pf->checkBlock(x, y)) {
 
+        //if(debug_pathFinder) {
+        //    cPrint("------before Asolving------");
+        //    tpf->print();
+        //    cPrint("---------------------------");
+        //}
+
 		tpf->setStart(ppos.x, ppos.y);
 		tpf->setEnd(x, y);
+		tpf->setUnitSize(pfSize);
 		this->getMap();
+        if(debug_pathFinder) {
+            cPrint("------get map------");
+            tpf->print();
+            cPrint("---------------------------");
+            //tpf->debug_pathFinder = true;
+        }
 		tpf->setTileX(pf->getTileX());
 		tpf->setTileY(pf->getTileY());
 		tpf->setOffX(pf->getOffX());
@@ -139,6 +154,12 @@ void BasicUnit::ASolve(int x, int y) {
 
 		lStack = tpf2.solve();
 		*/
+
+        if(debug_pathFinder) {
+            cPrint("------after Asolving------");
+            tpf->print();
+            cPrint("---------------------------");
+        }
 	}
 }
 
@@ -153,6 +174,7 @@ void BasicUnit::getMap() {
 			} else if(pf->checkEnemySpawnArea(i, j)){
 				tpf->setEnemySpawnArea(i, j);
 			}
+			tpf->setUnit(i, j, pf->getUnit(i, j));
 		}
 	}
 }
@@ -385,22 +407,20 @@ cocos2d::Animate* BasicUnit::animationWalk(){
 	}
 }
 
+/*
+* Move the unit to it's new position
+*/
 void BasicUnit::setPlayerPosition(Point position, bool diag) {
 	int x = convertToPf(position).x;
 	int y = convertToPf(position).y;
 
-	if (!pf->checkBlock(x, y)) {
+	//if (!pf->checkBlock(x, y)) {
+	if (!checkUnitSizeBlocked(x, y)) {
 		this->setZOrder(pf->getRows() - y);
 		blockedCount = 0;
 		giveup = false;
-		pf->block(convertToPf(position).x, convertToPf(position).y);
-		pf->unblock(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
 
-		pf->taken(convertToPf(position).x, convertToPf(position).y);
-		pf->untaken(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
-
-		pf->setUnit(convertToPf(position).x, convertToPf(position).y, this);
-		pf->setUnitZero(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
+		pfLocationUpdate(position);
 
 		CCFiniteTimeAction* actionMove;
 		//auto drawNode = DrawNode::create();
@@ -423,6 +443,17 @@ void BasicUnit::setPlayerPosition(Point position, bool diag) {
 		auto seq = Sequence::create(actionMove, callback, nullptr);
 		this->runAction(seq);
 		this->runAction(this->animationWalk());
+		auto tstr = cocos2d::__String::createWithFormat("current: %f, %f", this->getPosition().x, this->getPosition().y);
+		auto tstr2 = cocos2d::__String::createWithFormat("next p : %f, %f", position.x, position.y);
+
+		auto tstr3 = cocos2d::__String::createWithFormat("diff p : %f, %f", this->getPosition().x - position.x, this->getPosition().y - position.y);
+		auto tstr4 = cocos2d::__String::createWithFormat("mod  p : %f, %f", position.x / pf->getTileX(), position.y / pf->getTileY());
+
+		/*if(tracked) cPrint("%s", tstr->getCString());
+		if(tracked) cPrint("%s", tstr2->getCString());
+		if(tracked) cPrint("%s", tstr3->getCString());
+		if(tracked) cPrint("%s", tstr4->getCString());
+		*/
 		/*if(walkingAnimationFlag){
 			this->runAction(seq);
 			auto waction = RepeatForever::create(this->animationWalk());
@@ -442,7 +473,9 @@ void BasicUnit::setPlayerPosition(Point position, bool diag) {
 			//CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("step.mp3");
 			//auto id = CocosDenshion::AudioEngine::play2d(_files[index], false, 1.0f, &_audioProfile);
 
+            //WATCH OUT FOR THIS
 			numSounds++;
+
 			//auto id = cocos2d::experimental::AudioEngineImpl::play2d("step.mp3");
 
 			//auto soundId = cocos2d::experimental::AudioEngine::play2d("step.mp3");
@@ -467,7 +500,7 @@ void BasicUnit::setPlayerPosition(Point position, bool diag) {
 			auto callback = CallFunc::create([this]() {
 							this->moving = false;
 						});
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("error.mp3");
+			//CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("error.mp3");
 			auto seq = Sequence::create(DelayTime::create(0.5), callback, nullptr);
 			this->runAction(seq);
 			lStack->addFront(position);
@@ -479,6 +512,49 @@ void BasicUnit::setPlayerPosition(Point position, bool diag) {
 			setBasicUnitPF();
 		}
 	}
+}
+
+/*
+* Update unit location on the map
+*/
+void BasicUnit::pfLocationUpdate(cocos2d::Point position){
+    for(int i = 0; i < pfSize.x; i++){
+        for(int j = 0; j < pfSize.y; j++){
+            pf->unblock(convertToPf(this->getPosition()).x + i,	convertToPf(this->getPosition()).y + j);
+            pf->block(convertToPf(position).x + i, convertToPf(position).y + j);
+
+            pf->untaken(convertToPf(this->getPosition()).x + i,	convertToPf(this->getPosition()).y + j);
+            pf->taken(convertToPf(position).x + i, convertToPf(position).y + j);
+
+            pf->setUnitZero(convertToPf(this->getPosition()).x + i,	convertToPf(this->getPosition()).y + j);
+            pf->setUnit(convertToPf(position).x + i, convertToPf(position).y + j, this);
+        }
+    }
+
+    /* OLD
+    pf->block(convertToPf(position).x, convertToPf(position).y);
+    pf->unblock(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
+
+    pf->taken(convertToPf(position).x, convertToPf(position).y);
+    pf->untaken(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
+
+    pf->setUnit(convertToPf(position).x, convertToPf(position).y, this);
+    pf->setUnitZero(convertToPf(this->getPosition()).x,	convertToPf(this->getPosition()).y);
+    */
+}
+
+/*
+* Check if a unit can fit in a certain pf coordinate
+*/
+bool BasicUnit::checkUnitSizeBlocked(int x_pf, int y_pf){
+    for(int i = 0; i < pfSize.x; i++){
+        for(int j = 0; j < pfSize.y; j++){
+            if( (pf->getUnit(x_pf + i, y_pf + j) != nullptr && pf->getUnit(x_pf + i, y_pf + j) != this) || pf->checkPermaBlock(x_pf + i, y_pf + j) ){
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 void BasicUnit::setBasicUnitPF(){
@@ -527,6 +603,21 @@ Point BasicUnit::tileCoordForPosition(Point position) {
 	return Point(x, y);
 }
 
+/*
+* Set how large the unit is on the map
+*/
+void BasicUnit::setPfSize(int x, int y){
+    pfSize.x = x;
+    pfSize.y = y;
+}
+
+/*
+* Set how large the unit is on the map
+*/
+void BasicUnit::setPfSize(cocos2d::Point p){
+    pfSize = p;
+}
+
 void BasicUnit::update(float dt) {
 	cocos2d::Point currentEL;
 
@@ -568,9 +659,17 @@ void BasicUnit::update(float dt) {
 						}
 					}
 				}
-				pf->unblock(delete_pf.x, delete_pf.y);
-				pf->untaken(delete_pf.x, delete_pf.y);
-				pf->setUnitZero(delete_pf.x, delete_pf.y);
+
+				for(int i = -pfSize.x; i < pfSize.x; i++){
+                    for(int j = -pfSize.y; j < pfSize.y; j++){
+                        if(pf->getUnit(delete_pf.x + i, delete_pf.y + j) == this){
+                            pf->unblock(delete_pf.x + i, delete_pf.y + j);
+                            pf->untaken(delete_pf.x + i, delete_pf.y + j);
+                            pf->setUnitZero(delete_pf.x + i, delete_pf.y + j);
+                        }
+                    }
+				}
+
 				//this->getParent()->removeChild(this);
 				this->removeFromLevel();
 			});
@@ -611,7 +710,10 @@ void BasicUnit::update(float dt) {
 		else if(currentEnemy != 0 && currentEnemyMoved && unitToUnitDistance(this, currentEnemy) < movementRange &&
 				attackTravelRange >= pointToPointDistance(this->convertToPf(this->getPosition()), goalPosition)){
 			auto t = convertToPf(currentEnemy->getPosition());
+			auto hack_move = pfSize;
+			pfSize = {1, 1};
 			this->ASolve(t.x, t.y);
+			pfSize = hack_move;
 			currentEnemyMoved = false;
 			consoleDebugStatement(cocos2d::__String::createWithFormat(
 					"move to enemy: %d", this->enemyIsAttackable()));
@@ -619,11 +721,13 @@ void BasicUnit::update(float dt) {
 
 		//unit's goal position has been updated
 		else if(goalPositionAsolve && !moving){
+            consoleDebugStatement(cocos2d::__String::createWithFormat("updated goal position"));
 			goalPositionAsolve = false;
 			if(consoleTrack) {
 				consoleCount++;
 			}
-			this->ASolve(goalPosition.x, goalPosition.y);
+			//this->ASolve(goalPosition.x, goalPosition.y);
+            aSolveHelper(goalPosition.x, goalPosition.y);
 		}
 
 		//the unit is in between movements and is not attacking
@@ -649,7 +753,13 @@ void BasicUnit::update(float dt) {
 			badMove = 0;
 			consoleDebugStatement(__String::createWithFormat(
 					"%2d %2d idle", consoleCount, lStack->getLength()));
-			this->ASolve(goalPosition.x, goalPosition.y);
+			//this->ASolve(goalPosition.x, goalPosition.y);
+			//auto hack_move = pfSize;
+			//pfSize = {1, 1};
+			//aSolveHelper(goalPosition.x, goalPosition.y);
+			//pfSize = hack_move;
+			goalPositionAsolve = true;
+
 		}
 
 		//movedYet, tempMoving
@@ -682,6 +792,45 @@ void BasicUnit::update(float dt) {
 			tempMoving = false;
 		}
 	}
+}
+
+void BasicUnit::aSolveHelper(int x_pf, int y_pf){
+    auto this_pf = convertToPf(this->getPosition());
+    if(pf->getUnit(this_pf.x, this_pf.y) != this && pf->checkBlock(goalPosition.x, goalPosition.y)){
+        bool asolveNeighboorFound = false;
+        cPrint("==============================");
+        for(int i = 0; i <= 4; i++){
+            for(int j = 0; j <= 4; j++){
+                if(!pf->checkBlock(goalPosition.x + i, goalPosition.y + j)){
+                    if(debug_decisionTree) cPrint("asolve neighboor %d, %d", i, j);
+                    this->ASolve(goalPosition.x + i, goalPosition.y + j);
+                    asolveNeighboorFound = true;
+                    break;
+                } else if(!pf->checkBlock(goalPosition.x - i, goalPosition.y - j)){
+                    if(debug_decisionTree) cPrint("asolve neighboor %d, %d", -i, -j);
+                    this->ASolve(goalPosition.x - i, goalPosition.y - j);
+                    asolveNeighboorFound = true;
+                    break;
+                } else if(!pf->checkBlock(goalPosition.x + i, goalPosition.y - j)){
+                    if(debug_decisionTree) cPrint("asolve neighboor %d, %d", i, -j);
+                    this->ASolve(goalPosition.x + i, goalPosition.y - j);
+                    asolveNeighboorFound = true;
+                    break;
+                } else if(!pf->checkBlock(goalPosition.x - i, goalPosition.y + j)){
+                    if(debug_decisionTree) cPrint("asolve neighboor %d, %d", -i, j);
+                    this->ASolve(goalPosition.x - i, goalPosition.y + j);
+                    asolveNeighboorFound = true;
+                    break;
+                }
+            }
+            if(asolveNeighboorFound) break;
+        }
+        cPrint("==============================");
+
+    } else{
+        if(debug_decisionTree) cPrint("asolve neighboor original");
+        this->ASolve(goalPosition.x, goalPosition.y);
+    }
 }
 
 void BasicUnit::removeFromLevel(){
@@ -740,6 +889,7 @@ int BasicUnit::pointToPointDistance(cocos2d::Point a, cocos2d::Point b){
 	return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2));
 }
 
+/*
 //Melee
 bool BasicUnit::enemyIsAttackable(){
 	//if(this->getCurrentEnemy() != 0 && attackTravelRange >= pointToPointDistance(this->convertToPf(this->getPosition()), goalPosition)){
@@ -748,6 +898,27 @@ bool BasicUnit::enemyIsAttackable(){
 		auto thisLoc = convertToPf(this->getPosition());
 		if(abs(enemyLoc.x - thisLoc.x) <= 1 && abs(enemyLoc.y - thisLoc.y) <= 1){
 			return true;
+		}
+	}
+	return false;
+}
+*/
+
+bool BasicUnit::enemyIsAttackable(){
+	if(this->getCurrentEnemy() != 0){
+		auto enemyLoc = convertToPf(currentEnemy->getPosition());
+		auto thisLoc = convertToPf(this->getPosition());
+
+		for(int ei = 0; ei < getCurrentEnemy()->getPfSize().x; ei++){
+            for(int ej = 0; ej < getCurrentEnemy()->getPfSize().y; ej++){
+                for(int i = 0; i < pfSize.x; i++){
+                    for(int j = 0; j < pfSize.y; j++){
+                        if(abs(enemyLoc.x + ei - thisLoc.x + i) <= pfSize.x && abs(enemyLoc.y + ej - thisLoc.y + j) <= pfSize.y){
+                            return true;
+                        }
+                    }
+                }
+            }
 		}
 	}
 	return false;
@@ -794,7 +965,7 @@ int BasicUnit::getHealth(){
 
 
 void BasicUnit::consoleDebugStatement(cocos2d::__String * str){
-	if(consoleTrack){
-		CCLOG("%s",str->getCString());
+	if(debug_decisionTree){
+		cPrint("%s",str->getCString());
 	}
 }

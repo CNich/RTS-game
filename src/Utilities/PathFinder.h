@@ -6,6 +6,7 @@
 #include "src/Utilities/HeapPathFinder.h"
 #include "cocos2d.h"
 #include <vector>
+#include <iostream>
 
 template<class T>
 class PathFinder {
@@ -53,9 +54,15 @@ public:
 	bool checkBounds_Pf(int x, int y);
 	bool checkBounds_Pf(cocos2d::Point p);
 
-	void setUnit(int x, int y, T *ty) { map[x][y].unit = ty; };
-	void setUnitZero(int x, int y) { map[x][y].unit = 0; };
-	T* getUnit(int x, int y) { return map[x][y].unit; };
+	void setUnit(int x_pf, int y_pf, T *ty) { map[x_pf][y_pf].unit = ty; };
+	void setUnitZero(int x_pf, int y_pf) { map[x_pf][y_pf].unit = 0; };
+
+	/* Get the unit at the PF coordinate (x,y) */
+	T* getUnit(int x_pf, int y_pf) { return map[x_pf][y_pf].unit; };
+
+	void setUnitSize(cocos2d::Point p);
+
+	bool debug_pathFinder = false;
 
 private:
 	//pathNode **map;
@@ -74,6 +81,9 @@ private:
 	int offX = 0;
 	int offY = 0;
 	cocos2d::Point BFSStart;
+
+    /* size of unit on the map */
+	cocos2d::Point unitSize;
 
 };
 
@@ -234,6 +244,14 @@ int PathFinder<T>::getRows(){
 template<class T>
 int PathFinder<T>::getCols(){
 	return cols;
+}
+
+/*
+* Set unit size on the map
+*/
+template<class T>
+void PathFinder<T>::setUnitSize(cocos2d::Point p){
+    unitSize = p;
 }
 
 /*
@@ -442,6 +460,12 @@ LinkedList<cocos2d::Point> * PathFinder<T>::solve(){
 	//insert start into the heap
 	openL->insert(&map[start.x][start.y]);
 
+    if(debug_pathFinder) {
+        cout << "------------before solve------------" << endl;
+        print();
+        cout << "------------------------------------" << endl;
+    }
+
 	//main A* loop
 	//check the first item on the heap/mark it as visited
 	//add it's unchecked neighbors to the heap
@@ -458,11 +482,11 @@ LinkedList<cocos2d::Point> * PathFinder<T>::solve(){
 		}
 		//mark current node as visited
 		map[curr.x][curr.y].closed = true;
-		
+
 		//check all 8 adjacent nodes to see if they can be added to the heap
 		//check left
 		checkAdj(curr.x - 1, curr.y, curr.x, curr.y);
-		
+
 		//check right
 		checkAdj(curr.x + 1, curr.y, curr.x, curr.y);
 
@@ -483,10 +507,16 @@ LinkedList<cocos2d::Point> * PathFinder<T>::solve(){
 
 		//check lower right
 		checkAdj(curr.x + 1, curr.y + 1, curr.x, curr.y);
-		
+
 	}
 	//either the end node was reached or the the heap ran out
 	pathNode curr = map[end.x][end.y];
+
+    if(debug_pathFinder) {
+        cout << "------------After A* loop-----------" << endl;
+        print();
+        cout << "------------------------------------" << endl;
+    }
 
 	//travel parent to parent starting from the end node until the start node
 	//break if current node is already a success (should never happen)
@@ -538,8 +568,27 @@ void PathFinder<T>::checkAdj(int x1, int y1, int x2, int y2){
 		cost = 10;
 	}
 
+	bool allValid = true;
+
+    //Make sure that all of the places the next unit occupies are open along with if node is within the bounds
+	for(int i = 0; i < unitSize.x; i++){
+        for(int j = 0; j < unitSize.y; j++){
+    //for(int i = 0; i < 1; i++){
+    //    for(int j = 0; j < 1; j++){
+            int x1p = x1 + i;
+            int y1p = y1 + j;
+            //if ( !(x1p >= 0 && y1p >= 0 && x1p <= rows - 1 && y1p <= cols - 1 && !map[x1p][y1p].blocked) ){
+            //if ( !(x1p >= 0 && y1p >= 0 && x1p <= rows - 1 && y1p <= cols - 1) || map[x1p][y1p].permaBlocked || (map[x1p][y1p].unit != map[start.x][start.y].unit && map[x1p][y1p].blocked) ){
+            if ( !(x1p >= 0 && y1p >= 0 && x1p <= rows - 1 && y1p <= cols - 1) || map[x1p][y1p].permaBlocked || (map[x1p][y1p].blocked && map[x1p][y1p].unit != map[start.x][start.y].unit) ){
+                allValid = false;
+            }
+        }
+        //if(!allValid) break;
+	}
+
 	//check if node is within the bounds, already visited, or blocked
-	if (x1 >= 0 && y1 >= 0 && x1 <= rows - 1 && y1 <= cols - 1 && !map[x1][y1].closed && !map[x1][y1].blocked){
+	//if (x1 >= 0 && y1 >= 0 && x1 <= rows - 1 && y1 <= cols - 1 && !map[x1][y1].closed && !map[x1][y1].blocked){
+	if (allValid && !map[x1][y1].closed){
 
 		//if the cost to get to the neighbor's node is currently greater than getting there
 		//through the current node, switch it's G value and update it's position in the heap
@@ -554,10 +603,10 @@ void PathFinder<T>::checkAdj(int x1, int y1, int x2, int y2){
 
 			//calculate new F value
 			map[x1][y1].F = map[x1][y1].G + map[x1][y1].H;
-			
+
 			//for debugging
 			map[x1][y1].checked = true;
-			
+
 			//check to see if neighbor is in heap. If not, add it
 			//items not in the heap have heapPos = -1
 			if (map[x1][y1].heapPos == -1){
@@ -585,31 +634,37 @@ int PathFinder<T>::abs(int a){
 
 template<class T>
 void PathFinder<T>::print(){
-	////cout << endl << "map" << endl << endl;
-	////cout << start.x << " " << start.y << endl;
-	for (int i = 0; i < rows; i++){
-		for (int j = 0; j < cols; j++){
+	cout << endl << "map" << endl << endl;
+	cout << start.x << " " << start.y << endl;
+	//for (int i = 0; i < rows; i++){
+	//for (int i = 0; i < rows; i++){
+		//for (int j = 0; j < cols; j++){
+    for (int j = cols - 1; j >= 0; j--){
+		for (int i = 0; i < rows; i++){
 			//if ( map[i][j].success && (i != start.x && j != start.y) && (i != end.x && j != end.y) ){
 			if (map[i][j].success && !( (i == start.x && j == start.y) || (i == end.x && j == end.y) ) ){
-				//cout << "+";
+				cout << "+";
 			}
 			else if (map[i][j].checked == true && !map[i][j].blocked && !((i == start.x && j == start.y) || (i == end.x && j == end.y))){
 				//cout << "*";
 			}
 			else if (!map[i][j].blocked && !((i == start.x && j == start.y) || (i == end.x && j == end.y))){
-				//cout << " ";
+				cout << " ";
+			}
+			else if (map[i][j].unit != 0 || map[i][j].unit != nullptr){
+				cout << "-";
 			}
 			else if (map[i][j].blocked){
-				//cout << "#";
+				cout << "#";
 			}
 			else if ((i == start.x && j == start.y) || (i == end.x && j == end.y)){
-				//cout << "O";
+				cout << "O";
 			}
 			else{
-				//cout << "X";
+				cout << "X";
 			}
 		}
-		//cout << endl;
+		cout << endl;
 	}
 
 	/*

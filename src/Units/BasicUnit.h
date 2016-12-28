@@ -26,6 +26,10 @@ public:
 
 	cocos2d::Point convertToPf(cocos2d::Point tmp);
 
+	void setPfSize(int x, int y);
+	void setPfSize(cocos2d::Point p);
+	cocos2d::Point getPfSize(){ return pfSize; };
+
 	void setTeam(char t){team = t;};
 	char getTeam(){return team;};
 
@@ -61,6 +65,9 @@ public:
 	void initHealthBar();
 	void setHealthBar();
 
+    bool debug_pathFinder = false;
+    bool debug_decisionTree = false;
+
 protected:
 	cocos2d::Point startingPos;
 	bool enemy = false;
@@ -74,6 +81,10 @@ protected:
 	virtual void updateDelayedMove();
 	void setMoving();
 
+	cocos2d::Point pfSize = {1, 1};
+	void pfLocationUpdate(cocos2d::Point position);
+	bool checkUnitSizeBlocked(int x_pf, int y_pf);
+
 	bool movedYet = false;
 	bool idle = true;
 	bool idleTrack = true;
@@ -84,6 +95,7 @@ protected:
 	bool giveup = false;
 	bool tempMoving = false;
 	void setBasicUnitPF();
+	void aSolveHelper(int x_pf, int y_pf);
 
 	char team;
 
@@ -113,8 +125,8 @@ protected:
 	bool removeFromPf = true;
 
 	virtual int getHealth();
-	int health = 320;
-	int initHealth = 320;
+	int health = 1000;
+	int initHealth = 1000;
 	int attackDamage = 60;
 	int attackRange = 7;
 

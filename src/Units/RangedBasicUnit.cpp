@@ -27,7 +27,7 @@ RangedBasicUnit* RangedBasicUnit::create() {
 	pSprite->tpf->setTileX(32);
 	pSprite->tpf->setTileY(32);
 	*/
-	//pSprite->setScale(0.5);
+	pSprite->setScale(0.75);
 
 	pSprite->scheduleUpdate();
 

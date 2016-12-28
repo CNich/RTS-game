@@ -27,7 +27,7 @@ EnemyBasicUnitRanged* EnemyBasicUnitRanged::create() {
 	pSprite->tpf->setTileX(32);
 	pSprite->tpf->setTileY(32);
 	*/
-	//pSprite->setScale(0.5);
+	//pSprite->setScale(0.75);
 
 	pSprite->movementRange = pSprite->initMovementRange;
 	pSprite->initHealth = 120;

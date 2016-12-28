@@ -10,7 +10,7 @@ EnemyBasicUnit::EnemyBasicUnit() {
 }
 
 EnemyBasicUnit::~EnemyBasicUnit() {
-	CCLOG("EnemyBasicUnit WAS DELETED!!!!!!!!!!!");
+	cPrint("EnemyBasicUnit WAS DELETED!!!!!!!!!!!");
 	//delete tpf;
 	//delete lStack;
 	//this->getParent()->removeChild(this);
@@ -27,7 +27,6 @@ EnemyBasicUnit* EnemyBasicUnit::create() {
 	pSprite->tpf->setTileX(32);
 	pSprite->tpf->setTileY(32);
 	*/
-	//pSprite->setScale(0.5);
 
 	pSprite->movementRange = pSprite->initMovementRange;
 	pSprite->initHealth = 320;
@@ -48,6 +47,8 @@ EnemyBasicUnit* EnemyBasicUnit::create(cocos2d::Point tmp){
 }
 
 void EnemyBasicUnit::update(float dt) {
+    //debug_decisionTree = true;
+
 	cocos2d::Point currentEL;
 	if(currentEnemy != 0){
 		currentEL = convertToPf(currentEnemy->getPosition());
@@ -77,10 +78,18 @@ void EnemyBasicUnit::update(float dt) {
 						}
 					}
 				}
-				pf->unblock(delete_pf.x, delete_pf.y);
-				pf->untaken(delete_pf.x, delete_pf.y);
-				pf->setUnitZero(delete_pf.x, delete_pf.y);
-				CCLOG("Unit Dead");
+
+				for(int i = -pfSize.x; i < pfSize.x; i++){
+                    for(int j = -pfSize.y; j < pfSize.y; j++){
+                        if(pf->getUnit(delete_pf.x + i, delete_pf.y + j) == this){
+                            pf->unblock(delete_pf.x + i, delete_pf.y + j);
+                            pf->untaken(delete_pf.x + i, delete_pf.y + j);
+                            pf->setUnitZero(delete_pf.x + i, delete_pf.y + j);
+                        }
+                    }
+				}
+
+				cPrint("Unit Dead");
 				this->getParent()->removeChild(this);
 			});
 
@@ -124,7 +133,7 @@ void EnemyBasicUnit::update(float dt) {
 		else if(currentEnemy != 0 && unitToUnitDistance(this, currentEnemy) >= attackRange){
 			currentEnemyIsCloseEnough = false;
 			currentEnemyMoved = false;
-			CCLOG("drp");
+			cPrint("drp");
 		}*/
 
 		//else if(currentEnemyIsCloseEnough && !currentEnemyMoved && unitToUnitDistance(this, currentEnemy) < attackRange){
@@ -138,7 +147,7 @@ void EnemyBasicUnit::update(float dt) {
 		//if the movement stack isn't empty and the unit isn't moving
 		//i.e. in between moves, move to next location in stack
 		else if (!lStack->empty() && !moving) {
-			if(tracked) CCLOG("between movements");
+			if(debug_decisionTree) cPrint("between movements");
 			delayedMove();
 			tempMoving = true;
 			movedYet = true;
@@ -150,22 +159,22 @@ void EnemyBasicUnit::update(float dt) {
 			std::string dir = pf->getBFSDir(pos.x, pos.y);
 			auto bfsp = pf->getBFSParent(pos.x, pos.y);
 
-			if(tracked) CCLOG("%d %s bfsMoving", consoleTrackNum, dir.c_str());
+			if(debug_decisionTree) cPrint("%d %s bfsMoving", consoleTrackNum, dir.c_str());
 
 			auto BFSParentBlock = this->convertToPf(bfsp);
-			//bool tracked = false;
+			//bool debug_decisionTree = false;
 			if(dir == "u"){
-				if(tracked) CCLOG("u");
-				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
+				if(debug_decisionTree) cPrint("u");
+				if(!checkUnitSizeBlocked(BFSParentBlock.x, BFSParentBlock.y)){
 					lStack->addFront(bfsp);
-				} else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y + 1)){
+				} else if(!checkUnitSizeBlocked(BFSParentBlock.x, BFSParentBlock.y + 1)){
 					bfsp.y += pf->getTileY();
 					lStack->addFront(bfsp);
-					if(tracked) CCLOG("u to ur");
-				}else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y - 1)){
+					if(debug_decisionTree) cPrint("u to ur");
+				}else if(!checkUnitSizeBlocked(BFSParentBlock.x, BFSParentBlock.y - 1)){
 					bfsp.y -= pf->getTileY();
 					lStack->addFront(bfsp);
-					if(tracked) CCLOG("u to ul");
+					if(debug_decisionTree) cPrint("u to ul");
 				}else{
 					auto t = this->getPosition();
 					auto thisPos = this->convertToPf(this->getPosition());
@@ -175,22 +184,22 @@ void EnemyBasicUnit::update(float dt) {
 						t.y -= pf->getTileY();
 					}
 					lStack->addFront(t);
-					if(tracked) CCLOG("u to ?");
+					if(debug_decisionTree) cPrint("u to ?");
 				}
 			}
 
 			else if(dir == "d"){
-				if(tracked) CCLOG("d");
-				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
+				if(debug_decisionTree) cPrint("d");
+				if(!checkUnitSizeBlocked(BFSParentBlock.x, BFSParentBlock.y)){
 					lStack->addFront(bfsp);
-				} else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y + 1)){
+				} else if(!checkUnitSizeBlocked(BFSParentBlock.x, BFSParentBlock.y + 1)){
 					bfsp.y += pf->getTileY();
 					lStack->addFront(bfsp);
-					if(tracked) CCLOG("d to dr");
-				}else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y - 1)){
+					if(debug_decisionTree) cPrint("d to dr");
+				}else if(!checkUnitSizeBlocked(BFSParentBlock.x, BFSParentBlock.y - 1)){
 					bfsp.y -= pf->getTileY();
 					lStack->addFront(bfsp);
-					if(tracked) CCLOG("d to dl");
+					if(debug_decisionTree) cPrint("d to dl");
 				}else{
 					auto t = this->getPosition();
 					auto thisPos = this->convertToPf(this->getPosition());
@@ -200,26 +209,201 @@ void EnemyBasicUnit::update(float dt) {
 						t.y -= pf->getTileY();
 					}
 					lStack->addFront(t);
-					if(tracked) CCLOG("d to ?");
+					if(debug_decisionTree) cPrint("d to ?");
 				}
 			}
 
 			else if(dir == "r"){
-				if(tracked) CCLOG("r");
+				if(debug_decisionTree) cPrint("r");
+				if(!checkUnitSizeBlocked(BFSParentBlock.x, BFSParentBlock.y)){
+					lStack->addFront(bfsp);
+					//auto t = this->getPosition();
+					//t.y -= pf->getTileY();
+					//lStack->addFront(t);
+					if(debug_decisionTree) cPrint("r not changed");
+				} else if(!checkUnitSizeBlocked(BFSParentBlock.x + 1, BFSParentBlock.y)){
+					bfsp.x += pf->getTileX();
+					lStack->addFront(bfsp);
+					if(debug_decisionTree) cPrint("r to dr");
+				}else if(!checkUnitSizeBlocked(BFSParentBlock.x - 1, BFSParentBlock.y)){
+					bfsp.x -= pf->getTileX();
+					lStack->addFront(bfsp);
+					if(debug_decisionTree) cPrint("r to ur");
+				}else{
+					auto t = this->getPosition();
+					auto thisPos = this->convertToPf(this->getPosition());
+					if(thisPos.x < pf->getBFSStart().x){
+						t.x += pf->getTileX();
+					} else{
+						t.x -= pf->getTileX();
+					}
+					lStack->addFront(t);
+					if(debug_decisionTree) cPrint("r to ?");
+				}
+			}
+
+			else if(dir == "l"){
+				if(debug_decisionTree) cPrint("l");
+				if(!checkUnitSizeBlocked(BFSParentBlock.x, BFSParentBlock.y)){
+					lStack->addFront(bfsp);
+				} else if(!checkUnitSizeBlocked(BFSParentBlock.x + 1, BFSParentBlock.y)){
+					bfsp.x += pf->getTileX();
+					lStack->addFront(bfsp);
+					if(debug_decisionTree) cPrint("l to dl");
+				}else if(!checkUnitSizeBlocked(BFSParentBlock.x - 1, BFSParentBlock.y)){
+					bfsp.x -= pf->getTileX();
+					lStack->addFront(bfsp);
+					if(debug_decisionTree) cPrint("l to ul");
+				}else{
+					auto t = this->getPosition();
+					auto thisPos = this->convertToPf(this->getPosition());
+					if(thisPos.x < pf->getBFSStart().x){
+						t.x += pf->getTileX();
+					} else{
+						t.x -= pf->getTileX();
+					}
+					lStack->addFront(t);
+					if(debug_decisionTree) cPrint("l to ?");
+				}
+			}
+
+			else if(dir == "ul"){
+				if(debug_decisionTree) cPrint("ul");
+				if(!checkUnitSizeBlocked(BFSParentBlock.x, BFSParentBlock.y)){
+					lStack->addFront(bfsp);
+				} else if(!checkUnitSizeBlocked(BFSParentBlock.x - 1, BFSParentBlock.y)){
+					bfsp.x -= pf->getTileX();
+					lStack->addFront(bfsp);
+					if(debug_decisionTree) cPrint("ul to l");
+				}else if(!checkUnitSizeBlocked(BFSParentBlock.x, BFSParentBlock.y - 1)){
+					bfsp.y -= pf->getTileY();
+					lStack->addFront(bfsp);
+					if(debug_decisionTree) cPrint("ul to u");
+				}
+			}
+
+			else if(dir == "ur"){
+				if(debug_decisionTree) cPrint("ur");
+				if(!checkUnitSizeBlocked(BFSParentBlock.x, BFSParentBlock.y)){
+					lStack->addFront(bfsp);
+				} else if(!checkUnitSizeBlocked(BFSParentBlock.x - 1, BFSParentBlock.y)){
+					bfsp.x -= pf->getTileX();
+					lStack->addFront(bfsp);
+					if(debug_decisionTree) cPrint("ur to r");
+				}else if(!checkUnitSizeBlocked(BFSParentBlock.x, BFSParentBlock.y + 1)){
+					bfsp.y += pf->getTileY();
+					lStack->addFront(bfsp);
+					if(debug_decisionTree) cPrint("ur to u");
+				}
+			}
+
+			else if(dir == "dl"){
+				if(debug_decisionTree) cPrint("dl");
+				if(!checkUnitSizeBlocked(BFSParentBlock.x, BFSParentBlock.y)){
+					lStack->addFront(bfsp);
+				} else if(!checkUnitSizeBlocked(BFSParentBlock.x + 1, BFSParentBlock.y)){
+					bfsp.x += pf->getTileX();
+					lStack->addFront(bfsp);
+					if(debug_decisionTree) cPrint("dl to l");
+				}else if(!checkUnitSizeBlocked(BFSParentBlock.x, BFSParentBlock.y - 1)){
+					bfsp.y -= pf->getTileY();
+					lStack->addFront(bfsp);
+					if(debug_decisionTree) cPrint("dl to d");
+				}
+			}
+
+			else if(dir == "dr"){
+				if(debug_decisionTree) cPrint("dr");
+				if(!checkUnitSizeBlocked(BFSParentBlock.x, BFSParentBlock.y)){
+					lStack->addFront(bfsp);
+				} else if(!checkUnitSizeBlocked(BFSParentBlock.x + 1, BFSParentBlock.y)){
+					bfsp.x += pf->getTileX();
+					lStack->addFront(bfsp);
+					if(debug_decisionTree) cPrint("dr to r");
+				}else if(!checkUnitSizeBlocked(BFSParentBlock.x, BFSParentBlock.y + 1)){
+					bfsp.y += pf->getTileY();
+					lStack->addFront(bfsp);
+					if(debug_decisionTree) cPrint("dr to d");
+				}
+			}
+        }
+
+        /*
+		else if(lStack->empty() && !moving){
+			auto pos = this->convertToPf(this->getPosition());
+			std::string dir = pf->getBFSDir(pos.x, pos.y);
+			auto bfsp = pf->getBFSParent(pos.x, pos.y);
+
+			if(debug_decisionTree) cPrint("%d %s bfsMoving", consoleTrackNum, dir.c_str());
+
+			auto BFSParentBlock = this->convertToPf(bfsp);
+			//bool debug_decisionTree = false;
+			if(dir == "u"){
+				if(debug_decisionTree) cPrint("u");
+				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
+					lStack->addFront(bfsp);
+				} else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y + 1)){
+					bfsp.y += pf->getTileY();
+					lStack->addFront(bfsp);
+					if(debug_decisionTree) cPrint("u to ur");
+				}else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y - 1)){
+					bfsp.y -= pf->getTileY();
+					lStack->addFront(bfsp);
+					if(debug_decisionTree) cPrint("u to ul");
+				}else{
+					auto t = this->getPosition();
+					auto thisPos = this->convertToPf(this->getPosition());
+					if(thisPos.y < pf->getBFSStart().y){
+						t.y += pf->getTileY();
+					} else{
+						t.y -= pf->getTileY();
+					}
+					lStack->addFront(t);
+					if(debug_decisionTree) cPrint("u to ?");
+				}
+			}
+
+			else if(dir == "d"){
+				if(debug_decisionTree) cPrint("d");
+				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
+					lStack->addFront(bfsp);
+				} else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y + 1)){
+					bfsp.y += pf->getTileY();
+					lStack->addFront(bfsp);
+					if(debug_decisionTree) cPrint("d to dr");
+				}else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y - 1)){
+					bfsp.y -= pf->getTileY();
+					lStack->addFront(bfsp);
+					if(debug_decisionTree) cPrint("d to dl");
+				}else{
+					auto t = this->getPosition();
+					auto thisPos = this->convertToPf(this->getPosition());
+					if(thisPos.y < pf->getBFSStart().y){
+						t.y += pf->getTileY();
+					} else{
+						t.y -= pf->getTileY();
+					}
+					lStack->addFront(t);
+					if(debug_decisionTree) cPrint("d to ?");
+				}
+			}
+
+			else if(dir == "r"){
+				if(debug_decisionTree) cPrint("r");
 				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
 					lStack->addFront(bfsp);
 					//auto t = this->getPosition();
 					//t.y -= pf->getTileY();
 					//lStack->addFront(t);
-					if(tracked) CCLOG("r not changed");
+					if(debug_decisionTree) cPrint("r not changed");
 				} else if(!pf->checkBlock(BFSParentBlock.x + 1, BFSParentBlock.y)){
 					bfsp.x += pf->getTileX();
 					lStack->addFront(bfsp);
-					if(tracked) CCLOG("r to dr");
+					if(debug_decisionTree) cPrint("r to dr");
 				}else if(!pf->checkBlock(BFSParentBlock.x - 1, BFSParentBlock.y)){
 					bfsp.x -= pf->getTileX();
 					lStack->addFront(bfsp);
-					if(tracked) CCLOG("r to ur");
+					if(debug_decisionTree) cPrint("r to ur");
 				}else{
 					auto t = this->getPosition();
 					auto thisPos = this->convertToPf(this->getPosition());
@@ -229,22 +413,22 @@ void EnemyBasicUnit::update(float dt) {
 						t.x -= pf->getTileX();
 					}
 					lStack->addFront(t);
-					if(tracked) CCLOG("r to ?");
+					if(debug_decisionTree) cPrint("r to ?");
 				}
 			}
 
 			else if(dir == "l"){
-				if(tracked) CCLOG("l");
+				if(debug_decisionTree) cPrint("l");
 				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
 					lStack->addFront(bfsp);
 				} else if(!pf->checkBlock(BFSParentBlock.x + 1, BFSParentBlock.y)){
 					bfsp.x += pf->getTileX();
 					lStack->addFront(bfsp);
-					if(tracked) CCLOG("l to dl");
+					if(debug_decisionTree) cPrint("l to dl");
 				}else if(!pf->checkBlock(BFSParentBlock.x - 1, BFSParentBlock.y)){
 					bfsp.x -= pf->getTileX();
 					lStack->addFront(bfsp);
-					if(tracked) CCLOG("l to ul");
+					if(debug_decisionTree) cPrint("l to ul");
 				}else{
 					auto t = this->getPosition();
 					auto thisPos = this->convertToPf(this->getPosition());
@@ -254,217 +438,80 @@ void EnemyBasicUnit::update(float dt) {
 						t.x -= pf->getTileX();
 					}
 					lStack->addFront(t);
-					if(tracked) CCLOG("l to ?");
+					if(debug_decisionTree) cPrint("l to ?");
 				}
 			}
 
 			else if(dir == "ul"){
-				if(tracked) CCLOG("ul");
+				if(debug_decisionTree) cPrint("ul");
 				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
 					lStack->addFront(bfsp);
 				} else if(!pf->checkBlock(BFSParentBlock.x - 1, BFSParentBlock.y)){
 					bfsp.x -= pf->getTileX();
 					lStack->addFront(bfsp);
-					if(tracked) CCLOG("ul to l");
+					if(debug_decisionTree) cPrint("ul to l");
 				}else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y - 1)){
 					bfsp.y -= pf->getTileY();
 					lStack->addFront(bfsp);
-					if(tracked) CCLOG("ul to u");
+					if(debug_decisionTree) cPrint("ul to u");
 				}
 			}
 
 			else if(dir == "ur"){
-				if(tracked) CCLOG("ur");
+				if(debug_decisionTree) cPrint("ur");
 				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
 					lStack->addFront(bfsp);
 				} else if(!pf->checkBlock(BFSParentBlock.x - 1, BFSParentBlock.y)){
 					bfsp.x -= pf->getTileX();
 					lStack->addFront(bfsp);
-					if(tracked) CCLOG("ur to r");
+					if(debug_decisionTree) cPrint("ur to r");
 				}else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y + 1)){
 					bfsp.y += pf->getTileY();
 					lStack->addFront(bfsp);
-					if(tracked) CCLOG("ur to u");
+					if(debug_decisionTree) cPrint("ur to u");
 				}
 			}
 
 			else if(dir == "dl"){
-				if(tracked) CCLOG("dl");
+				if(debug_decisionTree) cPrint("dl");
 				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
 					lStack->addFront(bfsp);
 				} else if(!pf->checkBlock(BFSParentBlock.x + 1, BFSParentBlock.y)){
 					bfsp.x += pf->getTileX();
 					lStack->addFront(bfsp);
-					if(tracked) CCLOG("dl to l");
+					if(debug_decisionTree) cPrint("dl to l");
 				}else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y - 1)){
 					bfsp.y -= pf->getTileY();
 					lStack->addFront(bfsp);
-					if(tracked) CCLOG("dl to d");
+					if(debug_decisionTree) cPrint("dl to d");
 				}
 			}
 
 			else if(dir == "dr"){
-				if(tracked) CCLOG("dr");
+				if(debug_decisionTree) cPrint("dr");
 				if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y)){
 					lStack->addFront(bfsp);
 				} else if(!pf->checkBlock(BFSParentBlock.x + 1, BFSParentBlock.y)){
 					bfsp.x += pf->getTileX();
 					lStack->addFront(bfsp);
-					if(tracked) CCLOG("dr to r");
+					if(debug_decisionTree) cPrint("dr to r");
 				}else if(!pf->checkBlock(BFSParentBlock.x, BFSParentBlock.y + 1)){
 					bfsp.y += pf->getTileY();
 					lStack->addFront(bfsp);
-					if(tracked) CCLOG("dr to d");
+					if(debug_decisionTree) cPrint("dr to d");
 				}
 			}
 
 			auto diff = bfsp - this->getPosition();
-			if(tracked) CCLOG("%4.4f %4.4f", diff.x, diff.y);
-
-/*
-			if(dir == "u"){
-				if(tracked) CCLOG("u");
-				if(!pf->checkBlock(pos.x - 1, pos.y)){
-					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
-				} else if(!pf->checkBlock(pos.x - 1, pos.y + 1)){
-					pos.x -= 32;
-					pos.y += 32;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("u to ur");
-				} else{
-					pos.x -= 32;
-					pos.y -= 32;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("u to ul");
-				}
-			}
-
-			else if(dir == "d"){
-				if(tracked) CCLOG("d");
-				if(!pf->checkBlock(pos.x + 1, pos.y)){
-					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
-				} else if(!pf->checkBlock(pos.x + 1, pos.y + 1)){
-					pos.x += 32;
-					pos.y += 32;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("d to dr");
-				} else{
-					pos.x += 32;
-					pos.y -= 32;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("d to dl");
-				}
-			}
-
-			else if(dir == "r"){
-				if(tracked) CCLOG("r");
-				if(!pf->checkBlock(pos.x, pos.y + 1)){
-					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
-				} else if(!pf->checkBlock(pos.x + 1, pos.y + 1)){
-					pos.x += 32;
-					pos.y += 32;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("r to dr");
-				} else{
-					pos.x -= 32;
-					pos.y += 32;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("r to ur");
-				}
-			}
-
-			else if(dir == "l"){
-				if(tracked) CCLOG("l");
-				if(!pf->checkBlock(pos.x, pos.y - 1)){
-					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
-				} else if(!pf->checkBlock(pos.x + 1, pos.y - 1)){
-					pos.x += 32;
-					pos.y -= 32;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("l to dl");
-				} else{
-					pos.x -= 32;
-					pos.y -= 32;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("l to ul");
-				}
-			}
-
-			else if(dir == "ul"){
-				if(tracked) CCLOG("ul");
-				if(!pf->checkBlock(pos.x - 1, pos.y - 1)){
-					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
-				} else if(!pf->checkBlock(pos.x - 1, pos.y)){
-					pos.x -= 32;
-					pos.y -= 0;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("ul to u");
-				} else{
-					pos.x -= 0;
-					pos.y -= 32;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("ul to l");
-				}
-			}
-
-			else if(dir == "ur"){
-				if(tracked) CCLOG("ur");
-				if(!pf->checkBlock(pos.x - 1, pos.y + 1)){
-					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
-				} else if(!pf->checkBlock(pos.x, pos.y + 1)){
-					pos.x += 0;
-					pos.y += 32;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("ur to r");
-				} else{
-					pos.x -= 32;
-					pos.y -= 0;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("ur to u");
-				}
-			}
-
-			else if(dir == "dl"){
-				if(tracked) CCLOG("dl");
-				if(!pf->checkBlock(pos.x + 1, pos.y - 1)){
-					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
-				} else if(!pf->checkBlock(pos.x + 1, pos.y)){
-					pos.x += 32;
-					pos.y += 0;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("dl to d");
-				} else{
-					pos.x -= 0;
-					pos.y -= 32;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("dl to l");
-				}
-			}
-
-			else if(dir == "dr"){
-				if(tracked) CCLOG("dr");
-				if(!pf->checkBlock(pos.x + 1, pos.y + 1)){
-					lStack->addFront(pf->getBFSParent(pos.x, pos.y));
-				} else if(!pf->checkBlock(pos.x + 1, pos.y)){
-					pos.x += 32;
-					pos.y += 0;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("dr to d");
-				} else{
-					pos.x -= 0;
-					pos.y += 32;
-					lStack->addFront(pos);
-					if(tracked) CCLOG("dr to r");
-				}
-			}
-			*/
+			if(debug_decisionTree) cPrint("%4.4f %4.4f", diff.x, diff.y);
 
 		}
+		*/
 	}
 
 	//basically nothing is going on
 	else if(lStack->empty() && !moving && tempMoving){
-		if(tracked) CCLOG("nothing going on");
+		if(debug_decisionTree) cPrint("nothing going on");
 		badMove = 0;
 		if(tempMoving){
 			pf->block(convertToPf(this->getPosition()).x, convertToPf(this->getPosition()).y);
@@ -474,18 +521,19 @@ void EnemyBasicUnit::update(float dt) {
 }
 
 void EnemyBasicUnit::removeFromLevel(){
-	CCLOG("EnemyBasicUnit remove from level");
+	cPrint("EnemyBasicUnit remove from level");
 	this->getParent()->removeChild(this);
 }
 
 /*
 void EnemyBasicUnit::attack(BasicUnit * attacker, int damage, char attackType){
 	health -= damage;
-	//CCLOG("%p EnemyBasicUnit WAS ATTACKEDDDD for %d damage", this, damage);
-	//CCLOG("%p's (EnemyBasicUnit) health: %d", this, health);
+	//cPrint("%p EnemyBasicUnit WAS ATTACKEDDDD for %d damage", this, damage);
+	//cPrint("%p's (EnemyBasicUnit) health: %d", this, health);
 }
 */
 
+/*
 //Melee
 bool EnemyBasicUnit::enemyIsAttackable(){
 	if(this->getCurrentEnemy() != 0){
@@ -493,6 +541,26 @@ bool EnemyBasicUnit::enemyIsAttackable(){
 		auto thisLoc = convertToPf(this->getPosition());
 		if(abs(enemyLoc.x - thisLoc.x) <= 1 && abs(enemyLoc.y - thisLoc.y) <= 1){
 			return true;
+		}
+	}
+	return false;
+}
+*/
+bool EnemyBasicUnit::enemyIsAttackable(){
+	if(this->getCurrentEnemy() != 0){
+		auto enemyLoc = convertToPf(currentEnemy->getPosition());
+		auto thisLoc = convertToPf(this->getPosition());
+
+		for(int ei = 0; ei < getCurrentEnemy()->getPfSize().x; ei++){
+            for(int ej = 0; ej < getCurrentEnemy()->getPfSize().y; ej++){
+                for(int i = 0; i < pfSize.x; i++){
+                    for(int j = 0; j < pfSize.y; j++){
+                        if(abs(enemyLoc.x + ei - thisLoc.x + i) <= pfSize.x && abs(enemyLoc.y + ej - thisLoc.y + j) <= pfSize.y){
+                            return true;
+                        }
+                    }
+                }
+            }
 		}
 	}
 	return false;

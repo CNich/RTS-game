@@ -16,6 +16,7 @@
 #include "src/Units/Enemies/EnemyTrollErodedMetal.h"
 #include "src/Units/Enemies/EnemySkinnyTroll.h"
 #include "src/Units/Enemies/EnemyGoblinRanged.h"
+#include "src/Units/Enemies/EnemyTrollHammer.h"
 #include "src/Units/Ninja.h"
 //#include "src/Levels/HelloWorldHud.h"
 //#include "src/Levels/InfoHud.h"
@@ -101,6 +102,8 @@ private:
 
     void createUnitGroupHelper(int option, cocos2d::Point spawnLocation);
 
+    bool ninjaDead = false;
+
 public:
 	InfoHud *_infoHud;
 	PathFinder<BasicUnit> * pf;
@@ -112,6 +115,7 @@ public:
 	cocos2d::Vector<EnemyTrollErodedMetal *> TrollErodedMetalVec;
 	cocos2d::Vector<EnemySkinnyTroll*> SkinnyTrollVec;
 	cocos2d::Vector<EnemyGoblinRanged*> GoblinRangedVec;
+	cocos2d::Vector<EnemyTrollHammer*> TrollHammerVec;
 
 	std::vector<cocos2d::Sprite *> wayPointSprites;
 	std::vector<cocos2d::Vector<BasicUnit *>> goodUnitVectors;
@@ -122,10 +126,10 @@ public:
 
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
     virtual bool init();
-    
+
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);
-    
+
     void setViewPointCenter(cocos2d::Point position);
     void onTouchEnded(cocos2d::Touch *touch, cocos2d::Event *unused_event);
     void onTouchMoved(cocos2d::Touch *touch, cocos2d::Event *unused_event);
@@ -144,7 +148,7 @@ public:
 
     cocos2d::Sprite* bgImg;
 
-    void projectileMoveFinished(cocos2d::Object *pSender);
+    //void projectileMoveFinished(cocos2d::Object *pSender);
 
     cocos2d::Vector<cocos2d::Sprite *> _enemies;
     cocos2d::Vector<cocos2d::Sprite *> _projectiles;

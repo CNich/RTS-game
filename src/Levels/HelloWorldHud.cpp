@@ -93,7 +93,7 @@ void HelloWorldHud::setBasicUnit(){
 			case cocos2d::ui::Widget::TouchEventType::BEGAN:
 				break;
 			case cocos2d::ui::Widget::TouchEventType::ENDED:
-				this->Level1->_infoHud->addGold(10);
+				this->Level1->_infoHud->addGold(1000);
 				break;
 			default:
 				break;
