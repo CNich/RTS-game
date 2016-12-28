@@ -371,7 +371,7 @@ void HelloWorld::createUnitGroupHelper(int option, cocos2d::Point spawnLocation)
 			bv1.pushBack(r);
 			initUnit(r, 0);
 			r->debug_pathFinder = true;
-			r->debug_decisionTree = true;
+			//r->debug_decisionTree = true;
 		}
 	} else if(option == 1){
 		for(int i=0; i < 5; i++){

@@ -59,6 +59,8 @@ public:
 
 	/* Get the unit at the PF coordinate (x,y) */
 	T* getUnit(int x_pf, int y_pf) { return map[x_pf][y_pf].unit; };
+	T* getMapOwner() { return mapOwner;};
+	T* setMapOwner(T* t) { mapOwner = t;};
 
 	void setUnitSize(cocos2d::Point p);
 
@@ -81,6 +83,8 @@ private:
 	int offX = 0;
 	int offY = 0;
 	cocos2d::Point BFSStart;
+
+	T* mapOwner = nullptr;
 
     /* size of unit on the map */
 	cocos2d::Point unitSize;
@@ -579,7 +583,8 @@ void PathFinder<T>::checkAdj(int x1, int y1, int x2, int y2){
             int y1p = y1 + j;
             //if ( !(x1p >= 0 && y1p >= 0 && x1p <= rows - 1 && y1p <= cols - 1 && !map[x1p][y1p].blocked) ){
             //if ( !(x1p >= 0 && y1p >= 0 && x1p <= rows - 1 && y1p <= cols - 1) || map[x1p][y1p].permaBlocked || (map[x1p][y1p].unit != map[start.x][start.y].unit && map[x1p][y1p].blocked) ){
-            if ( !(x1p >= 0 && y1p >= 0 && x1p <= rows - 1 && y1p <= cols - 1) || map[x1p][y1p].permaBlocked || (map[x1p][y1p].blocked && map[x1p][y1p].unit != map[start.x][start.y].unit) ){
+            //if ( !(x1p >= 0 && y1p >= 0 && x1p <= rows - 1 && y1p <= cols - 1) || map[x1p][y1p].permaBlocked || (map[x1p][y1p].blocked && map[x1p][y1p].unit != map[start.x][start.y].unit) ){
+            if ( !(x1p >= 0 && y1p >= 0 && x1p <= rows - 1 && y1p <= cols - 1) || map[x1p][y1p].permaBlocked || (map[x1p][y1p].blocked && map[x1p][y1p].unit != mapOwner) ){
                 allValid = false;
             }
         }
@@ -636,6 +641,7 @@ template<class T>
 void PathFinder<T>::print(){
 	cout << endl << "map" << endl << endl;
 	cout << start.x << " " << start.y << endl;
+	cout << "map owner: " << mapOwner << "\t unit at start:" << map[start.x][start.y].unit << endl;
 	//for (int i = 0; i < rows; i++){
 	//for (int i = 0; i < rows; i++){
 		//for (int j = 0; j < cols; j++){
@@ -644,6 +650,9 @@ void PathFinder<T>::print(){
 			//if ( map[i][j].success && (i != start.x && j != start.y) && (i != end.x && j != end.y) ){
 			if (map[i][j].success && !( (i == start.x && j == start.y) || (i == end.x && j == end.y) ) ){
 				cout << "+";
+			}
+			else if (map[i][j].unit == mapOwner){
+				cout << "=";
 			}
 			else if (map[i][j].checked == true && !map[i][j].blocked && !((i == start.x && j == start.y) || (i == end.x && j == end.y))){
 				//cout << "*";

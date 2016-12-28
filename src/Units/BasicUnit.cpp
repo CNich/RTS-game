@@ -121,6 +121,7 @@ void BasicUnit::ASolve(int x, int y) {
 		tpf->setStart(ppos.x, ppos.y);
 		tpf->setEnd(x, y);
 		tpf->setUnitSize(pfSize);
+		tpf->setMapOwner(this);
 		this->getMap();
         if(debug_pathFinder) {
             cPrint("------get map------");

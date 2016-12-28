@@ -27,7 +27,7 @@ struct pathNode{
 	int x;
 	int y;
 
-	BasicUnit *unit;
+	BasicUnit *unit; //unit at certain location
 
 	//BFS map
 	char* dir = 0;
