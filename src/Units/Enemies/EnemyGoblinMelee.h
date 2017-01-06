@@ -1,15 +1,15 @@
-#ifndef __BRIGAND__
-#define __BRIGAND__
+#ifndef __GOBLIN_MELEE__
+#define __GOBLIN_MELEE__
 
-#include "src/Units/BasicUnit.h"
+#include "src/Units/EnemyBasicUnit.h"
 
-class Brigand : public BasicUnit
+class EnemyGoblinMelee : public EnemyBasicUnit
 {
 public:
-	Brigand();
-	~Brigand();
-	static Brigand* create();
-	static Brigand* create(cocos2d::Point tmp);
+	EnemyGoblinMelee();
+	~EnemyGoblinMelee();
+	static EnemyGoblinMelee* create();
+	static EnemyGoblinMelee* create(cocos2d::Point tmp);
 
 
 	//void attack(BasicUnit *attacker, int damage, char attackType);
@@ -41,4 +41,4 @@ protected:
 	/********************************************/
 };
 
-#endif // __BRIGAND__
+#endif // __GOBLIN_MELEE__

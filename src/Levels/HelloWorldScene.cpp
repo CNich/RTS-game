@@ -58,6 +58,9 @@ bool HelloWorld::init() {
 	wframeCache->addSpriteFramesWithFile("Units/Brigand/BrigandWalk.plist");
 	wframeCache->addSpriteFramesWithFile("Units/Brigand/BrigandAttack.plist");
 	wframeCache->addSpriteFramesWithFile("Units/Brigand/BrigandDie.plist");
+	wframeCache->addSpriteFramesWithFile("Units/Goblin Melee/GoblinMeleeWalk.plist");
+	wframeCache->addSpriteFramesWithFile("Units/Goblin Melee/GoblinMeleeAttack.plist");
+	wframeCache->addSpriteFramesWithFile("Units/Goblin Melee/GoblinMeleeDie.plist");
 
 	//cocos2d::experimental::AudioEngine::setMaxAudioInstance(1);
 
@@ -413,6 +416,12 @@ void HelloWorld::createEnemyUnit(int option, cocos2d::Point spawnLocation){
 	} else if(option == 36){
 		EnemyTrollHammer * r = EnemyTrollHammer::create(spawnLocation);
 		TrollHammerVec.pushBack(r);
+		initUnit(r, 1);
+		r->_infoHud = _infoHud;
+		//r->tracked = true;
+	} else if(option == 37){
+		EnemyGoblinMelee * r = EnemyGoblinMelee::create(spawnLocation);
+		GoblinMeleeVec.pushBack(r);
 		initUnit(r, 1);
 		r->_infoHud = _infoHud;
 		//r->tracked = true;
@@ -847,6 +856,12 @@ void HelloWorld::enemyDistances(float dt){
 		}
 	}
 
+	for(EnemyGoblinMelee * p : GoblinMeleeVec){
+		if(p != 0 && !p->isDead()){
+			team2.pushBack(p);
+		}
+	}
+
 	//reset newClosestEnemy
 	if(team1.size() > 0 && team2.size() > 0){
 
@@ -928,6 +943,7 @@ void HelloWorld::update(float dt) {
 		enemyRangedBasicUnitRespawn += 5.0f;
 		//createEnemyUnit(32, enemySpawnLocation2_nd);
 		createEnemyUnit(36, enemySpawnLocation2_nd);
+		createEnemyUnit(37, enemySpawnLocation1_nd);
 	}
 
 	if(!ninjaDead && ninja->isDead()){

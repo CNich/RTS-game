@@ -18,6 +18,7 @@
 #include "src/Units/Enemies/EnemySkinnyTroll.h"
 #include "src/Units/Enemies/EnemyGoblinRanged.h"
 #include "src/Units/Enemies/EnemyTrollHammer.h"
+#include "src/Units/Enemies/EnemyGoblinMelee.h"
 #include "src/Units/Ninja.h"
 //#include "src/Levels/HelloWorldHud.h"
 //#include "src/Levels/InfoHud.h"
@@ -117,6 +118,7 @@ public:
 	cocos2d::Vector<EnemySkinnyTroll*> SkinnyTrollVec;
 	cocos2d::Vector<EnemyGoblinRanged*> GoblinRangedVec;
 	cocos2d::Vector<EnemyTrollHammer*> TrollHammerVec;
+	cocos2d::Vector<EnemyGoblinMelee*> GoblinMeleeVec;
 	cocos2d::Vector<Brigand*> BrigandVec;
 
 	std::vector<cocos2d::Sprite *> wayPointSprites;
