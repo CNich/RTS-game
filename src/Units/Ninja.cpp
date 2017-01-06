@@ -36,6 +36,8 @@ Ninja* Ninja::create() {
 	pSprite->attackRange = pSprite->initAttackRange;
 	pSprite->movementRange = pSprite->initMovementRange;
 	pSprite->walkingSpeed = pSprite->initWalkingSpeed;
+	pSprite->xHealthPos = 1;
+	pSprite->yHealthPos = 1;
 
 	pSprite->scheduleUpdate();
 

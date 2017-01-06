@@ -10,14 +10,14 @@ AttackObjectNinjaStar::AttackObjectNinjaStar() {
 AttackObjectNinjaStar::~AttackObjectNinjaStar() {
 }
 
-AttackObjectNinjaStar* AttackObjectNinjaStar::create(BasicUnit * attacker, cocos2d::Point location, int damage, char attackType, PathFinder<BasicUnit> * tpf) {
+AttackObjectNinjaStar* AttackObjectNinjaStar::create(BasicUnit * attacker, cocos2d::Point location_pf, int damage, char attackType, PathFinder<BasicUnit> * tpf) {
 	AttackObjectNinjaStar* pSprite = new AttackObjectNinjaStar();
 	CCLOG("NINJA STARRRR");
 	pSprite->initWithFile("star.png");
 	pSprite->autorelease();
 	pSprite->setScale(0.75);
 	pSprite->parent = attacker;
-	pSprite->location = location;
+	pSprite->location_pf = location_pf;
 	pSprite->damage = damage;
 	pSprite->pf = tpf;
 	//pSprite->init(location, damage, attackType);

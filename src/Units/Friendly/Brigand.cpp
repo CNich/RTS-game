@@ -1,72 +1,69 @@
-#include "src/Units/Enemies/EnemyTrollHammer.h"
+#include "src/Units/Friendly/Brigand.h"
 #include "SimpleAudioEngine.h"
 #include "stdlib.h"
 #include "src/AttackObjects/AttackObject.h"
 
 USING_NS_CC;
 
-EnemyTrollHammer::EnemyTrollHammer() {
+Brigand::Brigand() {
 }
 
-EnemyTrollHammer::~EnemyTrollHammer() {
-	CCLOG("EnemyTrollHammer WAS DELETED!!!!!!!!!!!");
+Brigand::~Brigand() {
+	CCLOG("Brigand WAS DELETED!!!!!!!!!!!");
 }
 
-EnemyTrollHammer* EnemyTrollHammer::create() {
-	EnemyTrollHammer* pSprite = new EnemyTrollHammer();
-	cPrint("making troll hammer");
-	auto *filename = __String::createWithFormat("TrollHammerWalk00050.png");
+Brigand* Brigand::create() {
+	Brigand* pSprite = new Brigand();
+	cPrint("making Brigand");
+	auto *filename = __String::createWithFormat("Brigand1Walk00064.png");
 	auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
 	pSprite->initWithSpriteFrame(wframe);
 	srand((unsigned) time(NULL));
 	pSprite->autorelease();
 
 	pSprite->movementRange = pSprite->initMovementRange;
-	pSprite->initHealth = 1000;
-	pSprite->health = pSprite->initHealth;
+	pSprite->initHealth = pSprite->initMaxHealth;
+	pSprite->health = pSprite->initMaxHealth;
 	pSprite->attackDamage = pSprite->initAttackDamage;
 	pSprite->attackRange = pSprite->initAttackRange;
 	pSprite->walkingSpeed = pSprite->initWalkingSpeed;
 	pSprite->attackSpeed = pSprite->initAttackSpeed;
-	pSprite->loot = pSprite->initLoot;
+	pSprite->setScale(0.75);
+	pSprite->xHealthPos = 1.5;
+	pSprite->yHealthPos = 1;
 
-	pSprite->unitType = "Enemy Troll Hammer";
-
-	pSprite->setPfSize(2,2);
-	pSprite->setScale(1.5);
-
-	//auto t = cocos2d::Sprite::create("test-4-square.png");
-	//pSprite->addChild(t, 1);
-	//t->setPosition(128, 128);
+	pSprite->unitType = "Brigand";
 
 	pSprite->scheduleUpdate();
+
+	cPrint("Brigand Made");
 
 	return pSprite;
 
 }
 
-EnemyTrollHammer* EnemyTrollHammer::create(cocos2d::Point tmp){
-	EnemyTrollHammer* pSprite = EnemyTrollHammer::create();
+Brigand* Brigand::create(cocos2d::Point tmp){
+	Brigand* pSprite = Brigand::create();
 	pSprite->setPosition(tmp);
 	return pSprite;
 }
 
-void EnemyTrollHammer::removeFromLevel(){
-	CCLOG("EnemyTrollHammer remove from level");
+void Brigand::removeFromLevel(){
+	CCLOG("Brigand remove from level");
 	this->getParent()->removeChild(this);
 }
 
 /*
  * Set attack animation
  */
-void EnemyTrollHammer::animationAttack(){
+void Brigand::animationAttack(){
 	auto attackCallback = CallFunc::create([this]() {
 		AttackObject* atk = AttackObject::create(this, this->convertToPf(this->getCurrentEnemy()->getPosition()), attackDamage, 'm', pf);
 		atk->initAttack();
 	});
 
-	int startFrame = 110;
-	int endFrame = 130;
+	int startFrame = 100;
+	int endFrame = 117;
 	numAttackFrames = endFrame - startFrame + 1;
 	attackDuration = (attackSpeed - 0.1) / numAttackFrames;
 
@@ -75,7 +72,7 @@ void EnemyTrollHammer::animationAttack(){
 
 	Vector<SpriteFrame *> trollFrames;
 	for (int i = startFrame; i <= endFrame; i++){
-		auto *filename = __String::createWithFormat("TrollHammerAttack%d0%d.png", unitDir, i);
+		auto *filename = __String::createWithFormat("Brigand1Attack%d0%d.png", unitDir, i);
 		//cPrint("%s", filename->getCString());
 		auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
 		trollFrames.pushBack(wframe);
@@ -89,17 +86,17 @@ void EnemyTrollHammer::animationAttack(){
 /*
  * Set the walking animation
  */
-cocos2d::Animate* EnemyTrollHammer::animationWalk(){
+cocos2d::Animate* Brigand::animationWalk(){
 	if(unitDir <=8){
 		Vector<SpriteFrame *> walkFrames;
 
 		//length of animation sequence
-		int startFrame = 50;
-		int endFrame = 69;
+		int startFrame = 64;
+		int endFrame = 84;
 		float animationLength = endFrame - startFrame + 1.0f;
 
 		for (int i = startFrame; i <= endFrame; i++){
-			auto *filename = __String::createWithFormat("TrollHammerWalk%d00%d.png", unitDir, i);
+			auto *filename = __String::createWithFormat("Brigand1Walk%d00%d.png", unitDir, i);
 			//cPrint("%s", filename->getCString());
 			auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
 			walkFrames.pushBack(wframe);
@@ -119,18 +116,18 @@ cocos2d::Animate* EnemyTrollHammer::animationWalk(){
 /*
  * Set dying animation
  */
-void EnemyTrollHammer::animationDie(){
+void Brigand::animationDie(){
 	if(unitDir <=8){
 		Vector<SpriteFrame *> dieFrames;
 
 		//length of animation sequence
-		int startFrame = 150;
-		int endFrame = 165;
+		int startFrame = 666;
+		int endFrame = 686;
 
 		dieDuration = 1.3 / (endFrame - startFrame + 1);
 
 		for (int i = startFrame; i <= endFrame; i++){
-			auto *filename = __String::createWithFormat("TrollHammerDie%d0%d.png", unitDir, i);
+			auto *filename = __String::createWithFormat("Brigand1Die%d0%d.png", unitDir, i);
 			auto wframe = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename->getCString());
 			//cPrint("%s", filename->getCString());
 			dieFrames.pushBack(wframe);
@@ -140,25 +137,4 @@ void EnemyTrollHammer::animationDie(){
 		//auto waction = RepeatForever::create(animate);
 		this->runAction(animate);
 	}
-}
-
-
-bool EnemyTrollHammer::enemyIsAttackable(){
-	if(this->getCurrentEnemy() != 0){
-		auto enemyLoc = convertToPf(currentEnemy->getPosition());
-		auto thisLoc = convertToPf(this->getPosition());
-
-		for(int ei = 0; ei < getCurrentEnemy()->getPfSize().x; ei++){
-            for(int ej = 0; ej < getCurrentEnemy()->getPfSize().y; ej++){
-                for(int i = 0; i < pfSize.x; i++){
-                    for(int j = 0; j < pfSize.y; j++){
-                        if(abs(enemyLoc.x + ei - thisLoc.x + i) <= pfSize.x && abs(enemyLoc.y + ej - thisLoc.y + j) <= pfSize.y){
-                            return true;
-                        }
-                    }
-                }
-            }
-		}
-	}
-	return false;
 }

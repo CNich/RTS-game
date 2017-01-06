@@ -36,6 +36,7 @@ BasicUnit* BasicUnit::create() {
 	//pSprite->setScale(0.5);
     pSprite->setScale(1.5);
 	pSprite->setPfSize(2,2);
+	pSprite->setAnchorPoint({0.3, 0.3});
 
 	pSprite->scheduleUpdate();
 
@@ -60,6 +61,7 @@ void BasicUnit::setPf(PathFinder<BasicUnit> *tempPf){
 	pf->block(convertToPf(tmp).x, convertToPf(tmp).y);
 	pf->taken(convertToPf(tmp).x, convertToPf(tmp).y);
 	pf->setUnit(convertToPf(tmp).x, convertToPf(tmp).y, this);
+
 };
 
 /*BasicUnit* BasicUnit::create(cocos2d::Point tmp) {
@@ -210,6 +212,23 @@ void BasicUnit::initHealthBar(){
 	healthBarOutline = cocos2d::Sprite::create("healthBars/Outline.png");
 	healthBarOutline->setAnchorPoint({0,0});
 	this->addChild(healthBarOutline, RED_HEALTH_Z_ORDER - 1);
+	auto op = redHealth->getPosition();
+
+	float dx = healthBarOutline->getContentSize().width - redHealth->getContentSize().width;
+	float dy = healthBarOutline->getContentSize().height - redHealth->getContentSize().height;
+
+	healthBarOutline->setPosition({op.x - dx / 2, op.y - dy / 2});
+}
+
+void BasicUnit::adjustHealthBarSize(){
+    auto thisSize = this->getBoundingBox().size;
+
+    greenHealth->setPosition({xHealthPos * (thisSize.width - greenHealth->getBoundingBox().size.width) / 2,
+		yHealthPos * (thisSize.height - greenHealth->getBoundingBox().size.height)});
+
+	redHealth->setPosition({xHealthPos * (thisSize.width - redHealth->getBoundingBox().size.width) / 2,
+		yHealthPos * (thisSize.height - redHealth->getBoundingBox().size.height)});
+
 	auto op = redHealth->getPosition();
 
 	float dx = healthBarOutline->getContentSize().width - redHealth->getContentSize().width;
@@ -424,6 +443,7 @@ void BasicUnit::setPlayerPosition(Point position, bool diag) {
 		pfLocationUpdate(position);
 
 		CCFiniteTimeAction* actionMove;
+
 		//auto drawNode = DrawNode::create();
 
 		if(diag){
@@ -697,6 +717,7 @@ void BasicUnit::update(float dt) {
 			auto seq = Sequence::create(DelayTime::create(attackSpeed), callback, nullptr);
 			this->runAction(seq);
 
+            setUnitDir(getAngle(this->getPosition(), currentEnemy->getPosition()));
 			this->animationAttack();
 		}
 
@@ -799,9 +820,9 @@ void BasicUnit::aSolveHelper(int x_pf, int y_pf){
     auto this_pf = convertToPf(this->getPosition());
     if(pf->getUnit(this_pf.x, this_pf.y) != this && pf->checkBlock(goalPosition.x, goalPosition.y)){
         bool asolveNeighboorFound = false;
-        cPrint("==============================");
-        for(int i = 0; i <= 4; i++){
-            for(int j = 0; j <= 4; j++){
+        if(debug_decisionTree) cPrint("==============================");
+        for(int i = 0; i < 4; i++){
+            for(int j = 0; j < 4; j++){
                 if(!pf->checkBlock(goalPosition.x + i, goalPosition.y + j)){
                     if(debug_decisionTree) cPrint("asolve neighboor %d, %d", i, j);
                     this->ASolve(goalPosition.x + i, goalPosition.y + j);
@@ -826,7 +847,7 @@ void BasicUnit::aSolveHelper(int x_pf, int y_pf){
             }
             if(asolveNeighboorFound) break;
         }
-        cPrint("==============================");
+        if(debug_decisionTree) cPrint("==============================");
 
     } else{
         if(debug_decisionTree) cPrint("asolve neighboor original");
@@ -906,7 +927,7 @@ bool BasicUnit::enemyIsAttackable(){
 */
 
 bool BasicUnit::enemyIsAttackable(){
-	if(this->getCurrentEnemy() != 0){
+	if(this->getCurrentEnemy() != 0 && attackTravelRange >= pointToPointDistance(this->convertToPf(this->getPosition()), goalPosition)){
 		auto enemyLoc = convertToPf(currentEnemy->getPosition());
 		auto thisLoc = convertToPf(this->getPosition());
 

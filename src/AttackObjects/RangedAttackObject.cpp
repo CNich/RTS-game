@@ -10,13 +10,13 @@ RangedAttackObject::RangedAttackObject() {
 RangedAttackObject::~RangedAttackObject() {
 }
 
-RangedAttackObject* RangedAttackObject::create(BasicUnit * attacker, cocos2d::Point location, int damage, char attackType, PathFinder<BasicUnit> * tpf) {
+RangedAttackObject* RangedAttackObject::create(BasicUnit * attacker, cocos2d::Point location_pf, int damage, char attackType, PathFinder<BasicUnit> * tpf) {
 	RangedAttackObject* pSprite = new RangedAttackObject();
 	pSprite->initWithFile("bullet.png");
 	pSprite->autorelease();
 	pSprite->setScale(0.25);
 	pSprite->parent = attacker;
-	pSprite->location = location;
+	pSprite->location_pf = location_pf;
 	pSprite->damage = damage;
 	pSprite->pf = tpf;
 	//CCLOG("%p THIS WAS RECEIVED", attacker);

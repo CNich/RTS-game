@@ -126,6 +126,8 @@ void EnemyBasicUnit::update(float dt) {
 			lStack->reset();
 			auto seq = Sequence::create(DelayTime::create(attackSpeed), callback, nullptr);
 			this->runAction(seq);
+
+			setUnitDir(getAngle(this->getPosition(), currentEnemy->getPosition()));
 			this->animationAttack();
 		}
 

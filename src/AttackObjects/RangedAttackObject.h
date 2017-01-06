@@ -27,7 +27,7 @@ protected:
 public:
 	RangedAttackObject();
 	~RangedAttackObject();
-	static RangedAttackObject* create(BasicUnit * attacker, cocos2d::Point location, int damage, char attackType, PathFinder<BasicUnit> *tpf);
+	static RangedAttackObject* create(BasicUnit * attacker, cocos2d::Point location_pf, int damage, char attackType, PathFinder<BasicUnit> *tpf);
 	void attack(cocos2d::Point pos_pf);
 	float gausFactor(int distance);
 	void attackArea();

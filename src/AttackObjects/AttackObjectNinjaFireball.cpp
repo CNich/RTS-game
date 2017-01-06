@@ -15,7 +15,7 @@ AttackObjectNinjaFireball* AttackObjectNinjaFireball::create(BasicUnit * attacke
 	pSprite->initWithFile("bullet.png");
 	pSprite->autorelease();
 	pSprite->parent = attacker;
-	pSprite->location = enemyPfLocation;
+	pSprite->location_pf = enemyPfLocation;
 	pSprite->damage = damage;
 	pSprite->pf = tpf;
 	pSprite->targetPos = enemyPfLocation;

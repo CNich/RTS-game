@@ -12,7 +12,7 @@ protected:
 public:
 	AttackObjectNinjaStar();
 	~AttackObjectNinjaStar();
-	static AttackObjectNinjaStar* create(BasicUnit * attacker, cocos2d::Point location, int damage, char attackType, PathFinder<BasicUnit> *tpf);
+	static AttackObjectNinjaStar* create(BasicUnit * attacker, cocos2d::Point location_pf, int damage, char attackType, PathFinder<BasicUnit> *tpf);
 	//void attack();
 	//void initAttack();
 };

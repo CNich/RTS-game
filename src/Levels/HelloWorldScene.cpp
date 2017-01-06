@@ -55,10 +55,13 @@ bool HelloWorld::init() {
 	wframeCache->addSpriteFramesWithFile("Units/Troll Hammer/TrollHammerWalk.plist");
 	wframeCache->addSpriteFramesWithFile("Units/Elf/Elf.plist");
 	wframeCache->addSpriteFramesWithFile("Units/Wizard/Wizard.plist");
+	wframeCache->addSpriteFramesWithFile("Units/Brigand/BrigandWalk.plist");
+	wframeCache->addSpriteFramesWithFile("Units/Brigand/BrigandAttack.plist");
+	wframeCache->addSpriteFramesWithFile("Units/Brigand/BrigandDie.plist");
 
 	//cocos2d::experimental::AudioEngine::setMaxAudioInstance(1);
 
-	/**********************************************************************/
+	/**********************************************************************
 	//load tilemap
 	CCLOG("Start tilemap");
 	std::string file = "grassland/Level1FinalV2.tmx";
@@ -110,6 +113,55 @@ bool HelloWorld::init() {
 	bgImg->setScale(2);
 	this->addChild(bgImg,-2);
 	bgImg->setPosition(this->convertToNodeSpace(cocos2d::Point(3.0, -6.0)));
+
+	//auto drawNode = DrawNode::create();
+	//drawNode->drawDot(cocos2d::Point(0,0), 16, Color4F::GREEN);
+	//bgImg->addChild(drawNode, 1000);
+	**********************************************************************/
+
+    /**********************************************************************/
+	//load tilemap
+	cPrint("Start tilemap");
+	std::string file = "grassland/Level 2_v1.tmx";
+	cPrint("%s",file.c_str());
+	auto str =
+			String::createWithContentsOfFile(
+					FileUtils::getInstance()->fullPathForFilename(file.c_str()).c_str());
+	_tileMap = TMXTiledMap::createWithXML(str->getCString(), "");
+
+	cPrint("made _tileMap");
+	this->addChild(_tileMap, -1);
+	cPrint("added tilemap");
+
+	//load blocked layer and set it to invisible
+	_blockage = _tileMap->layerNamed("Meta");
+	_blockage->setVisible(false);
+
+	cPrint("added _blockage");
+
+	//get tilemap objects
+	TMXObjectGroup *objects = _tileMap->getObjectGroup("Objects");
+	CCASSERT(NULL != objects, "'Object-Player' object group not found");
+	auto playerShowUpPoint = objects->getObject("PlayerShowUpPoint");
+	auto enemySpawnPoint = objects->getObject("EnemySpawnPoint");
+	auto enemySpawnPoint2 = objects->getObject("EnemySpawnPoint2");
+	auto enemySpawnPoint3 = objects->getObject("EnemySpawnPoint3");
+	auto imagePoint = objects->getObject("ImagePoint");
+	CCASSERT(!playerShowUpPoint.empty(), "PlayerShowUpPoint object not found");
+
+	cPrint("added objects");
+
+	//int imageX = imagePoint["x"].asInt();
+	//int imageY = imagePoint["y"].asInt();
+	//CCLOG("imgx: %d, imgy: %d", imageX, imageY);
+
+	bgImg = cocos2d::Sprite::create("grassland/Level_2/Level1_Background4.png");
+	bgImg->setAnchorPoint(Vec2(0,0));
+	bgImg->setScale(1);
+	this->addChild(bgImg,-2);
+	//bgImg->setPosition(this->convertToNodeSpace(cocos2d::Point(-905.0, -373.0)));
+	//bgImg->setPosition(this->convertToNodeSpace(cocos2d::Point(-717.67, 1.33)));
+	bgImg->setPosition(this->convertToNodeSpace(cocos2d::Point(0, 0)));
 
 	//auto drawNode = DrawNode::create();
 	//drawNode->drawDot(cocos2d::Point(0,0), 16, Color4F::GREEN);
@@ -247,8 +299,11 @@ bool HelloWorld::init() {
 	pnt.y = _plpos.y  + pf->getTileY();
 	createUnitGroup(0, pnt, true);
 
-	pnt.y -= pf->getTileX() * 3;
+	pnt.y -= pf->getTileY() * 3;
 	createUnitGroup(1, pnt, true);
+
+    pnt.y -= pf->getTileY() * 3;
+	createUnitGroup(3, pnt, true);
 
 	enemySpawnLocation1_nd.x =  (float)enemyX;
 	enemySpawnLocation1_nd.y =  (float)enemyY;
@@ -295,6 +350,7 @@ void HelloWorld::initUnit(BasicUnit *r, char team){
 	r->setTileMap(_tileMap);
 	r->setTeam(team);
 	r->initHealthBar();
+	r->adjustHealthBarSize();
 	//r->_infoHud = _infoHud;
 	if(team == 0){
 		auto pos = r->convertToPf(r->getPosition());
@@ -311,6 +367,9 @@ void HelloWorld::createUnitGroup(int option, cocos2d::Point spawnLocation, bool 
 			createUnitGroupHelper(option, spawnLocation);
 			_infoHud->spendGold(200);
 		} else if(option == 1 && _infoHud->getGoldAmount() >= 250){
+			createUnitGroupHelper(option, spawnLocation);
+			_infoHud->spendGold(250);
+		} else if(option == 3 && _infoHud->getGoldAmount() >= 250){
 			createUnitGroupHelper(option, spawnLocation);
 			_infoHud->spendGold(250);
 		}
@@ -370,7 +429,7 @@ void HelloWorld::createUnitGroupHelper(int option, cocos2d::Point spawnLocation)
 			BasicUnit * r = BasicUnit::create(p);
 			bv1.pushBack(r);
 			initUnit(r, 0);
-			r->debug_pathFinder = true;
+			if(i == 0) r->debug_pathFinder = true;
 			//r->debug_decisionTree = true;
 		}
 	} else if(option == 1){
@@ -396,6 +455,14 @@ void HelloWorld::createUnitGroupHelper(int option, cocos2d::Point spawnLocation)
 		//ninja->tracked = true;
 		//ninja->consoleTrack = true;
 		bv1.pushBack(ninja);
+	} else if(option == 3){
+        for(int i=0; i < 5; i++){
+			auto p = spawnLocation;
+			p.y = spawnLocation.y  + pf->getTileY() * i;
+			Brigand * r = Brigand::create(p);
+			bv1.pushBack(r);
+			initUnit(r, 0);
+		}
 	}
 
 	goodUnitVectors.push_back(bv1);
@@ -413,8 +480,13 @@ void HelloWorld::createUnitGroupHelper(int option, cocos2d::Point spawnLocation)
 		wayPointPng = "Cyansquare.png";
 	} else if(option == 2){
 		wayPointPng = "Yellowsquare.png";
+	} else if(option == 3){
+		wayPointPng = "GreySquare.png";
 	}
+
 	auto tSprite = setMovementSprites(wayPointPng, Point(x + 16, y + 48));
+	tSprite->setOpacity(180);
+
 	wayPointSprites.push_back(tSprite);
 	tSprite->setPosition(spawnLocation.x - pf->getTileX() * 2, spawnLocation.y - pf->getTileY() * 2);
 
@@ -444,7 +516,7 @@ void HelloWorld::createUnitGroupHelper(int option, cocos2d::Point spawnLocation)
 		if (rect.containsPoint(locationInNode))
 		{
 			//CCLOG("sprite began... x = %f, y = %f", locationInNode.x, locationInNode.y);
-			target->setOpacity(180);
+			target->setOpacity(255);
 			return true;
 		}
 		return false;
@@ -464,7 +536,7 @@ void HelloWorld::createUnitGroupHelper(int option, cocos2d::Point spawnLocation)
 	listener->onTouchEnded = [=](Touch* touch, Event* event) {
 		auto target = static_cast<Sprite*>(event->getCurrentTarget());
 		//CCLOG("sprite onTouchesEnded.. ");
-		target->setOpacity(255);
+		target->setOpacity(180);
 
 		auto tpos = touch->getLocation();
 		tpos = convertToNodeSpace(tpos);
@@ -849,13 +921,13 @@ void HelloWorld::update(float dt) {
 		enemyBasicUnitRespawn += 30.0f;
 		//createEnemyUnit(31, enemySpawnLocation1_nd);
 		//createEnemyUnit(35, enemySpawnLocation1_nd);
-		createEnemyUnit(36, enemySpawnLocation1_nd);
+		//createEnemyUnit(36, enemySpawnLocation1_nd);
 	}
 
 	if(enemyRangedBasicUnitRespawn < 0){
 		enemyRangedBasicUnitRespawn += 5.0f;
 		//createEnemyUnit(32, enemySpawnLocation2_nd);
-		//createEnemyUnit(36, enemySpawnLocation2_nd);
+		createEnemyUnit(36, enemySpawnLocation2_nd);
 	}
 
 	if(!ninjaDead && ninja->isDead()){

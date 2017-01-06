@@ -64,9 +64,12 @@ public:
 
 	void initHealthBar();
 	void setHealthBar();
+	void adjustHealthBarSize();
 
     bool debug_pathFinder = false;
     bool debug_decisionTree = false;
+
+    char* getUnitType(){ return unitType; };
 
 protected:
 	cocos2d::Point startingPos;
@@ -159,6 +162,10 @@ protected:
 	cocos2d::Sprite * greenHealth;
 	cocos2d::Sprite * redHealth;
 	cocos2d::Sprite * healthBarOutline;
+	float xHealthPos = 0.5;
+	float yHealthPos = 0.65;
+
+	char * unitType = "Basic Unit";
 
 	virtual void update(float dt);
 };
